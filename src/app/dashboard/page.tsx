@@ -5,12 +5,14 @@ import { RiUserAddLine, RiBookOpenLine, RiUserLine } from 'react-icons/ri';
 import Announcements from './components/Announcements';
 import { Chart } from 'chart.js/auto';
 import Link from 'next/link';
+import Image from 'next/image';
+import { placeholderImages } from './components/placeholders';
 
 // Define valid roles to fix TypeScript error
 type UserRole = 'director' | 'teacher' | 'student' | 'parent';
 
 // Static role for testing different views
-const userRole: UserRole = 'director';
+const userRole: UserRole = 'parent';
 
 export default function DashboardPage() {
   useEffect(() => {
@@ -203,6 +205,18 @@ export default function DashboardPage() {
             <canvas id="performanceChart"></canvas>
           </div>
         </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="text-gray-600">Don&apos;t have any announcements?</span>
+        <button className="text-blue-600 hover:text-blue-700">Create one</button>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="text-gray-600">Don&apos;t have any grade reports?</span>
+        <button className="text-blue-600 hover:text-blue-700">Generate one</button>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="text-gray-600">Don&apos;t have any performance data?</span>
+        <button className="text-blue-600 hover:text-blue-700">View analytics</button>
       </div>
     </div>
   );

@@ -130,7 +130,7 @@ export default function AuthPage() {
                 </>
               ) : (
                 <>
-                  <span className="text-gray-600">Don't have an account?</span>{' '}
+                  <span className="text-gray-600">Don&apos;t have an account?</span>{' '}
                   <Link href="/auth?mode=register" className="font-medium text-blue-600 hover:text-blue-700">
                     Sign up
                   </Link>

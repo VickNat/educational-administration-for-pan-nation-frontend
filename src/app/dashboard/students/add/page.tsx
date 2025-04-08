@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { RiArrowLeftLine } from 'react-icons/ri';
+import Link from 'next/link';
 
 export default function AddStudentPage() {
   return (
