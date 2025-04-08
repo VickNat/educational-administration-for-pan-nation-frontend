@@ -131,30 +131,53 @@ export default function DashboardPage() {
 
   const renderDirectorDashboard = () => {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Link href="/dashboard/teachers" className="block">
-          <div className="bg-white rounded-xl p-6 hover:shadow-md transition-shadow">
-            <RiUserAddLine className="w-8 h-8 text-blue-600 mb-4" />
-            <h2 className="text-lg font-semibold text-gray-900">Add Teachers</h2>
-            <p className="text-sm text-gray-600 mt-2">Manage and add new teachers to the system</p>
+      <div className="space-y-6 p-6">
+        <div className="bg-white rounded-xl p-8">
+          <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+            Welcome to your dashboard, Pan-nation school
+          </h1>
+          <p className="text-gray-600 mb-8">school@gmail.com</p>
+
+          <div className="space-y-6">
+            <Link href="/dashboard/teachers" className="block">
+              <div className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mb-4">
+                  <RiUserAddLine className="w-6 h-6 text-blue-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Add Teachers</h3>
+                <p className="text-sm text-gray-600">Create rich course content and coaching products for your students. When you give them a pricing plan, they&apos;ll appear on your site!</p>
+              </div>
+            </Link>
+
+            <Link href="/dashboard/classes" className="block">
+              <div className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center mb-4">
+                  <RiBookOpenLine className="w-6 h-6 text-green-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Add classes</h3>
+                <p className="text-sm text-gray-600">Create rich course content and coaching products for your students. When you give them a pricing plan, they&apos;ll appear on your site!</p>
+              </div>
+            </Link>
+
+            <Link href="/dashboard/students" className="block">
+              <div className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center mb-4">
+                  <RiGroupLine className="w-6 h-6 text-purple-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Add students</h3>
+                <p className="text-sm text-gray-600">Create rich course content and coaching products for your students. When you give them a pricing plan, they&apos;ll appear on your site!</p>
+              </div>
+            </Link>
           </div>
-        </Link>
-        
-        <Link href="/dashboard/students" className="block">
-          <div className="bg-white rounded-xl p-6 hover:shadow-md transition-shadow">
-            <RiGroupLine className="w-8 h-8 text-green-600 mb-4" />
-            <h2 className="text-lg font-semibold text-gray-900">Add Students</h2>
-            <p className="text-sm text-gray-600 mt-2">Manage student enrollments and records</p>
-          </div>
-        </Link>
-        
-        <Link href="/dashboard/classes" className="block">
-          <div className="bg-white rounded-xl p-6 hover:shadow-md transition-shadow">
-            <RiBookOpenLine className="w-8 h-8 text-purple-600 mb-4" />
-            <h2 className="text-lg font-semibold text-gray-900">Add Classes</h2>
-            <p className="text-sm text-gray-600 mt-2">Create and manage class schedules</p>
-          </div>
-        </Link>
+        </div>
+
+        {/* Support Button */}
+        <div className="fixed bottom-6 right-6">
+          <button className="bg-blue-600 text-white px-6 py-2 rounded-full font-medium hover:bg-blue-700 transition-colors flex items-center gap-2">
+            <span>Support</span>
+            <span className="text-lg">↗</span>
+          </button>
+        </div>
       </div>
     );
   };
