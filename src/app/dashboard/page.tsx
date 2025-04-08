@@ -8,9 +8,6 @@ import Link from 'next/link';
 import { RiTeamLine, RiBookLine } from 'react-icons/ri';
 import { useRole } from '../context/RoleContext';
 
-// Define valid roles to fix TypeScript error
-type UserRole = 'director' | 'teacher' | 'parent';
-
 interface DashboardCardProps {
   icon: React.ElementType;
   title: string;
