@@ -4,7 +4,7 @@ import { useRole } from '../context/RoleContext';
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Chart from 'chart.js/auto';
-import { RiUserAddLine, RiBookOpenLine, RiGroupLine, RiTeamLine, RiBookLine } from 'react-icons/ri';
+import { RiUserAddLine, RiBookOpenLine, RiGroupLine, RiTeamLine, RiBookLine, RiBookmarkLine } from 'react-icons/ri';
 import Announcements from './components/Announcements';
 
 export default function DashboardPage() {
@@ -165,6 +165,16 @@ export default function DashboardPage() {
                   <RiGroupLine className="w-6 h-6 text-purple-600" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Add students</h3>
+                <p className="text-sm text-gray-600">Create rich course content and coaching products for your students. When you give them a pricing plan, they&apos;ll appear on your site!</p>
+              </div>
+            </Link>
+
+            <Link href="/dashboard/subjects" className="block">
+              <div className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center mb-4">
+                  <RiBookmarkLine className="w-6 h-6 text-orange-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Add subjects</h3>
                 <p className="text-sm text-gray-600">Create rich course content and coaching products for your students. When you give them a pricing plan, they&apos;ll appear on your site!</p>
               </div>
             </Link>

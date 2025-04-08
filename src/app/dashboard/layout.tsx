@@ -14,6 +14,7 @@ import {
   RiLogoutBoxLine,
   RiArrowDownSLine,
   RiSearchLine,
+  RiCalendarLine,
 } from 'react-icons/ri';
 import { placeholderImages } from './components/placeholders';
 import { useRole } from '../context/RoleContext';
@@ -47,9 +48,11 @@ export default function DashboardLayout({
       case 'director':
         return [
           ...commonItems,
-          { href: '/dashboard/teachers', icon: RiUserLine, label: 'Teachers' },
-          { href: '/dashboard/students', icon: RiTeamLine, label: 'Students' },
-          { href: '/dashboard/classes', icon: RiBookLine, label: 'Classes' },
+          { label: 'Teachers', href: '/dashboard/teachers', icon: RiTeamLine },
+          { label: 'Students', href: '/dashboard/students', icon: RiTeamLine },
+          { label: 'Classes', href: '/dashboard/classes', icon: RiBookLine },
+          { label: 'Subjects', href: '/dashboard/subjects', icon: RiBookLine },
+          { label: 'Events', href: '/dashboard/events', icon: RiCalendarLine }
         ];
       case 'teacher':
         return [
