@@ -1,19 +1,15 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { RiUserAddLine, RiBookOpenLine, RiUserLine } from 'react-icons/ri';
+import { RiUserAddLine } from 'react-icons/ri';
 import Announcements from './components/Announcements';
 import { Chart } from 'chart.js/auto';
 import Link from 'next/link';
-import { useState } from 'react';
 import { RiTeamLine, RiBookLine } from 'react-icons/ri';
 import { useRole } from '../context/RoleContext';
 
 // Define valid roles to fix TypeScript error
-type UserRole = 'director' | 'teacher' | 'student' | 'parent';
-
-// Static role for testing different views
-const userRole: UserRole = 'parent';
+type UserRole = 'director' | 'teacher' | 'parent';
 
 interface DashboardCardProps {
   icon: React.ElementType;
@@ -145,7 +141,7 @@ export default function DashboardPage() {
         performanceChartRef.current.destroy();
       }
     };
-  }, []);
+  }, [userRole]);
 
   const renderDirectorDashboard = () => (
     <div className="space-y-6 p-6">
