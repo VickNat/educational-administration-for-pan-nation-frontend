@@ -1,115 +1,77 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { Chart } from 'chart.js/auto';
+import Chart from 'chart.js/auto';
 import { useRole } from '../../context/RoleContext';
-import { useSearchParams } from 'next/navigation';
 
 export default function PerformancePage() {
   const { userRole } = useRole();
-  const searchParams = useSearchParams();
-  const childId = searchParams.get('child');
   const gradeChartRef = useRef<Chart | null>(null);
   const performanceChartRef = useRef<Chart | null>(null);
 
   useEffect(() => {
-    if (userRole === 'parent') {
-      // Bar Chart
-      const barCtx = document.getElementById('gradeChart') as HTMLCanvasElement;
-      if (barCtx) {
-        // Destroy existing chart if it exists
-        if (gradeChartRef.current) {
-          gradeChartRef.current.destroy();
-        }
+    if (userRole !== 'parent') return;
 
-        // Create new chart
-        gradeChartRef.current = new Chart(barCtx, {
-          type: 'bar',
-          data: {
-            labels: ['Math', 'Science', 'English', 'History', 'Art', 'PE', 'Music', 'Geography', 'Physics', 'Chemistry'],
-            datasets: [
-              {
-                label: 'This Year',
-                data: [85, 75, 82, 78, 88, 92, 85, 79, 83, 87],
-                backgroundColor: '#2563eb',
-                barThickness: 12,
-              },
-              {
-                label: 'Last Year',
-                data: [80, 72, 78, 75, 85, 88, 82, 76, 80, 84],
-                backgroundColor: '#e2e8f0',
-                barThickness: 12,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            scales: {
-              y: {
-                beginAtZero: true,
-                max: 100,
-              },
-            },
-            plugins: {
-              legend: {
-                position: 'bottom',
-              },
-            },
-          },
-        });
+    // Grade Chart
+    const gradeCtx = document.getElementById('gradeChart') as HTMLCanvasElement;
+    if (gradeCtx) {
+      if (gradeChartRef.current) {
+        gradeChartRef.current.destroy();
       }
-
-      // Line Chart
-      const lineCtx = document.getElementById('performanceChart') as HTMLCanvasElement;
-      if (lineCtx) {
-        // Destroy existing chart if it exists
-        if (performanceChartRef.current) {
-          performanceChartRef.current.destroy();
+      gradeChartRef.current = new Chart(gradeCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Term 1', 'Term 2', 'Term 3'],
+          datasets: [{
+            label: 'Grades',
+            data: [85, 88, 92],
+            backgroundColor: 'rgba(59, 130, 246, 0.5)',
+            borderColor: 'rgb(59, 130, 246)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100
+            }
+          }
         }
-
-        // Create new chart
-        performanceChartRef.current = new Chart(lineCtx, {
-          type: 'line',
-          data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-            datasets: [
-              {
-                label: 'Last Year',
-                data: [75, 82, 78, 77, 80, 82],
-                borderColor: '#2563eb',
-                backgroundColor: '#dbeafe',
-                fill: true,
-                tension: 0.4,
-              },
-              {
-                label: 'Last Month',
-                data: [82, 88, 85, 87, 84, 90],
-                borderColor: '#10b981',
-                backgroundColor: '#dcfce7',
-                fill: true,
-                tension: 0.4,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: {
-                position: 'bottom',
-              },
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-                max: 100,
-              },
-            },
-          },
-        });
-      }
+      });
     }
 
-    // Cleanup function to destroy charts when component unmounts
+    // Performance Chart
+    const performanceCtx = document.getElementById('performanceChart') as HTMLCanvasElement;
+    if (performanceCtx) {
+      if (performanceChartRef.current) {
+        performanceChartRef.current.destroy();
+      }
+      performanceChartRef.current = new Chart(performanceCtx, {
+        type: 'line',
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+          datasets: [{
+            label: 'Performance',
+            data: [75, 78, 82, 85, 88, 90],
+            borderColor: 'rgb(59, 130, 246)',
+            tension: 0.1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100
+            }
+          }
+        }
+      });
+    }
+
+    // Cleanup function
     return () => {
       if (gradeChartRef.current) {
         gradeChartRef.current.destroy();
