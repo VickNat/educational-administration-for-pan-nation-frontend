@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRole } from '../../context/RoleContext';
 import Link from 'next/link';
-import { RiAddLine, RiCalendarLine, RiCloseLine } from 'react-icons/ri';
+import { RiAddLine, RiCloseLine } from 'react-icons/ri';
 
 interface Event {
   id: string;
