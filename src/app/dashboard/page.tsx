@@ -144,7 +144,7 @@ export default function DashboardPage() {
                   <h2 className="text-lg font-medium text-gray-900">Add Teachers</h2>
                   <p className="text-gray-600 text-sm">
                     Create rich course content and coaching products for your students.
-                    When you give them a pricing plan, they'll appear on your site!
+                    When you give them a pricing plan, they&apos;ll appear on your site!
                   </p>
                 </div>
               </div>
@@ -160,7 +160,7 @@ export default function DashboardPage() {
                   <h2 className="text-lg font-medium text-gray-900">Add classes</h2>
                   <p className="text-gray-600 text-sm">
                     Create rich course content and coaching products for your students.
-                    When you give them a pricing plan, they'll appear on your site!
+                    When you give them a pricing plan, they&apos;ll appear on your site!
                   </p>
                 </div>
               </div>
@@ -176,7 +176,7 @@ export default function DashboardPage() {
                   <h2 className="text-lg font-medium text-gray-900">Add students</h2>
                   <p className="text-gray-600 text-sm">
                     Create rich course content and coaching products for your students.
-                    When you give them a pricing plan, they'll appear on your site!
+                    When you give them a pricing plan, they&apos;ll appear on your site!
                   </p>
                 </div>
               </div>
