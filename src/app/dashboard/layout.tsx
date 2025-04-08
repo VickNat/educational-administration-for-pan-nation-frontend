@@ -60,7 +60,6 @@ export default function DashboardLayout({
       case 'parent':
         return [
           ...commonItems,
-          { href: '/dashboard/children', icon: RiTeamLine, label: 'Children' },
           { href: '/dashboard/performance', icon: RiBookLine, label: 'Performance' },
         ];
       default:

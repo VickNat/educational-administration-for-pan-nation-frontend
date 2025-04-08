@@ -3,9 +3,12 @@
 import { useEffect, useRef } from 'react';
 import { Chart } from 'chart.js/auto';
 import { useRole } from '../../context/RoleContext';
+import { useSearchParams } from 'next/navigation';
 
 export default function PerformancePage() {
   const { userRole } = useRole();
+  const searchParams = useSearchParams();
+  const childId = searchParams.get('child');
   const gradeChartRef = useRef<Chart | null>(null);
   const performanceChartRef = useRef<Chart | null>(null);
 
@@ -121,7 +124,7 @@ export default function PerformancePage() {
     return (
       <div className="p-6">
         <h1 className="text-2xl font-semibold text-gray-900">Access Denied</h1>
-        <p className="text-gray-600 mt-2">You don't have permission to view this page.</p>
+        <p className="text-gray-600 mt-2">You don&apos;t have permission to view this page.</p>
       </div>
     );
   }
