@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { RiArrowRightLine } from 'react-icons/ri';
 
 export default function Home() {
   const router = useRouter();

@@ -1,6 +1,6 @@
 'use client';
 
-import { RiSearchLine, RiFilterLine, RiAddLine, RiFileExcelLine } from 'react-icons/ri';
+import { RiSearchLine, RiFilterLine } from 'react-icons/ri';
 import Link from 'next/link';
 
 export default function ClassesPage() {

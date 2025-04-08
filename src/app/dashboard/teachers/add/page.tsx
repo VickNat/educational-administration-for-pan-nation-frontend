@@ -6,6 +6,12 @@ import Link from 'next/link';
 export default function AddTeacherPage() {
   return (
     <div className="p-6">
+      <div className="flex items-center gap-4 mb-6">
+        <Link href="/dashboard/teachers" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+          <RiArrowLeftLine className="w-5 h-5" />
+          <span>Back to Teachers</span>
+        </Link>
+      </div>
       <div className="bg-white rounded-xl p-6">
         <h1 className="text-xl font-semibold text-gray-900 mb-6">Add Teachers</h1>
         

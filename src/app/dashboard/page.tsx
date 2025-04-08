@@ -1,12 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { RiUserAddLine, RiBookOpenLine, RiUserLine } from 'react-icons/ri';
 import Announcements from './components/Announcements';
 import { Chart } from 'chart.js/auto';
 import Link from 'next/link';
-import Image from 'next/image';
-import { placeholderImages } from './components/placeholders';
 
 // Define valid roles to fix TypeScript error
 type UserRole = 'director' | 'teacher' | 'student' | 'parent';
@@ -15,12 +13,21 @@ type UserRole = 'director' | 'teacher' | 'student' | 'parent';
 const userRole: UserRole = 'parent';
 
 export default function DashboardPage() {
+  const gradeChartRef = useRef<Chart | null>(null);
+  const performanceChartRef = useRef<Chart | null>(null);
+
   useEffect(() => {
     if (userRole === 'parent') {
       // Bar Chart
       const barCtx = document.getElementById('gradeChart') as HTMLCanvasElement;
       if (barCtx) {
-        new Chart(barCtx, {
+        // Destroy existing chart if it exists
+        if (gradeChartRef.current) {
+          gradeChartRef.current.destroy();
+        }
+
+        // Create new chart
+        gradeChartRef.current = new Chart(barCtx, {
           type: 'bar',
           data: {
             labels: ['Math', 'Science', 'English', 'History', 'Art', 'PE', 'Music', 'Geography', 'Physics', 'Chemistry'],
@@ -59,7 +66,13 @@ export default function DashboardPage() {
       // Line Chart
       const lineCtx = document.getElementById('performanceChart') as HTMLCanvasElement;
       if (lineCtx) {
-        new Chart(lineCtx, {
+        // Destroy existing chart if it exists
+        if (performanceChartRef.current) {
+          performanceChartRef.current.destroy();
+        }
+
+        // Create new chart
+        performanceChartRef.current = new Chart(lineCtx, {
           type: 'line',
           data: {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
@@ -99,6 +112,16 @@ export default function DashboardPage() {
         });
       }
     }
+
+    // Cleanup function to destroy charts when component unmounts
+    return () => {
+      if (gradeChartRef.current) {
+        gradeChartRef.current.destroy();
+      }
+      if (performanceChartRef.current) {
+        performanceChartRef.current.destroy();
+      }
+    };
   }, []);
 
   if (userRole === 'director') {
