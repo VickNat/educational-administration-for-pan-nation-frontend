@@ -1,10 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { RiArrowLeftLine } from 'react-icons/ri';
+import Link from 'next/link';
 
 export default function AddClassPage() {
   return (
     <div className="p-6">
+      <div className="flex items-center gap-4 mb-6">
+        <Link href="/dashboard/classes" className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+          <RiArrowLeftLine className="w-5 h-5" />
+          <span>Back to Classes</span>
+        </Link>
+      </div>
       <div className="bg-white rounded-xl p-6">
         <h1 className="text-xl font-semibold text-gray-900 mb-6">Add Classes</h1>
         

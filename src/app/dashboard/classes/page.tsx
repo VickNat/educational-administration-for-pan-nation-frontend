@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { RiSearchLine, RiFilterLine } from 'react-icons/ri';
 import Link from 'next/link';
 

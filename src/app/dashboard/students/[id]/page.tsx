@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import Image from 'next/image';
 import { RiSearchLine, RiBookLine, RiPhoneLine, RiMailLine } from 'react-icons/ri';
 import { placeholderImages } from '../../components/placeholders';

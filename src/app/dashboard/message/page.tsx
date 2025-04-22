@@ -24,214 +24,194 @@ interface Chat {
   unread?: number;
 }
 
+// Sample data
 const chats: Chat[] = [
   {
     id: 1,
-    name: 'Mr. Alemu',
-    role: 'Online',
+    name: 'Kristin Watson',
+    role: 'Chemistry Teacher',
     avatar: placeholderImages.avatar,
-    lastMessage: 'Good question! How about just discussing it?',
-    time: '11:55',
-    online: true
+    lastMessage: 'Don&apos;t forget to submit your assignment',
+    time: '2:30 PM',
+    online: true,
+    unread: 2
   },
   {
     id: 2,
-    name: 'Elen Hunt',
-    role: 'Algebra',
+    name: 'Marvin McKinney',
+    role: 'French Teacher',
     avatar: placeholderImages.avatar,
-    lastMessage: 'Thank you very much! Im glad...',
-    time: '3m ago'
+    lastMessage: 'Great work on the test!',
+    time: '1:45 PM',
+    online: false
   },
   {
     id: 3,
-    name: 'Jakob Saris',
-    role: 'Property manager',
+    name: 'Jane Cooper',
+    role: 'Maths Teacher',
     avatar: placeholderImages.avatar,
-    lastMessage: 'You: Sure! let me help you about e...',
-    time: '3m ago'
-  },
-  {
-    id: 4,
-    name: 'Jeremy Zucker',
-    role: 'Teacher',
-    avatar: placeholderImages.avatar,
-    lastMessage: 'You: Sure! let me help you about...',
-    time: '3m ago'
-  },
-  {
-    id: 5,
-    name: 'Nadia Lauren',
-    role: 'Teacher',
-    avatar: placeholderImages.avatar,
-    lastMessage: 'Is there anything I can help? Just...',
-    time: '3m ago',
+    lastMessage: 'Let&apos;s review the homework',
+    time: '12:15 PM',
+    online: true,
     unread: 1
   }
 ];
 
-const conversation: Message[] = [
+const messages: Message[] = [
   {
     id: 1,
-    content: 'Good question! How about just discussing it?',
-    time: '11:55',
-    isMe: false
+    content: 'Hi, how are you?',
+    time: '2:30 PM',
+    isMe: true
   },
   {
     id: 2,
-    content: 'Of course. Thank you so much for taking your time.',
-    time: '11:56',
-    isMe: true
+    content: 'I&apos;m good, thanks! How about you?',
+    time: '2:31 PM',
+    isMe: false
   },
   {
     id: 3,
-    content: 'Morning! Elen Hunt, I have a question about my job!',
-    time: '11:58',
-    isMe: true
-  },
-  {
-    id: 4,
-    content: 'What are the points that are important to get the perfect result of my assignment?',
-    time: '11:54',
+    content: 'I&apos;m doing well too. How&apos;s the class going?',
+    time: '2:32 PM',
     isMe: true
   }
 ];
 
 export default function MessagePage() {
-  const [selectedChat, setSelectedChat] = useState<Chat>(chats[0]);
+  const [selectedChat, setSelectedChat] = useState<Chat | null>(chats[0]);
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] bg-white rounded-xl overflow-hidden">
-      {/* Left sidebar - Chat list */}
+    <div className="h-full flex">
+      {/* Chat List */}
       <div className="w-80 border-r border-gray-200 flex flex-col">
         <div className="p-4 border-b border-gray-200">
-          <h1 className="text-xl font-semibold text-gray-900 mb-4">Messaging</h1>
           <div className="relative">
             <input
               type="text"
-              placeholder="Search in dashboard..."
-              className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              placeholder="Search messages..."
+              className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <RiSearchLine className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
           </div>
         </div>
-
         <div className="flex-1 overflow-y-auto">
           {chats.map((chat) => (
-            <button
+            <div
               key={chat.id}
-              onClick={() => setSelectedChat(chat)}
-              className={`w-full p-4 flex items-start gap-3 hover:bg-gray-50 transition-colors ${
-                selectedChat.id === chat.id ? 'bg-blue-50' : ''
+              className={`p-4 cursor-pointer hover:bg-gray-50 ${
+                selectedChat?.id === chat.id ? 'bg-blue-50' : ''
               }`}
+              onClick={() => setSelectedChat(chat)}
             >
-              <div className="relative">
-                <div className="w-10 h-10 rounded-full overflow-hidden">
+              <div className="flex items-center gap-3">
+                <div className="relative">
                   <Image
                     src={chat.avatar}
                     alt={chat.name}
                     width={40}
                     height={40}
-                    className="object-cover"
+                    className="rounded-full"
                     unoptimized
                   />
+                  {chat.online && (
+                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                  )}
                 </div>
-                {chat.online && (
-                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex justify-between items-start">
-                  <div className="truncate">
-                    <div className="font-medium text-gray-900">{chat.name}</div>
-                    <div className="text-xs text-gray-500">{chat.role}</div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-medium text-gray-900 truncate">{chat.name}</h3>
+                    <span className="text-xs text-gray-500">{chat.time}</span>
                   </div>
-                  <div className="text-xs text-gray-500 whitespace-nowrap ml-2">{chat.time}</div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-gray-600 truncate">{chat.lastMessage}</p>
+                    {chat.unread && (
+                      <span className="bg-blue-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                        {chat.unread}
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <p className="text-sm text-gray-600 truncate mt-1">{chat.lastMessage}</p>
               </div>
-              {chat.unread && (
-                <div className="w-5 h-5 rounded-full bg-blue-600 text-white text-xs flex items-center justify-center">
-                  {chat.unread}
-                </div>
-              )}
-            </button>
+            </div>
           ))}
         </div>
       </div>
 
-      {/* Right side - Chat conversation */}
+      {/* Chat Window */}
       <div className="flex-1 flex flex-col">
-        {/* Chat header */}
-        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <div className="w-10 h-10 rounded-full overflow-hidden">
+        {selectedChat ? (
+          <>
+            {/* Chat Header */}
+            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+              <div className="flex items-center gap-3">
                 <Image
                   src={selectedChat.avatar}
                   alt={selectedChat.name}
                   width={40}
                   height={40}
-                  className="object-cover"
+                  className="rounded-full"
                   unoptimized
                 />
-              </div>
-              {selectedChat.online && (
-                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-              )}
-            </div>
-            <div>
-              <div className="font-medium text-gray-900">{selectedChat.name}</div>
-              <div className="text-sm text-gray-500">{selectedChat.role}</div>
-            </div>
-          </div>
-          <button className="text-gray-400 hover:text-gray-600">
-            <RiMoreLine className="w-6 h-6" />
-          </button>
-        </div>
-
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {conversation.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${message.isMe ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-[70%] rounded-2xl px-4 py-2 ${
-                  message.isMe
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-900'
-                }`}
-              >
-                <p className="text-sm">{message.content}</p>
-                <div
-                  className={`text-xs mt-1 ${
-                    message.isMe ? 'text-blue-100' : 'text-gray-500'
-                  }`}
-                >
-                  {message.time}
+                <div>
+                  <h3 className="font-medium text-gray-900">{selectedChat.name}</h3>
+                  <p className="text-sm text-gray-500">{selectedChat.role}</p>
                 </div>
               </div>
+              <button className="text-gray-400 hover:text-gray-600">
+                <RiMoreLine className="w-5 h-5" />
+              </button>
             </div>
-          ))}
-        </div>
 
-        {/* Message input */}
-        <div className="p-4 border-t border-gray-200">
-          <div className="flex items-center gap-2">
-            <button className="text-gray-400 hover:text-gray-600">
-              <RiEmotionLine className="w-6 h-6" />
-            </button>
-            <input
-              type="text"
-              placeholder="Type your message..."
-              className="flex-1 px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <button className="text-white bg-blue-600 rounded-xl p-2 hover:bg-blue-700">
-              <RiSendPlaneFill className="w-5 h-5" />
-            </button>
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex ${message.isMe ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div
+                    className={`max-w-[70%] rounded-xl p-3 ${
+                      message.isMe
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-900'
+                    }`}
+                  >
+                    <p>{message.content}</p>
+                    <span
+                      className={`text-xs mt-1 block ${
+                        message.isMe ? 'text-blue-100' : 'text-gray-500'
+                      }`}
+                    >
+                      {message.time}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Message Input */}
+            <div className="p-4 border-t border-gray-200">
+              <div className="flex items-center gap-2">
+                <button className="text-gray-400 hover:text-gray-600">
+                  <RiEmotionLine className="w-5 h-5" />
+                </button>
+                <input
+                  type="text"
+                  placeholder="Type a message..."
+                  className="flex-1 px-4 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <button className="text-blue-600 hover:text-blue-700">
+                  <RiSendPlaneFill className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="flex-1 flex items-center justify-center text-gray-500">
+            Select a chat to start messaging
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

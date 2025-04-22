@@ -1,105 +1,135 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { RiUserAddLine, RiBookOpenLine, RiUserLine } from 'react-icons/ri';
-import Announcements from './components/Announcements';
-import { Chart } from 'chart.js/auto';
+import { useRole } from '../context/RoleContext';
+import { useEffect, useRef } from 'react';
 import Link from 'next/link';
-
-// Define valid roles to fix TypeScript error
-type UserRole = 'director' | 'teacher' | 'student' | 'parent';
-
-// Static role for testing different views
-const userRole: UserRole = 'director';
+import Chart from 'chart.js/auto';
+import { RiUserAddLine, RiBookOpenLine, RiGroupLine, RiTeamLine, RiBookLine, RiBookmarkLine } from 'react-icons/ri';
+import Announcements from './components/Announcements';
 
 export default function DashboardPage() {
+  const { userRole } = useRole();
+  const reportsChartRef = useRef<Chart | null>(null);
+  const attendanceChartRef = useRef<Chart | null>(null);
+
   useEffect(() => {
-    if (userRole === 'parent') {
-      // Bar Chart
-      const barCtx = document.getElementById('gradeChart') as HTMLCanvasElement;
-      if (barCtx) {
-        new Chart(barCtx, {
-          type: 'bar',
-          data: {
-            labels: ['Math', 'Science', 'English', 'History', 'Art', 'PE', 'Music', 'Geography', 'Physics', 'Chemistry'],
-            datasets: [
-              {
-                label: 'This Year',
-                data: [85, 75, 82, 78, 88, 92, 85, 79, 83, 87],
-                backgroundColor: '#2563eb',
-                barThickness: 12,
-              },
-              {
-                label: 'Last Year',
-                data: [80, 72, 78, 75, 85, 88, 82, 76, 80, 84],
-                backgroundColor: '#e2e8f0',
-                barThickness: 12,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            scales: {
-              y: {
-                beginAtZero: true,
-                max: 100,
-              },
-            },
-            plugins: {
-              legend: {
-                position: 'bottom',
-              },
-            },
-          },
-        });
-      }
+    if (userRole !== 'teacher') return;
 
-      // Line Chart
-      const lineCtx = document.getElementById('performanceChart') as HTMLCanvasElement;
-      if (lineCtx) {
-        new Chart(lineCtx, {
-          type: 'line',
-          data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-            datasets: [
-              {
-                label: 'Last Year',
-                data: [75, 82, 78, 77, 80, 82],
-                borderColor: '#2563eb',
-                backgroundColor: '#dbeafe',
-                fill: true,
-                tension: 0.4,
-              },
-              {
-                label: 'Last Month',
-                data: [82, 88, 85, 87, 84, 90],
-                borderColor: '#10b981',
-                backgroundColor: '#dcfce7',
-                fill: true,
-                tension: 0.4,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: {
-                position: 'bottom',
-              },
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-                max: 100,
-              },
-            },
-          },
-        });
+    // Reports Chart
+    const reportsCtx = document.getElementById('reportsChart') as HTMLCanvasElement;
+    if (reportsCtx) {
+      if (reportsChartRef.current) {
+        reportsChartRef.current.destroy();
       }
+      reportsChartRef.current = new Chart(reportsCtx, {
+        type: 'line',
+        data: {
+          labels: ['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00'],
+          datasets: [
+            {
+              label: 'Class A',
+              data: [15, 38, 35, 28, 35, 48, 40],
+              borderColor: 'rgb(59, 130, 246)',
+              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+              fill: true,
+              tension: 0.4
+            },
+            {
+              label: 'Class B',
+              data: [12, 25, 30, 35, 30, 38, 35],
+              borderColor: 'rgb(34, 197, 94)',
+              backgroundColor: 'rgba(34, 197, 94, 0.1)',
+              fill: true,
+              tension: 0.4
+            },
+            {
+              label: 'Class C',
+              data: [8, 15, 20, 25, 20, 25, 18],
+              borderColor: 'rgb(249, 115, 22)',
+              backgroundColor: 'rgba(249, 115, 22, 0.1)',
+              fill: true,
+              tension: 0.4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                display: true,
+                color: 'rgba(0, 0, 0, 0.1)'
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              }
+            }
+          }
+        }
+      });
     }
-  }, []);
 
-  if (userRole === 'director') {
+    // Attendance Chart
+    const attendanceCtx = document.getElementById('attendanceChart') as HTMLCanvasElement;
+    if (attendanceCtx) {
+      if (attendanceChartRef.current) {
+        attendanceChartRef.current.destroy();
+      }
+      attendanceChartRef.current = new Chart(attendanceCtx, {
+        type: 'radar',
+        data: {
+          labels: ['Attendance', 'Assignments', 'Tests', 'Projects', 'Participation', 'Homework'],
+          datasets: [
+            {
+              label: 'Allowed Budget',
+              data: [90, 85, 88, 92, 86, 89],
+              borderColor: 'rgb(59, 130, 246)',
+              backgroundColor: 'rgba(59, 130, 246, 0.2)'
+            },
+            {
+              label: 'Actual Spending',
+              data: [85, 80, 82, 87, 82, 85],
+              borderColor: 'rgb(34, 197, 94)',
+              backgroundColor: 'rgba(34, 197, 94, 0.2)'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          },
+          scales: {
+            r: {
+              beginAtZero: true,
+              max: 100
+            }
+          }
+        }
+      });
+    }
+
+    return () => {
+      if (reportsChartRef.current) {
+        reportsChartRef.current.destroy();
+      }
+      if (attendanceChartRef.current) {
+        attendanceChartRef.current.destroy();
+      }
+    };
+  }, [userRole]);
+
+  const renderDirectorDashboard = () => {
     return (
       <div className="space-y-6 p-6">
         <div className="bg-white rounded-xl p-8">
@@ -109,51 +139,43 @@ export default function DashboardPage() {
           <p className="text-gray-600 mb-8">school@gmail.com</p>
 
           <div className="space-y-6">
-            {/* Add Teachers Section */}
             <Link href="/dashboard/teachers" className="block">
-              <div className="flex items-start gap-4 p-4 hover:bg-gray-50 rounded-xl transition-colors">
-                <div className="p-3 bg-blue-50 rounded-xl">
+              <div className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mb-4">
                   <RiUserAddLine className="w-6 h-6 text-blue-600" />
                 </div>
-                <div>
-                  <h2 className="text-lg font-medium text-gray-900">Add Teachers</h2>
-                  <p className="text-gray-600 text-sm">
-                    Create rich course content and coaching products for your students.
-                    When you give them a pricing plan, they'll appear on your site!
-                  </p>
-                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Add Teachers</h3>
+                <p className="text-sm text-gray-600">Create rich course content and coaching products for your students. When you give them a pricing plan, they&apos;ll appear on your site!</p>
               </div>
             </Link>
 
-            {/* Add Classes Section */}
             <Link href="/dashboard/classes" className="block">
-              <div className="flex items-start gap-4 p-4 hover:bg-gray-50 rounded-xl transition-colors">
-                <div className="p-3 bg-blue-50 rounded-xl">
-                  <RiBookOpenLine className="w-6 h-6 text-blue-600" />
+              <div className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center mb-4">
+                  <RiBookOpenLine className="w-6 h-6 text-green-600" />
                 </div>
-                <div>
-                  <h2 className="text-lg font-medium text-gray-900">Add classes</h2>
-                  <p className="text-gray-600 text-sm">
-                    Create rich course content and coaching products for your students.
-                    When you give them a pricing plan, they'll appear on your site!
-                  </p>
-                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Add classes</h3>
+                <p className="text-sm text-gray-600">Create rich course content and coaching products for your students. When you give them a pricing plan, they&apos;ll appear on your site!</p>
               </div>
             </Link>
 
-            {/* Add Students Section */}
             <Link href="/dashboard/students" className="block">
-              <div className="flex items-start gap-4 p-4 hover:bg-gray-50 rounded-xl transition-colors">
-                <div className="p-3 bg-blue-50 rounded-xl">
-                  <RiUserLine className="w-6 h-6 text-blue-600" />
+              <div className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center mb-4">
+                  <RiGroupLine className="w-6 h-6 text-purple-600" />
                 </div>
-                <div>
-                  <h2 className="text-lg font-medium text-gray-900">Add students</h2>
-                  <p className="text-gray-600 text-sm">
-                    Create rich course content and coaching products for your students.
-                    When you give them a pricing plan, they'll appear on your site!
-                  </p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Add students</h3>
+                <p className="text-sm text-gray-600">Create rich course content and coaching products for your students. When you give them a pricing plan, they&apos;ll appear on your site!</p>
+              </div>
+            </Link>
+
+            <Link href="/dashboard/subjects" className="block">
+              <div className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center mb-4">
+                  <RiBookmarkLine className="w-6 h-6 text-orange-600" />
                 </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Add subjects</h3>
+                <p className="text-sm text-gray-600">Create rich course content and coaching products for your students. When you give them a pricing plan, they&apos;ll appear on your site!</p>
               </div>
             </Link>
           </div>
@@ -168,42 +190,126 @@ export default function DashboardPage() {
         </div>
       </div>
     );
-  }
+  };
 
-  // Default dashboard view for parent and other roles
-  return (
-    <div className="p-6 space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="col-span-2">
-          <Announcements />
+  const renderTeacherDashboard = () => {
+    return (
+      <div className="space-y-6">
+        {/* Attendance Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <Link href="/dashboard/attendance" className="block">
+            <div className="bg-white rounded-xl p-6 hover:shadow-md transition-shadow">
+              <h3 className="text-sm font-medium text-gray-500 mb-1">Present</h3>
+              <div className="flex items-baseline">
+                <span className="text-2xl font-bold text-gray-900">145</span>
+                <span className="text-sm text-green-500 ml-2">12% increase</span>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Today</p>
+            </div>
+          </Link>
+
+          <Link href="/dashboard/attendance" className="block">
+            <div className="bg-white rounded-xl p-6 hover:shadow-md transition-shadow">
+              <h3 className="text-sm font-medium text-gray-500 mb-1">Absent</h3>
+              <div className="flex items-baseline">
+                <span className="text-2xl font-bold text-gray-900">145</span>
+                <span className="text-sm text-green-500 ml-2">12% increase</span>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Today</p>
+            </div>
+          </Link>
+
+          <Link href="/dashboard/attendance" className="block">
+            <div className="bg-white rounded-xl p-6 hover:shadow-md transition-shadow">
+              <h3 className="text-sm font-medium text-gray-500 mb-1">Attendance</h3>
+              <div className="flex items-baseline">
+                <span className="text-2xl font-bold text-gray-900">145</span>
+                <span className="text-sm text-green-500 ml-2">12% increase</span>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">This Month</p>
+            </div>
+          </Link>
+
+          <Link href="/dashboard/attendance" className="block">
+            <div className="bg-white rounded-xl p-6 hover:shadow-md transition-shadow">
+              <h3 className="text-sm font-medium text-gray-500 mb-1">Attendance Report</h3>
+              <div className="h-[80px]">
+                <canvas id="attendanceChart"></canvas>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">This Month</p>
+            </div>
+          </Link>
         </div>
+
+        {/* Reports Chart */}
         <div className="bg-white rounded-xl p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-lg font-medium text-gray-900">Grade Report</h2>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-green-500 text-sm">↑ 2.1%</span>
-                <span className="text-gray-500 text-sm">vs last week</span>
-              </div>
-              <p className="text-sm text-gray-600 mt-1">Student Result 2024 and 2025</p>
+              <h2 className="text-lg font-medium text-gray-900">Reports</h2>
+              <p className="text-sm text-gray-500">Today</p>
             </div>
-            <button className="text-blue-600 text-sm font-medium hover:text-blue-700">
-              View Report
-            </button>
           </div>
-          <div className="h-64">
-            <canvas id="gradeChart"></canvas>
-          </div>
-        </div>
-        <div className="bg-white rounded-xl p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-medium text-gray-900">Performance Analysis</h2>
-          </div>
-          <div className="h-64">
-            <canvas id="performanceChart"></canvas>
+          <div className="h-[300px]">
+            <canvas id="reportsChart"></canvas>
           </div>
         </div>
       </div>
+    );
+  };
+
+  const renderParentDashboard = () => {
+    return (
+      <div className="space-y-6 p-6">
+        <div className="bg-white rounded-xl p-8">
+          <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+            Welcome to your dashboard, Parent
+          </h1>
+          <p className="text-gray-600 mb-8">school@gmail.com</p>
+
+          <div className="space-y-6">
+            <Link href="/dashboard/performance" className="block">
+              <div className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mb-4">
+                  <RiBookLine className="w-6 h-6 text-blue-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">View Performance</h3>
+                <p className="text-sm text-gray-600">Check your child&apos;s academic performance, grades, and progress reports.</p>
+              </div>
+            </Link>
+
+            <Link href="/dashboard/grades" className="block">
+              <div className="p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center mb-4">
+                  <RiTeamLine className="w-6 h-6 text-green-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">View Grades</h3>
+                <p className="text-sm text-gray-600">Access detailed grade reports and assessment results for your child.</p>
+              </div>
+            </Link>
+
+            <div className="p-6 bg-white rounded-xl shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Announcements</h3>
+              <Announcements />
+            </div>
+          </div>
+        </div>
+
+        {/* Support Button */}
+        <div className="fixed bottom-6 right-6">
+          <button className="bg-blue-600 text-white px-6 py-2 rounded-full font-medium hover:bg-blue-700 transition-colors flex items-center gap-2">
+            <span>Support</span>
+            <span className="text-lg">↗</span>
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="p-6">
+      {userRole === 'director' && renderDirectorDashboard()}
+      {userRole === 'teacher' && renderTeacherDashboard()}
+      {userRole === 'parent' && renderParentDashboard()}
     </div>
   );
 }
