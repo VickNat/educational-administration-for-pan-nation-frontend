@@ -15,6 +15,7 @@ import {
   RiCalendarEventLine,
   RiArrowLeftSLine,
   RiArrowRightSLine,
+  RiSchoolLine,
 } from 'react-icons/ri';
 
 const navItems = {
@@ -25,14 +26,17 @@ const navItems = {
   ],
   DIRECTOR: [
     { name: 'Teachers', href: '/dashboard/teachers', icon: <RiTeamLine /> },
-    { name: 'Students', href: '/dashboard/students', icon: <RiGroupLine /> },
-    { name: 'Classes', href: '/dashboard/classes', icon: <RiBookLine /> },
+    { name: 'Parents', href: '/dashboard/parents', icon: <RiSchoolLine /> },
+    { name: 'Students', href: '/dashboard/student', icon: <RiGroupLine /> },
     { name: 'Subjects', href: '/dashboard/subjects', icon: <RiFileListLine /> },
+    { name: 'Classes', href: '/dashboard/classes', icon: <RiBookLine /> },
     { name: 'Events', href: '/dashboard/events', icon: <RiCalendarEventLine /> },
   ],
   TEACHER: [
-    { name: 'Classes', href: '/dashboard/classes', icon: <RiBookLine /> },
+    { name: 'Parents', href: '/dashboard/parents', icon: <RiSchoolLine /> },
+    { name: 'Students', href: '/dashboard/student', icon: <RiGroupLine /> },
     { name: 'Subjects', href: '/dashboard/subjects', icon: <RiFileListLine /> },
+    { name: 'Classes', href: '/dashboard/classes', icon: <RiBookLine /> },
     { name: 'Events', href: '/dashboard/events', icon: <RiCalendarEventLine /> },
   ],
   PARENT: [
