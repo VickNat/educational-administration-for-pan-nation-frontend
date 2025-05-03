@@ -93,4 +93,38 @@ export interface Subject {
   gradeLevelId: string | null;
 }
 
+export interface GradeLevel {
+  id: string;
+  level: string;
+  subjectList: Subject[];
+}
+
+export interface Section {
+  id: string;
+  name: string;
+  gradeLevelId?: string;
+  teacherId?: string;
+  students?: Student[];
+  gradeLevel?: {
+    id: string;
+    level: string;
+  };
+  homeRoom?: {
+    id: string;
+    isActivated: boolean;
+    userId: string;
+    user: {
+      id: string;
+      email: string;
+      password: string;
+      firstName: string;
+      lastName: string;
+      profile?: string | null;
+      phoneNumber: string;
+      gender?: string | null;
+      dateOfBirth?: string | null;
+      role: 'TEACHER';
+    };
+  };
+}
 

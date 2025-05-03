@@ -52,9 +52,9 @@ const subjectSchema = Yup.object().shape({
 const SubjectsView = () => {
   const [subjectsData, setSubjectsData] = useState<Subject[]>([]);
   const { data, refetch } = useGetSubjects();
-  const { mutate: createSubject, isPending: isCreating } = useCreateSubject();
-  const { mutate: updateSubject, isPending: isUpdating } = useUpdateSubject();
-  const { mutate: deleteSubject, isPending: isDeleting } = useDeleteSubject();
+  const { mutateAsync: createSubject, isPending: isCreating } = useCreateSubject();
+  const { mutateAsync: updateSubject, isPending: isUpdating } = useUpdateSubject();
+  const { mutateAsync: deleteSubject, isPending: isDeleting } = useDeleteSubject();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -67,8 +67,8 @@ const SubjectsView = () => {
     }
   }, [data]);
 
-  const handleAddSubject = (values: { name: string }, { resetForm }: any) => {
-    createSubject(
+  const handleAddSubject = async (values: { name: string }, { resetForm }: any) => {
+    await createSubject(
       { name: values.name },
       {
         onSuccess: () => {
@@ -85,10 +85,10 @@ const SubjectsView = () => {
     );
   };
 
-  const handleEditSubject = (values: { name: string }, { resetForm }: any) => {
+  const handleEditSubject = async (values: { name: string }, { resetForm }: any) => {
     if (!editSubject) return;
 
-    updateSubject(
+    await updateSubject(
       { id: editSubject.id, name: values.name },
       {
         onSuccess: () => {
@@ -110,10 +110,10 @@ const SubjectsView = () => {
     setIsDeleteDialogOpen(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!subjectToDelete) return;
 
-    deleteSubject(
+    await deleteSubject(
       subjectToDelete.id,
       {
         onSuccess: () => {

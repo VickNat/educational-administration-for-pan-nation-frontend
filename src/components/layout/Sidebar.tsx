@@ -29,14 +29,16 @@ const navItems = {
     { name: 'Parents', href: '/dashboard/parents', icon: <RiSchoolLine /> },
     { name: 'Students', href: '/dashboard/student', icon: <RiGroupLine /> },
     { name: 'Subjects', href: '/dashboard/subjects', icon: <RiFileListLine /> },
-    { name: 'Classes', href: '/dashboard/classes', icon: <RiBookLine /> },
+    { name: 'Grade Levels', href: '/dashboard/grade-level', icon: <RiBookLine /> },
+    { name: 'Sections', href: '/dashboard/sections', icon: <RiBookLine /> },
     { name: 'Events', href: '/dashboard/events', icon: <RiCalendarEventLine /> },
   ],
   TEACHER: [
     { name: 'Parents', href: '/dashboard/parents', icon: <RiSchoolLine /> },
     { name: 'Students', href: '/dashboard/student', icon: <RiGroupLine /> },
     { name: 'Subjects', href: '/dashboard/subjects', icon: <RiFileListLine /> },
-    { name: 'Classes', href: '/dashboard/classes', icon: <RiBookLine /> },
+    { name: 'Grade Levels', href: '/dashboard/grade-level', icon: <RiBookLine /> },
+    { name: 'Sections', href: '/dashboard/sections', icon: <RiBookLine /> },
     { name: 'Events', href: '/dashboard/events', icon: <RiCalendarEventLine /> },
   ],
   PARENT: [
