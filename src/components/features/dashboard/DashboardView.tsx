@@ -84,14 +84,14 @@ const SHORTCUTS = {
 
 const DashboardView = () => {
   const { user } = useAuth();
-  const role = user?.role || 'DIRECTOR';
+  const role = user?.user?.role || 'DIRECTOR';
   const shortcuts = SHORTCUTS[role] || [];
 
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="mb-8">
         <h1 className="text-2xl font-bold mb-1">Welcome to your dashboard, Pan-nation school</h1>
-        <p className="text-sm text-muted-foreground">{user?.email}</p>
+        <p className="text-sm text-muted-foreground">{user?.user?.email}</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {shortcuts.map((shortcut) => (

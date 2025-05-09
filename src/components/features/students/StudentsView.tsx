@@ -63,9 +63,9 @@ const StudentsView = () => {
   console.log("studentsData", studentsData);
 
   const canEdit = (student: Student) => {
-    return user?.role === 'TEACHER' || 
-           user?.role === 'DIRECTOR' || 
-           (user?.role === 'PARENT' && user?.id === student.parentId);
+    return user?.user?.role === 'TEACHER' || 
+           user?.user?.role === 'DIRECTOR' || 
+           (user?.user?.role === 'PARENT' && user?.user?.id === student.parentId);
   };
 
   const handleDeleteClick = (student: Student) => {

@@ -4,11 +4,11 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchWithAuth } from '@/lib/api';
-import { AuthResponse, LoginCredentials, User } from '@/lib/utils/types';
+import { AuthResponse, LoginCredentials, User, UserMe } from '@/lib/utils/types';
 import { getToken, setToken } from '@/lib/utils/utils';
 
 interface AuthContextType {
-  user: User | null;
+  user: UserMe | null;
   isLoading: boolean;
   isLoggingIn: boolean;
   login: (credentials: LoginCredentials) => void;
@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { data: user, isLoading } = useQuery({
     queryKey: ['user'],
     queryFn: () => {
-      return fetchWithAuth<any>('/users/get-me').then(res => res.result) as Promise<User>
+      return fetchWithAuth<any>('/users/get-me').then(res => res.result) as Promise<UserMe>
     },
     enabled: !!token,
   });
@@ -47,10 +47,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify(credentials),
       }),
     onSuccess: (res) => {
-      console.log("res", res);
       setTokenState(res.result.token);
       setToken(res.result.token);
-      queryClient.setQueryData(['user'], res.result.user);
+      queryClient.setQueryData(['user'], res.result);
       queryClient.invalidateQueries({ queryKey: ['user'] });
     },
   });

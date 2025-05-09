@@ -6,9 +6,9 @@ import { toast } from 'react-hot-toast';
 
 export default function ProfileTab() {
   const { user } = useAuth();
-  const [firstName, setFirstName] = useState(user?.firstName || '');
-  const [lastName, setLastName] = useState(user?.lastName || '');
-  const [phone, setPhone] = useState(user?.phoneNumber || '');
+  const [firstName, setFirstName] = useState(user?.user?.firstName || '');
+  const [lastName, setLastName] = useState(user?.user?.lastName || '');
+  const [phone, setPhone] = useState(user?.user?.phoneNumber || '');
   const updateUser = useUpdateUser();
 
   const handleSave = async (e: React.FormEvent) => {

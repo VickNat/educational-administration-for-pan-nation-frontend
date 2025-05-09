@@ -5,6 +5,14 @@ export interface User {
   lastName: string;
   phoneNumber: string;
   role: 'DIRECTOR' | 'TEACHER' | 'PARENT';
+  gender?: string | null;
+  dateOfBirth?: string | null;
+  profile?: string | null;
+}
+
+export interface UserMe {
+  roleId: string;
+  user: User;
 }
 
 export interface LoginCredentials {
@@ -18,6 +26,7 @@ export interface AuthResponse {
   result: {
     user: User;
     token: string;
+    roleId: string;
   };
 }
 
@@ -93,10 +102,18 @@ export interface Subject {
   gradeLevelId: string | null;
 }
 
+export interface GradeLevelSection {
+  id: string;
+  name: string;
+  gradeLevelId: string;
+  teacherId: string;
+}
+
 export interface GradeLevel {
   id: string;
   level: string;
   subjectList: Subject[];
+  Section?: GradeLevelSection[];
 }
 
 export interface Section {
@@ -126,5 +143,31 @@ export interface Section {
       role: 'TEACHER';
     };
   };
+}
+
+export interface Result {
+  id: string;
+  test1: number;
+  test2: number;
+  mid: number;
+  final: number;
+  assignment: number;
+  quiz: number;
+  teacherId: string;
+  studentId: string;
+  sectionId: string;
+  subjectId: string;
+  collectiveResultId: string | null;
+  student?: Student;
+  subject?: Subject;
+  section?: GradeLevelSection;
+}
+
+export interface Announcement {
+  id: string;
+  topic: string;
+  description: string;
+  image: string | null;
+  directorId: string;
 }
 
