@@ -60,7 +60,7 @@ const TeachersView = () => {
     }
   }, [data]);
 
-  const canEdit = user?.role === 'DIRECTOR';
+  const canEdit = user?.user?.role === 'DIRECTOR';
 
   const handleDeleteClick = (teacher: Teacher) => {
     setSelectedTeacher(teacher);

@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/dialog';
 import Link from 'next/link';
 import { Student } from '@/lib/utils/types';
-import { RiDeleteBinLine, RiUserAddLine } from 'react-icons/ri';
+import { RiDeleteBinLine, RiEditLine, RiUserAddLine } from 'react-icons/ri';
 import { toast } from 'react-hot-toast';
 import { useAddStudentsToSection, useRemoveStudentsFromSection } from '@/queries/sections/mutations';
 import { useGetStudents } from '@/queries/students/queries';
@@ -207,15 +207,29 @@ const StudentsTab: React.FC<StudentsTabProps> = ({ sectionId, sectionName, stude
                     <TableCell>{`${student.user.firstName} ${student.user.lastName}`}</TableCell>
                     <TableCell>{student.user.email}</TableCell>
                     <TableCell className="text-center">
+                      {/* Remove Student from Section */}
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => openDeleteDialog(student)}
                         className="text-red-500 hover:text-red-700"
                         disabled={isRemoving}
+                        title="Remove Student from Section"
                       >
-                        Remove from Section
+                        <RiDeleteBinLine className="w-4 h-4" />
                       </Button>
+                      {/* Edit student results */}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-blue-500 hover:text-blue-700"
+                        title="Edit student results"
+                      >
+                        <Link href={`/sections/${sectionId}/students/${student.id}/results`}>
+                          <RiEditLine className="w-4 h-4" />
+                        </Link>
+                      </Button>
+
                     </TableCell>
                   </TableRow>
                 ))}

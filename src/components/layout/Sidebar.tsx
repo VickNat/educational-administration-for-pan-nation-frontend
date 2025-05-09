@@ -16,6 +16,7 @@ import {
   RiArrowLeftSLine,
   RiArrowRightSLine,
   RiSchoolLine,
+  RiMegaphoneLine,
 } from 'react-icons/ri';
 
 const navItems = {
@@ -25,13 +26,14 @@ const navItems = {
     { name: 'Settings', href: '/dashboard/settings', icon: <RiSettingsLine /> },
   ],
   DIRECTOR: [
+    { name: 'Announcements', href: '/dashboard/announcements', icon: <RiMegaphoneLine /> },
     { name: 'Teachers', href: '/dashboard/teachers', icon: <RiTeamLine /> },
     { name: 'Parents', href: '/dashboard/parents', icon: <RiSchoolLine /> },
     { name: 'Students', href: '/dashboard/student', icon: <RiGroupLine /> },
     { name: 'Subjects', href: '/dashboard/subjects', icon: <RiFileListLine /> },
     { name: 'Grade Levels', href: '/dashboard/grade-level', icon: <RiBookLine /> },
     { name: 'Sections', href: '/dashboard/sections', icon: <RiBookLine /> },
-    { name: 'Events', href: '/dashboard/events', icon: <RiCalendarEventLine /> },
+    { name: 'Calendar', href: '/dashboard/calendar', icon: <RiCalendarEventLine /> },
   ],
   TEACHER: [
     { name: 'Parents', href: '/dashboard/parents', icon: <RiSchoolLine /> },
@@ -39,11 +41,11 @@ const navItems = {
     { name: 'Subjects', href: '/dashboard/subjects', icon: <RiFileListLine /> },
     { name: 'Grade Levels', href: '/dashboard/grade-level', icon: <RiBookLine /> },
     { name: 'Sections', href: '/dashboard/sections', icon: <RiBookLine /> },
-    { name: 'Events', href: '/dashboard/events', icon: <RiCalendarEventLine /> },
+    { name: 'Calendar', href: '/dashboard/calendar', icon: <RiCalendarEventLine /> },
   ],
   PARENT: [
     { name: 'Children', href: '/dashboard/children', icon: <RiGroupLine /> },
-    { name: 'Events', href: '/dashboard/events', icon: <RiCalendarEventLine /> },
+    { name: 'Calendar', href: '/dashboard/calendar', icon: <RiCalendarEventLine /> },
   ],
 };
 
@@ -54,7 +56,7 @@ interface SidebarProps {
 
 export default function Sidebar({ open, setOpen }: SidebarProps) {
   const { user } = useAuth();
-  const role = user?.role;
+  const role = user?.user?.role;
 
   // Compose navigation based on role
   const items = [

@@ -40,9 +40,9 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
             </div>
             <div className="flex flex-col items-end">
               <span className="font-medium text-gray-900 text-sm">
-                {user?.firstName || 'User'} {user?.lastName || ''}
+                {user?.user?.firstName || 'User'} {user?.user?.lastName || ''}
               </span>
-              <span className="text-xs text-primary font-semibold">{user?.role || ''}</span>
+              <span className="text-xs text-primary font-semibold">{user?.user?.role || ''}</span>
             </div>
             <Popover>
               <PopoverTrigger asChild>

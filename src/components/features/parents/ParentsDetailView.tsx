@@ -37,7 +37,7 @@ const ParentsDetailView = () => {
             <RiArrowLeftLine className="w-4 h-4" />
             Back
           </Button>
-          {(user?.role === 'DIRECTOR' || user?.role === 'TEACHER') && (
+          {(user?.user?.role === 'DIRECTOR' || user?.user?.role === 'TEACHER') && (
             <Button
               variant="default"
               onClick={() => {

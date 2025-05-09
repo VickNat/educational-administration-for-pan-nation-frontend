@@ -25,7 +25,7 @@ const TeacherDetailView = () => {
     phoneNumber: '',
   });
 
-  const canEdit = user?.role === 'DIRECTOR';
+  const canEdit = user?.user?.role === 'DIRECTOR';
 
   useEffect(() => {
     if (data?.result?.user) {
