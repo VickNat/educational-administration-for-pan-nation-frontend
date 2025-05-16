@@ -20,4 +20,11 @@ export const useGetSectionById = (id: string) => {
   });
 };
 
-
+export const useGetSectionMessages = (sectionId: string) => {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: ['section-messages', sectionId],
+    queryFn: () => fetchWithAuth(`/section-message/${sectionId}`) as Promise<any>,
+    enabled: !!user,
+  });
+};

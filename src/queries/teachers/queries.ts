@@ -12,7 +12,7 @@ export const useGetTeachers = () => {
 
 export const useGetTeacherById = (id: string) => {
   return useQuery({
-    queryKey: ['teacher', id],
+    queryKey: ['teachers', id],
     queryFn: () => fetchWithAuth(`/teacher/${id}`) as Promise<any>,
   });
 };

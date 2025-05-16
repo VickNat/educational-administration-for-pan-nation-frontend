@@ -36,13 +36,14 @@ export const useGetTeacherRelatedUsers = () => {
 export const useGetMessagesBetweenUsers = (senderId: string, receiverId: string) => {
   return useQuery({
     queryKey: ['messagesBetweenUsers', senderId, receiverId],
-    queryFn: () => fetchWithAuth(`/message`, {
-      method: 'GET',
-      body: JSON.stringify({
-        senderId,
-        receiverId
-      })
-    }) as Promise<any>,
+    queryFn: () =>
+      fetchWithAuth(`/message`, {
+        method: 'POST',
+        body: JSON.stringify({
+          senderId,
+          receiverId,
+        }),
+      }) as Promise<any>,
     enabled: !!senderId && !!receiverId,
   });
 };

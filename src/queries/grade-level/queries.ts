@@ -20,3 +20,11 @@ export const useGetGradeLevelById = (id: string) => {
   });
 };
 
+export const useGetGradeLevelMessages = (id: string) => {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: ['grade-level-messages', id],
+    queryFn: () => fetchWithAuth(`/grade-level-message/grade-level/${id}`) as Promise<any>,
+    enabled: !!user,
+  });
+};

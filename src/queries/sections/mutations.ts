@@ -50,3 +50,25 @@ export const useDeleteSection = (id: string) => {
     },
   });
 };
+
+export const useCreateSectionMessage = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: any) => fetchWithAuth(`/section-message`, { method: 'POST', body: JSON.stringify(data) }),
+  });
+};
+
+export const useUpdateSectionMessage = (id: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: any) => fetchWithAuth(`/section-message/${id}`, { method: 'POST', body: JSON.stringify(data) }),
+  });
+};
+
+export const useDeleteSectionMessage = (id: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => fetchWithAuth(`/section-message/${id}`, { method: 'DELETE' }),
+  });
+};
+

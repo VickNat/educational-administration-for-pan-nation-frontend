@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
 import { getToken } from '@/lib/utils/utils';
 import MainLayout from '@/components/layout/MainLayout';
+import ActivateAccount from '@/components/features/dashboard/ActivateAccount';
 
 export default function DashboardLayout({
   children,
@@ -14,6 +15,8 @@ export default function DashboardLayout({
   const { isLoading } = useAuth();
   const router = useRouter();
   const storedToken = getToken();
+
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!isLoading && !storedToken) {
@@ -32,6 +35,10 @@ export default function DashboardLayout({
   if (!storedToken) {
     return null;
   }
+
+  // if (user && !user.isActivated) {
+  //   return <ActivateAccount />;
+  // }
 
   return (
     <MainLayout>{children}</MainLayout>

@@ -49,21 +49,21 @@ const SHORTCUTS = {
   TEACHER: [
     {
       icon: <RiBookLine className="h-8 w-8 text-green-500 bg-green-100 rounded p-1" />,
-      title: 'My Classes',
-      description: 'View and manage your classes.',
-      href: '/dashboard/classes',
+      title: 'View Sections',
+      description: 'View and manage your sections.',
+      href: '/dashboard/sections',
     },
     {
       icon: <RiFileListLine className="h-8 w-8 text-pink-500 bg-pink-100 rounded p-1" />,
-      title: 'My Subjects',
-      description: 'View and manage your subjects.',
-      href: '/dashboard/subjects',
+      title: 'View Students',
+      description: 'View and manage your students.',
+      href: '/dashboard/students',
     },
     {
       icon: <RiCalendarEventLine className="h-8 w-8 text-yellow-500 bg-yellow-100 rounded p-1" />,
-      title: 'School Events',
+      title: 'School Calendar',
       description: 'See upcoming school events.',
-      href: '/dashboard/events',
+      href: '/dashboard/calendar',
     },
   ],
   PARENT: [
