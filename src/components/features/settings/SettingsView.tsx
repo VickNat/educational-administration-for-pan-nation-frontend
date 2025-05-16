@@ -1,20 +1,24 @@
 'use client';
 
 import { useState } from 'react';
-import { RiUserLine, RiBellLine, RiLockLine, RiGlobalLine } from 'react-icons/ri';
+import { RiUserLine, RiBellLine, RiLockLine, RiGlobalLine, RiUserHeartLine } from 'react-icons/ri';
 import ProfileTab from './ProfileTab';
 import NotificationsTab from './NotificationsTab';
 import SecurityTab from './SecurityTab';
 import PreferencesTab from './PreferencesTab';
+import ChildrenTab from './ChildrenTab';
+import { useAuth } from '@/app/context/AuthContext';
 
 export default function SettingsView() {
   const [activeTab, setActiveTab] = useState('profile');
+  const { user } = useAuth();
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: RiUserLine },
     { id: 'notifications', label: 'Notifications', icon: RiBellLine },
     { id: 'security', label: 'Security', icon: RiLockLine },
     { id: 'preferences', label: 'Preferences', icon: RiGlobalLine },
+    ...(user?.user.role === 'PARENT' ? [{ id: 'children', label: 'Children', icon: RiUserHeartLine }] : []),
   ];
 
   return (
@@ -49,6 +53,9 @@ export default function SettingsView() {
             {activeTab === 'notifications' && <NotificationsTab />}
             {activeTab === 'security' && <SecurityTab />}
             {activeTab === 'preferences' && <PreferencesTab />}
+            {activeTab === 'children' && user?.user.role === 'PARENT' && (
+              <ChildrenTab id={user.roleId} />
+            )}
           </div>
         </div>
       </div>

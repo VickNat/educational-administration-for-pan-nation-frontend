@@ -5,12 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
-import { RiArrowLeftLine, RiBook2Line, RiTeamLine } from 'react-icons/ri';
+import { RiArrowLeftLine, RiBook2Line, RiChatSmile2Line, RiTeamLine } from 'react-icons/ri';
 import { useGetGradeLevelById } from '@/queries/grade-level/queries';
 import { useParams } from 'next/navigation';
 import { GradeLevel } from '@/lib/utils/types';
 import GradeLevelDetailsTab from './tabs/GradeLevelDetailsTab';
 import SectionsTab from './tabs/SectionsTab';
+import GradeLevelChatTab from './tabs/GradeLevelChatTab';
 
 const gradeLevelData = {
   id: "grade001",
@@ -25,6 +26,7 @@ const gradeLevelData = {
 const tabs = [
   { id: 'details', label: 'Grade Level Details', icon: RiBook2Line },
   { id: 'sections', label: 'Sections', icon: RiTeamLine },
+  { id: 'chat', label: 'Chat', icon: RiChatSmile2Line },
 ];
 
 const GradeLevelDetail = () => {
@@ -95,6 +97,7 @@ const GradeLevelDetail = () => {
                 ]} 
               />
             )}
+            {activeTab === 'chat' && <GradeLevelChatTab gradeLevelId={gradeLevel.id} />}
           </div>
         </div>
       </div>

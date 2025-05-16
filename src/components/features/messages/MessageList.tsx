@@ -15,11 +15,45 @@ interface MessageListProps {
 
 const MessageList = ({ selectedConversation }: MessageListProps) => {
   const { user } = useAuth();
-  const { data: messagesData, isLoading } = useGetMessagesBetweenUsers(
-    user?.user?.id || '',
-    selectedConversation?.id || ''
-  );
+  // const { data: messagesData, isLoading } = useGetMessagesBetweenUsers(
+  //   user?.user?.id || '',
+  //   selectedConversation?.id || ''
+  // );
   const { mutateAsync: sendMessage, isPending: isSending } = useSendMessage();
+
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [messagesData, setMessagesData] = React.useState<MessagesResponse | null>(null);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (!user?.user?.id || !selectedConversation?.id) return;
+      
+      setIsLoading(true);
+      try {
+        const response = await fetch('/api/v1/message', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify({
+            senderId: user.user.id,
+            receiverId: selectedConversation.id
+          })
+        });
+
+        const data = await response.json();
+        setMessagesData(data);
+      } catch (error) {
+        console.error('Failed to fetch messages:', error);
+        toast.error('Failed to load messages');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMessages();
+  }, [user?.user?.id, selectedConversation?.id, sendMessage]);
 
   const messages = (messagesData as MessagesResponse)?.result || [];
 

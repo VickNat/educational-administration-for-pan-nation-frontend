@@ -1,12 +1,12 @@
 'use client'
 
 import React, { useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useGetStudentById } from '@/queries/students/queries';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { RiArrowLeftLine, RiBook2Line, RiTeamLine } from 'react-icons/ri';
+import { RiArrowLeftLine, RiBook2Line, RiTeamLine, RiFileListLine } from 'react-icons/ri';
 import { Loader2 } from 'lucide-react';
 import { useUpdateStudent } from '@/queries/students/mutations';
 import toast from 'react-hot-toast';
@@ -14,15 +14,18 @@ import { useAuth } from '@/app/context/AuthContext';
 import StudentDetailsTab from './tabs/StudentDetailsTab';
 import StudentResultsTab from './tabs/StudentResultsTab';
 import Link from 'next/link';
+import CollectiveResultTab from './tabs/CollectiveResultTab';
 
 const tabs = [
   { id: 'details', label: 'Student Details', icon: RiBook2Line },
   { id: 'results', label: 'Results', icon: RiTeamLine },
+  { id: 'collective-result', label: 'Collective Result', icon: RiFileListLine },
 ];
 
 const StudentDetailView = () => {
   const router = useRouter();
   const { id } = useParams();
+  const searchParams = useSearchParams();
   const { data, isLoading } = useGetStudentById(id as string);
   const { mutateAsync: updateStudent, isPending } = useUpdateStudent(id as string);
   const { user } = useAuth();
@@ -30,7 +33,7 @@ const StudentDetailView = () => {
     firstName: '',
     lastName: ''
   });
-  const [activeTab, setActiveTab] = useState('details');
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'details');
 
   const canEdit = user?.user?.role === 'TEACHER' || 
                  user?.user?.role === 'DIRECTOR' || 
@@ -90,10 +93,8 @@ const StudentDetailView = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold text-gray-900 mb-6">Student Details</h1>
-        <Button asChild variant="ghost">
-          <Link href="/dashboard/students">
+        <Button variant="ghost" onClick={() => router.back()}>
             <RiArrowLeftLine className="w-5 h-5" /> Back
-          </Link>
         </Button>
       </div>
       <div className="flex flex-col lg:flex-row gap-6">
@@ -120,6 +121,7 @@ const StudentDetailView = () => {
           <div className="bg-white rounded-xl p-6">
             {activeTab === 'details' && <StudentDetailsTab student={data.result} />}
             {activeTab === 'results' && <StudentResultsTab studentId={data.result.id} />}
+            {activeTab === 'collective-result' && <CollectiveResultTab studentId={data.result.id} />}
           </div>
         </div>
       </div>

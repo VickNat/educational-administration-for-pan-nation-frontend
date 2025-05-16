@@ -16,3 +16,33 @@ export function useUpdateUser() {
     },
   });
 }
+
+export const useActivateTeacher = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ input }: { input: any }) =>
+      fetchWithAuth(`/teacher/activate`, {
+        method: 'POST',
+        body: JSON.stringify(input),
+      }),
+    onSuccess: (updatedTeacher) => {
+      queryClient.setQueryData(['teachers'], updatedTeacher);
+      queryClient.invalidateQueries({ queryKey: ['teachers'] });
+    },
+  });
+}
+
+export const useActivateParent = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ input }: { input: any }) =>
+      fetchWithAuth(`/parent/activate`, {
+        method: 'POST',
+        body: JSON.stringify(input),
+      }),
+    onSuccess: (updatedParent) => {
+      queryClient.setQueryData(['parents'], updatedParent);
+      queryClient.invalidateQueries({ queryKey: ['parents'] });
+    },
+  });
+}

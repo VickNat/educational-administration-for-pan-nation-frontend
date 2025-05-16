@@ -19,3 +19,22 @@ export const useDeleteResult = () => {
     mutationFn: (resultId: string) => fetchWithAuth(`/result/${resultId}`, { method: 'DELETE' }),
   });
 };
+
+export const useGenerateCollectiveResult = () => {
+  return useMutation({
+    mutationFn: (sectionId: string) => fetchWithAuth(`/collective-result/section/${sectionId}`, { method: 'POST' }),
+  });
+};
+
+export const useUpdateCollectiveResult = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ collectiveResultId, collectiveResultData }: { collectiveResultId: string; collectiveResultData: any }) => 
+      fetchWithAuth(`/collective-result/${collectiveResultId}`, { method: 'PUT', body: JSON.stringify(collectiveResultData) }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['results'] });
+    },
+  });
+};
+

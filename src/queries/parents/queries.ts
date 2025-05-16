@@ -16,8 +16,8 @@ export const useGetParents = () => {
 export const useGetParentById = (id: string) => {
   const { user } = useAuth();
   return useQuery({
-    queryKey: ['parent', id],
+    queryKey: ['parents', id],
     queryFn: () => fetchWithAuth(`/parent/${id}`) as Promise<any>,
-    enabled: !!user && (user.user.role === 'TEACHER' || user.user.role === 'DIRECTOR'),
+    enabled: !!user,
   });
 };

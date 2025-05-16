@@ -31,5 +31,23 @@ export const useDeleteGradeLevel = (id: string) => {
   });
 };
 
+export const useCreateGradeLevelMessage = (id: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: any) => fetchWithAuth(`/grade-level-message`, { method: 'POST', body: JSON.stringify(data) }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['grade-level-messages'] });
+    },
+  });
+};
 
+export const useDeleteGradeLevelMessage = (id: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => fetchWithAuth(`/grade-level-message/${id}`, { method: 'DELETE' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['grade-level-messages'] });
+    },
+  });
+};
 

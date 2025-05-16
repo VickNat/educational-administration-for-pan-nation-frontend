@@ -12,6 +12,7 @@ export interface User {
 
 export interface UserMe {
   roleId: string;
+  isActivated?: boolean;
   user: User;
 }
 
@@ -171,3 +172,70 @@ export interface Announcement {
   directorId: string;
 }
 
+export interface CollectiveResult {
+  id: string;
+  conduct: string | null;
+  rank: number;
+  feedback: string | null;
+  roasterId: string | null;
+  studentId: string;
+  sectionId: string;
+  isAvailable: boolean;
+  totalScore: number;
+}
+
+export interface CollectiveResultByStudent {
+  id: string;
+  conduct: string | null;
+  rank: number;
+  feedback: string | null;
+  roasterId: string | null;
+  studentId: string;
+  sectionId: string;
+  isAvailable: boolean;
+  totalScore: number;
+  result: Result[];
+  student: {
+    id: string;
+    userId: string;
+    sectionId: string;
+    parentId: string;
+    user: {
+      id: string;
+      email: string;
+      password: string;
+      firstName: string;
+      lastName: string;
+      profile: string | null;
+      phoneNumber: string;
+      gender: string | null;
+      dateOfBirth: string | null;
+      role: 'STUDENT';
+    };
+  };
+}
+
+export interface GradeLevelMessage {
+  id: string;
+  content: string;
+  image: string;
+  createdAt: string;
+  gradeLevelId: string;
+  senderId: string;
+  sender: {
+    id: string;
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    profile: string | null;
+    phoneNumber: string;
+    gender: string | null;
+    dateOfBirth: string | null;
+    role: 'DIRECTOR';
+  };
+  gradeLevel: {
+    id: string;
+    level: string;
+  };
+}

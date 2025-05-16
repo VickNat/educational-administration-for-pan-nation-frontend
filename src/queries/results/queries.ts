@@ -37,3 +37,27 @@ export const useGetResultById = (resultId: string) => {
     enabled: !!user && (user.user.role === 'TEACHER' || user.user.role === 'DIRECTOR'),
   });
 };
+
+export const useGetCollectiveResultBySectionId = (sectionId: string) => {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ['results', sectionId],
+    queryFn: () => {
+      return fetchWithAuth(`/collective-result/section/${sectionId}`) as Promise<any>;
+    },
+    enabled: !!user && (user.user.role === 'TEACHER' || user.user.role === 'DIRECTOR'),
+  });
+};
+
+export const useGetCollectiveResultByStudentId = (studentId: string) => {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ['results', studentId],
+    queryFn: () => {
+      return fetchWithAuth(`/collective-result/student/${studentId}`) as Promise<any>;
+    },
+    enabled: !!user,
+  });
+};
