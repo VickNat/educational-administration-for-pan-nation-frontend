@@ -26,12 +26,14 @@ import {
 } from '@/components/ui/dialog';
 import { toast } from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
-
+import { useAuth } from '@/app/context/AuthContext';
+import { useRouter } from 'next/navigation';
 const SectionsView = () => {
+  const router = useRouter();
   const [sections, setSections] = useState<Section[]>([]);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [sectionToDelete, setSectionToDelete] = useState<Section | null>(null);
-
+  const { user } = useAuth();
   const { data, refetch } = useGetSections();
   const { mutateAsync: deleteSection, isPending: isDeleting } = useDeleteSection(sectionToDelete?.id || '');
 
@@ -75,9 +77,11 @@ const SectionsView = () => {
         {/* Header Section (No Path) */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Sections</h1>
-          <Button asChild className="bg-blue-600 hover:bg-blue-700">
-            <Link href="/dashboard/sections/add">Add section</Link>
-          </Button>
+          {user?.user.role === 'DIRECTOR' && (
+            <Button asChild className="bg-blue-600 hover:bg-blue-700">
+              <Link href="/dashboard/sections/add">Add section</Link>
+            </Button>
+          )}
         </div>
 
         {/* Table Section */}
@@ -103,30 +107,32 @@ const SectionsView = () => {
               </TableHeader>
               <TableBody>
                 {sections.map((section, index) => (
-                  <TableRow key={section.id}>
+                  <TableRow onClick={() => router.push(`/dashboard/sections/${section.id}`)} key={section.id}>
                     <TableCell className="text-center">{index + 1}</TableCell>
                     <TableCell>{section.name}</TableCell>
                     <TableCell>{section.gradeLevel?.level || 'N/A'}</TableCell>
                     <TableCell>
                       {section.homeRoom?.user.firstName} {section.homeRoom?.user.lastName}
                     </TableCell>
-                    <TableCell className="text-center">
-                      <div className="flex justify-center gap-2">
-                        <Button variant="ghost" size="icon" asChild>
-                          <Link href={`/dashboard/sections/${section.id}`}>
-                            <RiEdit2Line className="h-5 w-5 text-gray-600" />
-                          </Link>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => openDeleteDialog(section)}
-                          disabled={isDeleting}
-                        >
-                          <RiDeleteBinLine className="h-5 w-5 text-red-500" />
-                        </Button>
-                      </div>
-                    </TableCell>
+                    {(user?.user.role === 'DIRECTOR' || user?.roleId === section.homeRoom?.id) && (
+                      <TableCell className="text-center">
+                        <div className="flex justify-center gap-2">
+                          <Button variant="ghost" size="icon" asChild>
+                            <Link href={`/dashboard/sections/${section.id}`}>
+                              <RiEdit2Line className="h-5 w-5 text-gray-600" />
+                            </Link>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => openDeleteDialog(section)}
+                            disabled={isDeleting}
+                          >
+                            <RiDeleteBinLine className="h-5 w-5 text-red-500" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>

@@ -11,9 +11,10 @@ import { Student } from '@/lib/utils/types';
 
 interface StudentDetailsTabProps {
   student: Student;
+  canEdit: boolean;
 }
 
-const StudentDetailsTab: React.FC<StudentDetailsTabProps> = ({ student }) => {
+const StudentDetailsTab: React.FC<StudentDetailsTabProps> = ({ student, canEdit }) => {
   const { mutateAsync: updateStudent, isPending } = useUpdateStudent(student.id);
   const [formData, setFormData] = useState({
     firstName: student.user.firstName,
@@ -42,6 +43,7 @@ const StudentDetailsTab: React.FC<StudentDetailsTabProps> = ({ student }) => {
             value={formData.firstName}
             onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
             className="mt-1"
+            disabled={!canEdit}
           />
         </div>
 
@@ -55,6 +57,7 @@ const StudentDetailsTab: React.FC<StudentDetailsTabProps> = ({ student }) => {
             value={formData.lastName}
             onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
             className="mt-1"
+            disabled={!canEdit}
           />
         </div>
 

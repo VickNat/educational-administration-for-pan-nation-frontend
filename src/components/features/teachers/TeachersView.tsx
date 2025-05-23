@@ -27,6 +27,7 @@ import {
 import { useAuth } from '@/app/context/AuthContext';
 import toast from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 // Dummy data for teachers
 const teachersData = [
@@ -53,6 +54,7 @@ const TeachersView = () => {
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
   const { mutateAsync: deleteTeacher, isPending } = useDeleteTeacher(selectedTeacher?.id as string);
   const { user } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     if (data) {
@@ -122,7 +124,7 @@ const TeachersView = () => {
               </TableHeader>
               <TableBody>
                 {teachersData.map((teacher, index) => (
-                  <TableRow key={teacher.id}>
+                  <TableRow onClick={() => router.push(`/dashboard/teachers/${teacher.id}`)} key={teacher.id}>
                     <TableCell className="text-center">{index + 1}</TableCell>
                     <TableCell>{`${teacher.user.firstName} ${teacher.user.lastName}`}</TableCell>
                     <TableCell>{teacher.user.email}</TableCell>

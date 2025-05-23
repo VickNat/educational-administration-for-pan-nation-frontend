@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useAddParent } from '@/queries/parents/mutations';
 import toast from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/app/context/AuthContext';
 
 interface ParentFormData {
   firstName: string;
@@ -20,6 +21,7 @@ interface ParentFormData {
 const AddParentView = () => {
   const { mutateAsync: addParent, isPending } = useAddParent();
   const router = useRouter();
+  const { user } = useAuth();
   const [formData, setFormData] = useState<ParentFormData>({
     firstName: '',
     lastName: '',
@@ -27,6 +29,12 @@ const AddParentView = () => {
     phoneNumber: '',
     password: '',
   });
+
+  useEffect(() => {
+    if (user?.user.role !== 'DIRECTOR') {
+      router.back();
+    }
+  }, [user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

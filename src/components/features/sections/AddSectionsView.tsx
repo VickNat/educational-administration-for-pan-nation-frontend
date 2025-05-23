@@ -35,7 +35,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { toast } from 'react-hot-toast';
 import { GradeLevel, Student, Teacher } from '@/lib/utils/types';
-
+import { useAuth } from '@/app/context/AuthContext';
 // Validation schema
 const sectionSchema = Yup.object().shape({
   name: Yup.string()
@@ -71,6 +71,14 @@ const AddSectionsView = () => {
   const params = useParams();
   const searchParams = useSearchParams();
   const gradeLevelIdFromQuery = searchParams.get('gradeLevelId');
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user?.user.role !== 'DIRECTOR') {
+      router.push('/dashboard');
+    }
+  }, [user]);
+
 
   useEffect(() => {
     if (gradeLevelsData) {

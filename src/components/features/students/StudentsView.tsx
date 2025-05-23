@@ -27,6 +27,7 @@ import {
 import { useAuth } from '@/app/context/AuthContext';
 import toast from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 // Dummy data for students
 const studentsData = [
@@ -53,19 +54,16 @@ const StudentsView = () => {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const { mutateAsync: deleteStudent, isPending } = useDeleteStudent(selectedStudent?.id as string);
   const { user } = useAuth();
-
+  const router = useRouter();
+  
   useEffect(() => {
     if (data) {
       setStudentsData(data.result);
     }
   }, [data]);
   
-  console.log("studentsData", studentsData);
-
   const canEdit = (student: Student) => {
-    return user?.user?.role === 'TEACHER' || 
-           user?.user?.role === 'DIRECTOR' || 
-           (user?.user?.role === 'PARENT' && user?.user?.id === student.parentId);
+    return user?.user?.role === 'DIRECTOR'
   };
 
   const handleDeleteClick = (student: Student) => {
@@ -128,7 +126,7 @@ const StudentsView = () => {
               </TableHeader>
               <TableBody>
                 {studentsData.map((student, index) => (
-                  <TableRow key={student.id}>
+                  <TableRow onClick={() => router.push(`/dashboard/student/${student.id}`)} key={student.id}>
                     <TableCell className="text-center">{index + 1}</TableCell>
                     <TableCell>{`${student.user.firstName} ${student.user.lastName}`}</TableCell>
                     {/* <TableCell>{student.user.email}</TableCell>

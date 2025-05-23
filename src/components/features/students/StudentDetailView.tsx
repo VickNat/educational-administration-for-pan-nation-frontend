@@ -44,9 +44,7 @@ const StudentDetailView = () => {
     router.push(`?${params.toString()}`);
   };
 
-  const canEdit = user?.user?.role === 'TEACHER' || 
-                 user?.user?.role === 'DIRECTOR' || 
-                 (user?.user?.role === 'PARENT' && user?.user?.id === data?.result?.parentId);
+  const canEdit = user?.user?.role === 'DIRECTOR';
 
   React.useEffect(() => {
     if (data?.result?.user) {
@@ -128,7 +126,7 @@ const StudentDetailView = () => {
         {/* Content */}
         <div className="flex-1">
           <div className="bg-white rounded-xl p-6">
-            {activeTab === 'details' && <StudentDetailsTab student={data.result} />}
+            {activeTab === 'details' && <StudentDetailsTab student={data.result} canEdit={canEdit} />}
             {activeTab === 'results' && <StudentResultsTab studentId={data.result.id} />}
             {activeTab === 'collective-result' && <CollectiveResultTab studentId={data.result.id} />}
             {activeTab === 'attendance-history' && <AttendanceHistoryTab studentId={data.result.id} />}

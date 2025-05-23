@@ -20,7 +20,7 @@ export default function SectionDetailView() {
   const [activeTab, setActiveTab] = useState('details');
   const { id } = useParams();
   const { data } = useGetSectionById(id as string);
-  const [displayChat, setDisplayChat] = useState(false);
+  const [displayChat, setDisplayChat] = useState(true);
   const [isHomeRoom, setIsHomeRoom] = useState(false);
   const { user } = useAuth();
 
@@ -30,11 +30,11 @@ export default function SectionDetailView() {
     }
   }, [data]);
 
-  useEffect(() => {
-    if (user?.user.role === 'TEACHER' && sectionData?.homeRoom?.id === user?.roleId) {
-      setDisplayChat(true);
-    }
-  }, [data, user]);
+  // useEffect(() => {
+  //   if (user?.user.role === 'TEACHER' && sectionData?.homeRoom?.id === user?.roleId) {
+  //     setDisplayChat(true);
+  //   }
+  // }, [data, user]);
   
   useEffect(() => {
     if (user?.user.role === 'TEACHER' && sectionData?.homeRoom?.id === user?.roleId) {
@@ -73,11 +73,15 @@ export default function SectionDetailView() {
         <div className="lg:w-64">
           <div className="bg-white rounded-xl p-2">
             {tabs.map((tab) => {
-              if (tab.id === 'chat' && !displayChat) {
+              if (tab.id === 'teachers' && user?.user.role !== 'DIRECTOR') {
                 return null;
               }
 
-              if (tab.id === 'teachers' && user?.user.role !== 'DIRECTOR') {
+              if (tab.id === 'attendance' && !isHomeRoom) {
+                return null;
+              }
+
+              if (tab.id === 'collective-result' && !isHomeRoom) {
                 return null;
               }
 
@@ -100,7 +104,7 @@ export default function SectionDetailView() {
         {/* Content */}
         <div className="flex-1">
           <div className="bg-white rounded-xl p-6">
-            {activeTab === 'details' && <SectionDetailsTab sectionData={sectionData} />}
+            {activeTab === 'details' && <SectionDetailsTab sectionData={sectionData} isHomeRoom={isHomeRoom} />}
             {activeTab === 'students' && (
               <StudentsTab sectionId={sectionData.id} sectionName={sectionData.name} studentsData={sectionData.students || []} isHomeRoom={isHomeRoom} subjectId={sectionData.subject || ''} />
             )}

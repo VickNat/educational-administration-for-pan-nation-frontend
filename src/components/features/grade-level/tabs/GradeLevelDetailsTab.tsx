@@ -13,13 +13,14 @@ import { Loader2 } from 'lucide-react';
 
 interface GradeLevelDetailsTabProps {
   gradeLevel: GradeLevel;
+  canEdit: boolean;
 }
 
 const validationSchema = Yup.object().shape({
   level: Yup.string().required('Level is required'),
 });
 
-const GradeLevelDetailsTab: React.FC<GradeLevelDetailsTabProps> = ({ gradeLevel }) => {
+const GradeLevelDetailsTab: React.FC<GradeLevelDetailsTabProps> = ({ gradeLevel, canEdit }) => {
   const { mutateAsync: updateGradeLevel, isPending } = useUpdateGradeLevel(gradeLevel.id);
 
   const initialValues = {
@@ -43,12 +44,11 @@ const GradeLevelDetailsTab: React.FC<GradeLevelDetailsTabProps> = ({ gradeLevel 
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ values, errors, touched, handleChange, isSubmitting }) => (
-          <Form className="space-y-8">
-            {/* Level Field */}
+        {({ values, errors, touched, handleChange }) => (
+          <Form className="space-y-6">
             <div>
               <Label htmlFor="level" className="text-sm font-medium text-gray-700">
-                Level
+                Grade Level
               </Label>
               <Input
                 id="level"
@@ -56,21 +56,17 @@ const GradeLevelDetailsTab: React.FC<GradeLevelDetailsTabProps> = ({ gradeLevel 
                 type="text"
                 value={values.level}
                 onChange={handleChange}
-                className="mt-1 max-w-md"
+                disabled={!canEdit || isPending}
+                className="mt-1"
               />
               {errors.level && touched.level && (
                 <div className="text-red-500 text-sm mt-1">{errors.level}</div>
               )}
             </div>
 
-            {/* Save Button */}
-            <div className="flex justify-end">
-              <Button
-                type="submit"
-                className="bg-blue-600 hover:bg-blue-700"
-                disabled={isSubmitting || isPending}
-              >
-                {isSubmitting || isPending ? (
+            {canEdit && (
+              <Button type="submit" disabled={isPending}>
+                {isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Saving...
@@ -79,12 +75,11 @@ const GradeLevelDetailsTab: React.FC<GradeLevelDetailsTabProps> = ({ gradeLevel 
                   'Save Changes'
                 )}
               </Button>
-            </div>
+            )}
           </Form>
         )}
       </Formik>
 
-      {/* Subjects List */}
       <div>
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
           Subjects in {gradeLevel.level}

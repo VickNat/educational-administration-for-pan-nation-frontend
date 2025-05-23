@@ -12,6 +12,7 @@ import { GradeLevel } from '@/lib/utils/types';
 import GradeLevelDetailsTab from './tabs/GradeLevelDetailsTab';
 import SectionsTab from './tabs/SectionsTab';
 import GradeLevelChatTab from './tabs/GradeLevelChatTab';
+import { useAuth } from '@/app/context/AuthContext';
 
 const gradeLevelData = {
   id: "grade001",
@@ -34,12 +35,20 @@ const GradeLevelDetail = () => {
   const { data } = useGetGradeLevelById(id as string);
   const [gradeLevel, setGradeLevel] = useState<GradeLevel | null>(null);
   const [activeTab, setActiveTab] = useState('details');
+  const [canEdit, setCanEdit] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     if (data) {
       setGradeLevel(data.result);
     }
   }, [data]);
+
+  useEffect(() => {
+    if (user?.user.role === 'DIRECTOR') {
+      setCanEdit(true);
+    }
+  }, [user]);
 
   if (!gradeLevel) {
     return <div>Loading...</div>;
@@ -77,27 +86,24 @@ const GradeLevelDetail = () => {
         {/* Content */}
         <div className="flex-1">
           <div className="bg-white rounded-xl p-6">
-            {activeTab === 'details' && <GradeLevelDetailsTab gradeLevel={gradeLevel} />}
+            {activeTab === 'details' && (
+              <GradeLevelDetailsTab 
+                gradeLevel={gradeLevel} 
+                canEdit={canEdit}
+              />
+            )}
             {activeTab === 'sections' && (
               <SectionsTab 
                 gradeLevelId={gradeLevel.id} 
-                sections={gradeLevel?.Section || [
-                  {
-                    id: "section1",
-                    name: "Section A",
-                    gradeLevelId: gradeLevel.id,
-                    teacherId: "teacher1"
-                  },
-                  {
-                    id: "section2",
-                    name: "Section B", 
-                    gradeLevelId: gradeLevel.id,
-                    teacherId: "teacher2"
-                  }
-                ]} 
+                sections={gradeLevel?.Section || []} 
+                canEdit={canEdit}
               />
             )}
-            {activeTab === 'chat' && <GradeLevelChatTab gradeLevelId={gradeLevel.id} />}
+            {activeTab === 'chat' && (
+              <GradeLevelChatTab 
+                gradeLevelId={gradeLevel.id} 
+              />
+            )}
           </div>
         </div>
       </div>

@@ -18,9 +18,11 @@ import { toast } from 'react-hot-toast';
 import * as Yup from 'yup';
 import { useUpdateSection } from '@/queries/sections/mutations';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/app/context/AuthContext';
 
 interface SectionDetailsTabProps {
   sectionData: Section;
+  isHomeRoom: boolean;
 }
 
 const validationSchema = Yup.object().shape({
@@ -28,9 +30,10 @@ const validationSchema = Yup.object().shape({
   homeRoomId: Yup.string().required('Home room teacher is required'),
 });
 
-const SectionDetailsTab: React.FC<SectionDetailsTabProps> = ({ sectionData }) => {
+const SectionDetailsTab: React.FC<SectionDetailsTabProps> = ({ sectionData, isHomeRoom }) => {
   const { data: teachersData } = useGetTeachers();
   const { mutateAsync: updateSection } = useUpdateSection(sectionData.id);
+  const { user } = useAuth();
 
   const initialValues = {
     name: sectionData.name,
@@ -82,6 +85,7 @@ const SectionDetailsTab: React.FC<SectionDetailsTabProps> = ({ sectionData }) =>
                   type="text"
                   value={values.name}
                   onChange={handleChange}
+                  disabled={!isHomeRoom && user?.user.role !== 'DIRECTOR'}
                   className="mt-1"
                 />
                 {errors.name && touched.name && (
@@ -144,9 +148,10 @@ const SectionDetailsTab: React.FC<SectionDetailsTabProps> = ({ sectionData }) =>
             </div>
 
             {/* Save Button */}
-            <div className="flex justify-end">
-              <Button
-                type="submit"
+            {user?.user.role === 'DIRECTOR' || isHomeRoom && (
+              <div className="flex justify-end">
+                <Button
+                  type="submit"
                 className="bg-blue-600 hover:bg-blue-700"
                 disabled={isSubmitting}
               >
@@ -158,8 +163,9 @@ const SectionDetailsTab: React.FC<SectionDetailsTabProps> = ({ sectionData }) =>
                 ) : (
                   'Save Changes'
                 )}
-              </Button>
-            </div>
+                </Button>
+              </div>
+            )}
           </Form>
         )}
       </Formik>
