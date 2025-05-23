@@ -26,6 +26,7 @@ interface AllMessagesResponse {
   error?: string;
 }
 
+
 // Create socket connection
 const socket = io("https://capstone-class-bridge.onrender.com", {
   reconnection: true,
