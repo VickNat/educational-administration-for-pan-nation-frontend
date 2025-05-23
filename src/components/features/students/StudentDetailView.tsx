@@ -6,7 +6,7 @@ import { useGetStudentById } from '@/queries/students/queries';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { RiArrowLeftLine, RiBook2Line, RiTeamLine, RiFileListLine } from 'react-icons/ri';
+import { RiArrowLeftLine, RiBook2Line, RiTeamLine, RiFileListLine, RiCalendarLine } from 'react-icons/ri';
 import { Loader2 } from 'lucide-react';
 import { useUpdateStudent } from '@/queries/students/mutations';
 import toast from 'react-hot-toast';
@@ -15,11 +15,13 @@ import StudentDetailsTab from './tabs/StudentDetailsTab';
 import StudentResultsTab from './tabs/StudentResultsTab';
 import Link from 'next/link';
 import CollectiveResultTab from './tabs/CollectiveResultTab';
+import AttendanceHistoryTab from './tabs/AttendanceHistoryTab';
 
 const tabs = [
   { id: 'details', label: 'Student Details', icon: RiBook2Line },
   { id: 'results', label: 'Results', icon: RiTeamLine },
   { id: 'collective-result', label: 'Collective Result', icon: RiFileListLine },
+  { id: 'attendance-history', label: 'Attendance History', icon: RiCalendarLine },
 ];
 
 const StudentDetailView = () => {
@@ -34,6 +36,13 @@ const StudentDetailView = () => {
     lastName: ''
   });
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'details');
+
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', tabId);
+    router.push(`?${params.toString()}`);
+  };
 
   const canEdit = user?.user?.role === 'TEACHER' || 
                  user?.user?.role === 'DIRECTOR' || 
@@ -104,7 +113,7 @@ const StudentDetailView = () => {
             {tabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleTabChange(tab.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm ${activeTab === tab.id
                   ? 'bg-blue-50 text-blue-600'
                   : 'text-gray-600 hover:bg-gray-50'
@@ -122,6 +131,7 @@ const StudentDetailView = () => {
             {activeTab === 'details' && <StudentDetailsTab student={data.result} />}
             {activeTab === 'results' && <StudentResultsTab studentId={data.result.id} />}
             {activeTab === 'collective-result' && <CollectiveResultTab studentId={data.result.id} />}
+            {activeTab === 'attendance-history' && <AttendanceHistoryTab studentId={data.result.id} />}
           </div>
         </div>
       </div>

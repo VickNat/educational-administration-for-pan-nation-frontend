@@ -8,10 +8,12 @@ import { useParams } from 'next/navigation';
 import { Section } from '@/lib/utils/types';
 import SectionDetailsTab from './tabs/SectionDetailsTab';
 import StudentsTab from './tabs/StudentsTab';
-import { RiArrowLeftLine, RiBook2Line, RiTeamLine, RiFileListLine, RiMessage2Line } from 'react-icons/ri';
+import { RiArrowLeftLine, RiBook2Line, RiTeamLine, RiFileListLine, RiMessage2Line, RiCalendarLine, RiUserSettingsLine } from 'react-icons/ri';
 import CollectiveResultTab from './tabs/CollectiveResultTab';
 import SectionChatTab from './tabs/SectionChatTab';
 import { useAuth } from '@/app/context/AuthContext';
+import AttendanceTab from './tabs/AttendanceTab';
+import TeachersAssignedTab from './tabs/TeachersAssignedTab';
 
 export default function SectionDetailView() {
   const [sectionData, setSectionData] = useState<Section | null>(null);
@@ -19,14 +21,8 @@ export default function SectionDetailView() {
   const { id } = useParams();
   const { data } = useGetSectionById(id as string);
   const [displayChat, setDisplayChat] = useState(false);
+  const [isHomeRoom, setIsHomeRoom] = useState(false);
   const { user } = useAuth();
-
-  // console.log(user);
-  // console.log(data);
-  // console.log(sectionData?.homeRoom?.id === user?.roleId);
-  // console.log(sectionData?.homeRoom?.id);
-  // console.log(user?.roleId);
-  // console.log(user?.user.id)
 
   useEffect(() => {
     if (data) {
@@ -35,10 +31,16 @@ export default function SectionDetailView() {
   }, [data]);
 
   useEffect(() => {
-    if ((user?.user.role === 'TEACHER' && sectionData?.homeRoom?.user.id === user?.user.id) || user?.user.role === 'DIRECTOR') {
+    if (user?.user.role === 'TEACHER' && sectionData?.homeRoom?.id === user?.roleId) {
       setDisplayChat(true);
     }
   }, [data, user]);
+  
+  useEffect(() => {
+    if (user?.user.role === 'TEACHER' && sectionData?.homeRoom?.id === user?.roleId) {
+      setIsHomeRoom(true);
+    }
+  }, [data, user, sectionData]);
 
   if (!sectionData) {
     return <div>Loading...</div>;
@@ -47,8 +49,10 @@ export default function SectionDetailView() {
   const tabs = [
     { id: 'details', label: 'Section Details', icon: RiBook2Line },
     { id: 'students', label: 'Students', icon: RiTeamLine },
+    { id: 'teachers', label: 'Teachers', icon: RiUserSettingsLine },
     { id: 'collective-result', label: 'Collective Result', icon: RiFileListLine },
     { id: 'chat', label: 'Chat', icon: RiMessage2Line },
+    { id: 'attendance', label: 'Attendance', icon: RiCalendarLine }
   ];
 
   return (
@@ -73,6 +77,10 @@ export default function SectionDetailView() {
                 return null;
               }
 
+              if (tab.id === 'teachers' && user?.user.role !== 'DIRECTOR') {
+                return null;
+              }
+
               return (
                 <button
                   key={tab.id}
@@ -94,13 +102,19 @@ export default function SectionDetailView() {
           <div className="bg-white rounded-xl p-6">
             {activeTab === 'details' && <SectionDetailsTab sectionData={sectionData} />}
             {activeTab === 'students' && (
-              <StudentsTab sectionId={sectionData.id} sectionName={sectionData.name} studentsData={sectionData.students || []} />
+              <StudentsTab sectionId={sectionData.id} sectionName={sectionData.name} studentsData={sectionData.students || []} isHomeRoom={isHomeRoom} subjectId={sectionData.subject || ''} />
             )}
             {activeTab === 'collective-result' && (
               <CollectiveResultTab section={sectionData} />
             )}
             {activeTab === 'chat' && (
               <SectionChatTab sectionId={sectionData.id} />
+            )}
+            {activeTab === 'attendance' && (
+              <AttendanceTab sectionId={sectionData.id} sectionName={sectionData.name} isHomeRoom={isHomeRoom} />
+            )}
+            {activeTab === 'teachers' && user?.user.role === 'DIRECTOR' && (
+              <TeachersAssignedTab sectionData={sectionData} teacherSectionSubject={sectionData.teacherSectionSubject || []} />
             )}
           </div>
         </div>

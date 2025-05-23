@@ -90,9 +90,11 @@ const TeachersView = () => {
             <h1 className="text-2xl font-bold">Teachers</h1>
             {/* <p className="text-sm text-muted-foreground">Manage / Teachers</p> */}
           </div>
-          <Button asChild className="bg-blue-600 hover:bg-blue-700">
-            <Link href="/dashboard/teachers/add">Add teacher</Link>
-          </Button>
+          {canEdit && (
+            <Button asChild className="bg-blue-600 hover:bg-blue-700">
+              <Link href="/dashboard/teachers/add">Add teacher</Link>
+            </Button>
+          )}
         </div>
 
         {/* Table Section */}

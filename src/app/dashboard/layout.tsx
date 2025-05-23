@@ -36,9 +36,11 @@ export default function DashboardLayout({
     return null;
   }
 
-  // if (user && !user.isActivated) {
-  //   return <ActivateAccount />;
-  // }
+  console.log("User", user)
+
+  if (user && !user.isActivated) {
+    return <ActivateAccount />;
+  }
 
   return (
     <MainLayout>{children}</MainLayout>
