@@ -6,7 +6,13 @@ export const useSendMessage = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: any) => fetchWithAuth('/message', { method: 'POST', body: JSON.stringify(data) }),
+    mutationFn: (data: any) => {
+      console.log('message data', data);
+      return fetchWithAuth('/message', { method: 'POST', body: JSON.stringify(data) })
+    },
+    onError: (error) => {
+      console.log('error', error);
+    },  
   });
 };
 

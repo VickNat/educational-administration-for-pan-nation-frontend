@@ -5,7 +5,8 @@ import ConversationList from './ConversationList';
 import MessageList from './MessageList';
 import { useAuth } from '@/app/context/AuthContext';
 import { useGetDirectorRelatedUsers, useGetParentRelatedUsers, useGetTeacherRelatedUsers } from '@/queries/messages/queries';
-
+import MySocket from './socket';
+import SocketMessageList from './SocketMessageList';
 // Dummy data for messages (right section) - will be replaced later
 const messagesData = [
   {
@@ -78,12 +79,12 @@ const MessagesView = () => {
   ) || null;
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-[78vh] overflow-hidden ">
       <ConversationList
         selectedConversationId={selectedConversationId || ''}
         onSelectConversation={setSelectedConversationId}
       />
-      <MessageList
+      <SocketMessageList
         selectedConversation={selectedConversation}
       />
     </div>

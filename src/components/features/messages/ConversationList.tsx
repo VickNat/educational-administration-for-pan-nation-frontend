@@ -65,11 +65,11 @@ const ConversationList = ({ selectedConversationId, onSelectConversation }: Conv
   }
 
   return (
-    <Card className="w-80 border-r-0 rounded-none h-full">
-      <div className="p-4 border-b border-gray-200">
+    <Card className="w-80 border-r-0 rounded-none h-full  py-0 ">
+      <div className="p-4 border-b border-gray-200 min-h-[80px] ">
         <h2 className="text-xl font-semibold text-gray-900">Messaging</h2>
       </div>
-      <ScrollArea className="h-[calc(100vh-64px)]">
+      <ScrollArea className="h-full flex-1 pb-12">
         {conversations.map((conversation) => (
           <div
             key={conversation.id}

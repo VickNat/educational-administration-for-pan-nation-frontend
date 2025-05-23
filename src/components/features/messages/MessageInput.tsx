@@ -19,7 +19,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSend, disabled }) => {
   };
 
   return (
-    <div className="p-4 border-t border-gray-200 bg-white">
+    <div className="p-2 border-t border-gray-200 bg-white">
       <div className="flex items-center space-x-2">
         <Input
           placeholder="Type your message..."

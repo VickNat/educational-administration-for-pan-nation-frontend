@@ -7,82 +7,170 @@ import { useSendMessage } from "@/queries/messages/mutations";
 import { useAuth } from "@/app/context/AuthContext";
 import { Message, MessagesResponse } from "./types";
 import { toast } from "react-hot-toast";
+import io from "socket.io-client";
 
 interface MessageListProps {
   selectedConversation: any | null;
 }
 
-const POLLING_INTERVAL = 2000; // 2 seconds
+interface SocketMessage {
+  success: boolean;
+  senderId: string;
+  receiverId: string;
+  data: Message | null;
+}
 
-const MessageList = ({ selectedConversation }: MessageListProps) => {
+interface AllMessagesResponse {
+  success: boolean;
+  data?: Message[];
+  error?: string;
+}
+
+// Create socket connection
+const socket = io('http://localhost:4000', {
+  reconnection: true,
+  reconnectionAttempts: 5,
+  reconnectionDelay: 1000,
+  timeout: 10000,
+  auth: {
+    token: localStorage.getItem('token')
+  }
+});
+
+const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
   const { user } = useAuth();
-  const { mutateAsync: sendMessage, isPending: isSending, error : sendMessageError } = useSendMessage();
+  const { mutateAsync: sendMessage, isPending: isSending } = useSendMessage();
   const [isLoading, setIsLoading] = React.useState(false);
   const [messagesData, setMessagesData] = React.useState<MessagesResponse | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const socketInitialized = useRef(false);
 
+  // Scroll to bottom when messages update
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messagesData]);
 
-  const fetchMessages = async () => {
-    if (!user?.user?.id || !selectedConversation?.id) return;
+  // Socket connection and message handling
+  useEffect(() => {
+    if (!socketInitialized.current && user?.user?.id) {
+      console.log('Initializing socket connection');
 
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/message/get-message`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({
-          senderId: user.user.id,
-          receiverId: selectedConversation.id,
-        }),
+      // Handle incoming messages
+      const handleReceiveMessage = (socketMessage: SocketMessage) => {
+        console.log('Received socket message:', socketMessage);
+
+        // Validate if message is for current conversation
+        if (!selectedConversation?.id || !user?.user?.id) return;
+
+        const isRelevantMessage = 
+          (socketMessage.senderId === user.user.id && socketMessage.receiverId === selectedConversation.id) ||
+          (socketMessage.senderId === selectedConversation.id && socketMessage.receiverId === user.user.id);
+
+        if (!isRelevantMessage) {
+          console.log('Message not relevant for current conversation');
+          return;
+        }
+
+        if (!socketMessage.success) {
+          toast.error('Failed to send message');
+          return;
+        }
+
+        if (socketMessage.data) {
+          setMessagesData(prev => {
+            if (!prev) {
+              return {
+                success: true,
+                message: 'Messages loaded',
+                result: [socketMessage.data!]
+              };
+            }
+            return {
+              ...prev,
+              result: [...prev.result, socketMessage.data!]
+            };
+          });
+        }
+      };
+
+      // Handle initial messages fetch response
+      const handleAllMessagesResponse = (response: AllMessagesResponse) => {
+        console.log('Received all messages:', response);
+        if (!response.success) {
+          toast.error(response.error || 'Failed to fetch messages');
+          return;
+        }
+
+        if (response.data) {
+          setMessagesData({
+            success: true,
+            message: 'Messages loaded',
+            result: response.data
+          });
+        }
+        setIsLoading(false);
+      };
+
+      // Set up socket listeners
+      socket.on('connect', () => {
+        console.log('Socket connected');
       });
 
-      const data = await response.json();
-      setMessagesData(data);
-    } catch (error) {
-      console.error("Error fetching messages:", error);
-      toast.error("Failed to load messages");
-    } finally {
-      timeoutRef.current = setTimeout(fetchMessages, POLLING_INTERVAL);
-    }
-  };
+      socket.on('disconnect', () => {
+        console.log('Socket disconnected');
+      });
 
+      socket.on('receive_message', handleReceiveMessage);
+      socket.on('all_messages_response', handleAllMessagesResponse);
+
+      socketInitialized.current = true;
+
+      // Cleanup
+      return () => {
+        console.log('Cleaning up socket listeners');
+        socket.off('connect');
+        socket.off('disconnect');
+        socket.off('receive_message', handleReceiveMessage);
+        socket.off('all_messages_response', handleAllMessagesResponse);
+        socketInitialized.current = false;
+      };
+    }
+  }, [user?.user?.id, selectedConversation?.id]);
+
+  // Fetch messages when conversation changes
   useEffect(() => {
     if (!selectedConversation?.id || !user?.user?.id) return;
 
     setIsLoading(true);
-    fetchMessages().finally(() => setIsLoading(false));
+    // Emit event to fetch all messages
+    socket.emit('all_messages', {
+      senderId: user.user.id,
+      receiverId: selectedConversation.id
+    });
 
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
   }, [user?.user?.id, selectedConversation?.id]);
-
-  const messages = messagesData?.result || [];
 
   const handleSendMessage = async (content: string) => {
     if (!selectedConversation || !user?.user?.id) return;
 
     try {
-      const res = await sendMessage({
+      const messageData = {
         senderId: user.user.id,
         receiverId: selectedConversation.id,
         content,
         images: [],
-      });
-      console.log("Message sent successfully:", res);
-      await fetchMessages();
-    } catch (error : any) {
-      toast.error("You cannot send negative messages");
+      };
+
+      // Only send through socket - the server will handle persistence
+      socket.emit("send_message", messageData);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to send message");
     }
   };
+
+  const messages = messagesData?.result || [];
 
   return (
     <Card className="flex-1 flex flex-col rounded-none h-full py-0">
@@ -109,7 +197,7 @@ const MessageList = ({ selectedConversation }: MessageListProps) => {
         )}
       </div>
 
-      <ScrollArea  className="flex-1 h-full p-4 overflow-auto">
+      <ScrollArea className="flex-1 h-full p-4 overflow-auto">
         {selectedConversation ? (
           isLoading ? (
             <div className="flex justify-center items-center h-full">
@@ -169,4 +257,4 @@ const MessageList = ({ selectedConversation }: MessageListProps) => {
   );
 };
 
-export default MessageList;
+export default SocketMessageList;
