@@ -17,3 +17,11 @@ export const useGetTeacherById = (id: string) => {
   });
 };
 
+export const useGetAvailableHomeRoomTeachers = () => {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: ['teachers'],
+    queryFn: () => fetchWithAuth('/teacher/available-homeroom') as Promise<any>,
+    enabled: user?.user.role === 'DIRECTOR',
+  });
+};

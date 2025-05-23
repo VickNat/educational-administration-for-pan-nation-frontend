@@ -9,9 +9,11 @@ import { useAddTeacher } from '@/queries/teachers/mutation';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Loader2 } from 'lucide-react';
+import { useAuth } from '@/app/context/AuthContext';
 
 const AddTeacherView = () => {
   const { mutateAsync: addTeacher, isPending } = useAddTeacher();
+  const { user } = useAuth();
   const router = useRouter();
   const [formData, setFormData] = useState({
     firstName: '',
@@ -20,6 +22,10 @@ const AddTeacherView = () => {
     phoneNumber: '',
     password: '',
   });
+
+  if (user?.user?.role !== 'DIRECTOR') {
+    router.push('/dashboard/teachers');
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;

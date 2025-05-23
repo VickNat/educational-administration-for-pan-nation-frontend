@@ -19,3 +19,12 @@ export const useGetStudents = () => {
     enabled: !!user,
   });
 };
+
+export const useGetUnassignedStudents = () => {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: ['students'],
+    queryFn: () => fetchWithAuth('/student/unassigned') as Promise<any>,
+    enabled: !!user,
+  });
+};

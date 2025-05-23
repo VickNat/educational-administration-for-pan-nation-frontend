@@ -117,11 +117,27 @@ export interface GradeLevel {
   Section?: GradeLevelSection[];
 }
 
+export interface TeacherSectionSubject {
+  id: string;
+  teacherId: string;
+  subjectId: string;
+  sectionId: string;
+  studentId: string | null;
+  teacher: Teacher;
+  subject: Subject;
+  section: {
+    id: string;
+    name: string;
+    gradeLevelId: string;
+    teacherId: string;
+  };
+}
 export interface Section {
   id: string;
   name: string;
   gradeLevelId?: string;
   teacherId?: string;
+  subject?: string;
   students?: Student[];
   gradeLevel?: {
     id: string;
@@ -143,7 +159,9 @@ export interface Section {
       dateOfBirth?: string | null;
       role: 'TEACHER';
     };
+
   };
+  teacherSectionSubject?: TeacherSectionSubject[];
 }
 
 export interface Result {
@@ -239,3 +257,4 @@ export interface GradeLevelMessage {
     level: string;
   };
 }
+

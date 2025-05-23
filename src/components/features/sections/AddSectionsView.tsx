@@ -28,7 +28,7 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useGetGradeLevels } from '@/queries/grade-level/queries';
-import { useGetTeachers } from '@/queries/teachers/queries';
+import { useGetAvailableHomeRoomTeachers } from '@/queries/teachers/queries';
 import { useGetStudents } from '@/queries/students/queries';
 import { useAddSection } from '@/queries/sections/mutations';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
@@ -43,9 +43,7 @@ const sectionSchema = Yup.object().shape({
     .min(1, 'Section name must be at least 1 character')
     .max(50, 'Section name must not exceed 50 characters'),
   students: Yup.array()
-    .of(Yup.string())
-    .min(1, 'At least one student must be selected')
-    .required('At least one student must be selected'),
+    .of(Yup.string()),
   gradeLevelId: Yup.string()
     .required('Grade level is required'),
   homeRoom: Yup.string()
@@ -66,7 +64,7 @@ const AddSectionsView = () => {
   const [selectedGradeLevelId, setSelectedGradeLevelId] = useState<string>('');
 
   const { data: gradeLevelsData } = useGetGradeLevels();
-  const { data: teachersData } = useGetTeachers();
+  const { data: teachersData } = useGetAvailableHomeRoomTeachers();
   const { data: studentsData } = useGetStudents();
   const { mutateAsync: addSection, isPending } = useAddSection();
   const router = useRouter();

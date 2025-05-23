@@ -42,7 +42,7 @@ export const useActivateParent = () => {
       }),
     onSuccess: (updatedParent) => {
       queryClient.setQueryData(['parents'], updatedParent);
-      queryClient.invalidateQueries({ queryKey: ['parents'] });
+      queryClient.invalidateQueries({ queryKey: ['parents', 'user'] });
     },
   });
 }

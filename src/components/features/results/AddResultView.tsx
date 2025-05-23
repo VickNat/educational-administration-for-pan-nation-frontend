@@ -5,7 +5,7 @@ import { useCreateResult } from '@/queries/results/mutations';
 import { useGetStudentById } from '@/queries/students/queries';
 import { useGetSubjects } from '@/queries/subjects/queries';
 import { useGetTeachers } from '@/queries/teachers/queries';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,17 +15,40 @@ import { ArrowLeft, Loader2 } from 'lucide-react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { toast } from 'react-hot-toast';
+import { useAuth } from '@/app/context/AuthContext';
 
 const AddResultView = () => {
   const { id: studentId } = useParams();
+  const searchParams = useSearchParams();
+  const subjectId = searchParams.get('subjectId');
+  const teacherId = searchParams.get('teacherId');
   const router = useRouter();
+  const { user } = useAuth();
   const [student, setStudent] = useState<Student | null>(null);
   const [subjects, setSubjects] = useState<Subject[] | null>(null);
   const [teachers, setTeachers] = useState<Teacher[] | null>(null);
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(subjectId);
+  const [selectedTeacherId, setSelectedTeacherId] = useState<string | null>(teacherId);
   const { data, isLoading: isStudentLoading } = useGetStudentById(studentId as string);
   const { data: subjectsData, isLoading: isSubjectLoading } = useGetSubjects();
   const { data: teachersData, isLoading: isTeacherLoading } = useGetTeachers();
   const { mutateAsync: createResult, isPending: isCreatingResult } = useCreateResult();
+
+  // Check if user has permission to access this page
+  useEffect(() => {
+    if (user?.user?.role === 'DIRECTOR' || user?.user?.role === 'PARENT') {
+      toast.error('You do not have permission to access this page');
+      router.back();
+      return;
+    }
+
+    // If subjectId or teacherId is not provided, redirect back
+    // if (!subjectId || !teacherId) {
+    //   toast.error('Missing required parameters');
+    //   router.back();
+    //   return;
+    // }
+  }, [user, router]);
 
   useEffect(() => {
     if (data) {
@@ -40,10 +63,6 @@ const AddResultView = () => {
       setTeachers(teachersData.result);
     }
   }, [data, subjectsData, teachersData]);
-
-  // console.log("student", student);
-  // console.log("subjects", subjects);
-  // console.log("teachers", teachers);
 
   if (isStudentLoading || isSubjectLoading || isTeacherLoading) {
     return (
@@ -68,8 +87,8 @@ const AddResultView = () => {
     final: '',
     assignment: '',
     quiz: '',
-    teacherId: '',
-    subjectId: '',
+    teacherId: selectedTeacherId || '',
+    subjectId: selectedSubjectId || '',
     studentId: student.id,
     sectionId: student.sectionId,
   };
@@ -81,19 +100,32 @@ const AddResultView = () => {
     final: Yup.number().min(0).max(40).required('Required'),
     assignment: Yup.number().min(0).max(15).required('Required'),
     quiz: Yup.number().min(0).max(5).required('Required'),
-    teacherId: Yup.string().required('Required'),
-    subjectId: Yup.string().required('Required'),
+    teacherId: Yup.string().required('Teacher is required'),
+    subjectId: Yup.string().required('Subject is required'),
   });
 
   const handleSubmit = async (values: any, { resetForm }: any) => {
     try {
-      await createResult(values);
+      if (!selectedTeacherId || !selectedSubjectId) {
+        toast.error('Teacher and Subject are required');
+        return;
+      }
+
+      await createResult({
+        ...values,
+        teacherId: selectedTeacherId,
+        subjectId: selectedSubjectId,
+      });
       toast.success('Result added successfully!');
       resetForm();
     } catch (error: any) {
       toast.error(error?.message || 'Failed to add result.');
     }
   };
+
+  // Find the selected subject and teacher for display
+  const selectedSubject = subjects?.find(s => s.id === selectedSubjectId);
+  const selectedTeacher = teachers?.find(t => t.id === selectedTeacherId);
 
   return (
     <div className="max-w-5xl mx-auto bg-white dark:bg-gray-900 p-8 rounded-lg mt-8">
@@ -107,6 +139,7 @@ const AddResultView = () => {
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
+        enableReinitialize
       >
         {({ isSubmitting, setFieldValue, values, errors, touched }) => (
           <Form className="space-y-5">
@@ -145,48 +178,24 @@ const AddResultView = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="w-full">
                 <Label htmlFor="teacherId">Teacher</Label>
-                <Select
-                  value={values.teacherId}
-                  onValueChange={val => setFieldValue('teacherId', val)}
-                  disabled={!teachers}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select a teacher" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {teachers && teachers.map(teacher => (
-                      <SelectItem key={teacher.id} value={teacher.id}>
-                        {teacher.user && teacher.user.firstName && teacher.user.lastName
-                          ? `${teacher.user.firstName} ${teacher.user.lastName}`
-                          : teacher.id}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors.teacherId && touched.teacherId && (
-                  <div className="text-red-500 text-xs mt-1">{errors.teacherId}</div>
+                <Input 
+                  value={selectedTeacher ? `${selectedTeacher.user.firstName} ${selectedTeacher.user.lastName}` : 'Select a teacher'} 
+                  readOnly 
+                  className="bg-gray-100 dark:bg-gray-800"
+                />
+                {!selectedTeacherId && (
+                  <div className="text-red-500 text-xs mt-1">Teacher is required</div>
                 )}
               </div>
               <div className="w-full">
                 <Label htmlFor="subjectId">Subject</Label>
-                <Select
-                  value={values.subjectId}
-                  onValueChange={val => setFieldValue('subjectId', val)}
-                  disabled={!subjects}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select a subject" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {subjects && subjects.map(subject => (
-                      <SelectItem key={subject.id} value={subject.id}>
-                        {subject.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors.subjectId && touched.subjectId && (
-                  <div className="text-red-500 text-xs mt-1">{errors.subjectId}</div>
+                <Input 
+                  value={selectedSubject ? selectedSubject.name : 'Select a subject'} 
+                  readOnly 
+                  className="bg-gray-100 dark:bg-gray-800"
+                />
+                {!selectedSubjectId && (
+                  <div className="text-red-500 text-xs mt-1">Subject is required</div>
                 )}
               </div>
             </div>

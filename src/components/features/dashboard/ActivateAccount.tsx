@@ -21,16 +21,17 @@ const validationSchema = Yup.object().shape({
 
 const ActivateAccount = () => {
   const { user } = useAuth();
-  const { mutate: activateTeacher, isPending: isActivatingTeacher } = useActivateTeacher();
-  const { mutate: activateParent, isPending: isActivatingParent } = useActivateParent();
+  const { mutateAsync: activateTeacher, isPending: isActivatingTeacher } = useActivateTeacher();
+  const { mutateAsync: activateParent, isPending: isActivatingParent } = useActivateParent();
 
-  const handleSubmit = (values: { password: string; confirmPassword: string }) => {
+  const handleSubmit = async (values: { password: string; confirmPassword: string }) => {
     if (user?.user.role === 'TEACHER') {
-      activateTeacher(
+      await activateTeacher(
         { input: { password: values.password } },
         {
           onSuccess: () => {
             toast.success('Account activated successfully!');
+            window.location.reload();
           },
           onError: (error) => {
             toast.error(error.message || 'Failed to activate account');
@@ -43,6 +44,7 @@ const ActivateAccount = () => {
         {
           onSuccess: () => {
             toast.success('Account activated successfully!');
+            window.location.reload();
           },
           onError: (error) => {
             toast.error(error.message || 'Failed to activate account');

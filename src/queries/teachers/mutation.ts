@@ -22,3 +22,8 @@ export const useDeleteTeacher = (id: string) => {
   });
 };
 
+export const useAssignTeacherToSection = () => {
+  return useMutation({
+    mutationFn: (data: any) => fetchWithAuth(`/section/${data.sectionId}/assign-teacher`, { method: 'POST', body: JSON.stringify(data) }),
+  });
+};

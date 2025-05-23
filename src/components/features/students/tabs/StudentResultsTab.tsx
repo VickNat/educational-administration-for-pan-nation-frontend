@@ -122,12 +122,14 @@ const StudentResultsTab: React.FC<StudentResultsTabProps> = ({ studentId }) => {
     <div>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold text-gray-900">Student Results</h2>
-        <Button
+
+        <div />
+        {/* <Button
           className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
           onClick={() => router.push(`/dashboard/student/${studentId}/results/add`)}
         >
           <RiAddLine className="w-4 h-4" /> Add Result
-        </Button>
+        </Button> */}
       </div>
       <div className="border rounded-lg">
         <Table>
