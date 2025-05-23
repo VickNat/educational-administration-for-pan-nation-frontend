@@ -26,6 +26,8 @@ import { useCreateSubject, useDeleteSubject, useUpdateSubject } from '@/queries/
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { toast } from 'react-hot-toast';
+import { useAuth } from '@/app/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 // Dummy data for subjects
 const initialSubjectsData = [
@@ -50,6 +52,8 @@ const subjectSchema = Yup.object().shape({
 });
 
 const SubjectsView = () => {
+  const { user } = useAuth();
+  const router = useRouter();
   const [subjectsData, setSubjectsData] = useState<Subject[]>([]);
   const { data, refetch } = useGetSubjects();
   const { mutateAsync: createSubject, isPending: isCreating } = useCreateSubject();
@@ -64,6 +68,10 @@ const SubjectsView = () => {
   useEffect(() => {
     if (data) {
       setSubjectsData(data?.result);
+    }
+
+    if (user?.user.role === 'PARENT') {
+      router.push('/dashboard');
     }
   }, [data]);
 
@@ -168,7 +176,9 @@ const SubjectsView = () => {
                   <TableHead>ID</TableHead>
                   <TableHead>Name</TableHead>
                   <TableHead>Grade Level ID</TableHead>
-                  <TableHead className="text-center">Action</TableHead>
+                  {user?.user.role === 'DIRECTOR' && (
+                    <TableHead className="text-center">Action</TableHead>
+                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -178,10 +188,11 @@ const SubjectsView = () => {
                     <TableCell>{subject.id}</TableCell>
                     <TableCell>{subject.name}</TableCell>
                     <TableCell>{subject.gradeLevelId}</TableCell>
-                    <TableCell className="text-center">
-                      <div className="flex justify-center gap-2">
-                        <Button
-                          variant="ghost"
+                    {user?.user.role === 'DIRECTOR' && (
+                      <TableCell className="text-center">
+                        <div className="flex justify-center gap-2">
+                          <Button
+                            variant="ghost"
                           size="icon"
                           onClick={() => openEditDialog(subject)}
                         >
@@ -193,9 +204,10 @@ const SubjectsView = () => {
                           onClick={() => handleDeleteSubject(subject)}
                         >
                           <RiDeleteBinLine className="h-5 w-5 text-red-500" />
-                        </Button>
-                      </div>
-                    </TableCell>
+                          </Button>
+                        </div>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>

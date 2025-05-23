@@ -16,7 +16,7 @@ export const useUpdateAnnouncement = (id: string) => {
   return useMutation({
     mutationFn: (data: any) => fetchWithAuth(`/announcement/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [] });
+      queryClient.invalidateQueries({ queryKey: ['announcements', id] });
     },
   });
 };

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,6 +9,7 @@ import { useAddStudent } from '@/queries/students/mutations';
 import { useRouter, useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/app/context/AuthContext';
 
 interface StudentFormData {
   firstName: string;
@@ -22,6 +23,7 @@ interface StudentFormData {
 const AddStudentsView = () => {
   const { mutateAsync: addStudent, isPending } = useAddStudent();
   const router = useRouter();
+  const { user } = useAuth();
   const searchParams = useSearchParams();
   const parentId = searchParams.get('parentId');
   const [formData, setFormData] = useState<StudentFormData>({
@@ -32,6 +34,12 @@ const AddStudentsView = () => {
     password: '',
     parentId: parentId || '',
   });
+
+  useEffect(() => {
+    if (user?.user.role !== 'DIRECTOR') {
+      router.back();
+    }
+  }, [user, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

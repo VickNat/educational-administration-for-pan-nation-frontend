@@ -26,6 +26,8 @@ import { Parent } from '@/lib/utils/types';
 import { useDeleteParent } from '@/queries/parents/mutations';
 import toast from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/app/context/AuthContext';
 // Dummy data for parents
 const parentsData = [
   { id: 1, name: 'Manang Lama', address: 'Dolpa', email: 'manang@gmail.com', username: '@manang', password: 'manang123' },
@@ -40,6 +42,8 @@ const ParentsView = () => {
   const [selectedParent, setSelectedParent] = useState<Parent | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const { mutateAsync: deleteParent, isPending } = useDeleteParent(selectedParent?.id || '');
+  const router = useRouter();
+  const { user } = useAuth();
   
   useEffect(() => {
     if (data && data?.result) {
@@ -69,9 +73,11 @@ const ParentsView = () => {
           <div>
             <h1 className="text-2xl font-bold">Parent</h1>
           </div>
-          <Button asChild className="bg-blue-600 hover:bg-blue-700">
-            <Link href="/dashboard/parents/add">Add parent</Link>
-          </Button>
+          {user?.user.role === 'DIRECTOR' && (
+            <Button asChild className="bg-blue-600 hover:bg-blue-700">
+              <Link href="/dashboard/parents/add">Add parent</Link>
+            </Button>
+          )}
         </div>
 
         {/* Table Section */}
@@ -99,14 +105,15 @@ const ParentsView = () => {
               </TableHeader>
               <TableBody>
                 {parentsData.map((parent, index) => (
-                  <TableRow key={parent.id}>
+                  <TableRow onClick={() => router.push(`/dashboard/parents/${parent.id}`)} key={parent.id}>
                     <TableCell className="text-center">{index + 1}</TableCell>
                     <TableCell>{parent.user.firstName} {parent.user.lastName}</TableCell>
                     <TableCell>{parent.user.email}</TableCell>
                     <TableCell>{parent.user.phoneNumber}</TableCell>
-                    <TableCell className="text-center">
-                      <div className="flex justify-center gap-2">
-                        <Button variant="ghost" size="icon" asChild>
+                    {user?.user.role === 'DIRECTOR' && (
+                      <TableCell className="text-center">
+                        <div className="flex justify-center gap-2">
+                          <Button variant="ghost" size="icon" asChild>
                           <Link href={`/dashboard/parents/${parent.id}`}>
                             <RiEdit2Line className="h-5 w-5 text-gray-600" />
                           </Link>
@@ -121,8 +128,9 @@ const ParentsView = () => {
                         >
                           <RiDeleteBinLine className="h-5 w-5 text-red-500" />
                         </Button>
-                      </div>
-                    </TableCell>
+                        </div>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>

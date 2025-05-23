@@ -6,7 +6,7 @@ export const useGetSections = () => {
   const { user } = useAuth();
   return useQuery({
     queryKey: ['sections'],
-    queryFn: () => fetchWithAuth('/section') as Promise<any>,
+    queryFn: () => fetchWithAuth('/section/role') as Promise<any>,
     enabled: !!user,
   });
 };

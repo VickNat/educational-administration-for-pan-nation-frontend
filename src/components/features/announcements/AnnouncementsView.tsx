@@ -7,6 +7,7 @@ import Image from 'next/image';
 import logo from '@/../public/images/logo.png';
 import { useGetAnnouncements } from '@/queries/announcements/queries';
 import { Announcement } from '@/lib/utils/types';
+import { useAuth } from '@/app/context/AuthContext';
 
 // Dummy data for announcements
 const announcementsData = [
@@ -77,6 +78,7 @@ const AnnouncementCard = ({ topic, description, image, directorId, id }: Announc
 const AnnouncementsView = () => {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const { data, isLoading } = useGetAnnouncements();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (data) {
@@ -91,9 +93,11 @@ const AnnouncementsView = () => {
         {/* Header Section (No Path) */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Announcements</h1>
-          <Button asChild className="bg-blue-600 hover:bg-blue-700">
-            <Link href="/dashboard/announcements/add">Add Announcement</Link>
-          </Button>
+          {user?.user.role === 'DIRECTOR' && (
+            <Button asChild className="bg-blue-600 hover:bg-blue-700">
+              <Link href="/dashboard/announcements/add">Add Announcement</Link>
+            </Button>
+          )}
         </div>
 
         {/* Feed Section */}

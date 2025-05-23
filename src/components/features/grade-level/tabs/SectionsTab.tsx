@@ -27,9 +27,10 @@ import { Loader2 } from 'lucide-react';
 interface SectionsTabProps {
   gradeLevelId: string;
   sections: GradeLevelSection[];
+  canEdit: boolean;
 }
 
-const SectionsTab: React.FC<SectionsTabProps> = ({ gradeLevelId, sections }) => {
+const SectionsTab: React.FC<SectionsTabProps> = ({ gradeLevelId, sections, canEdit }) => {
   const router = useRouter();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
   const [sectionToDelete, setSectionToDelete] = React.useState<GradeLevelSection | null>(null);
@@ -67,32 +68,34 @@ const SectionsTab: React.FC<SectionsTabProps> = ({ gradeLevelId, sections }) => 
           <TableHeader>
             <TableRow>
               <TableHead>Section Name</TableHead>
-              <TableHead className="text-center">Actions</TableHead>
+              {canEdit && <TableHead className="text-center">Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
             {sections.map((section) => (
               <TableRow key={section.id}>
                 <TableCell>{section.name}</TableCell>
-                <TableCell className="text-center">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleEdit(section.id)}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    <RiEditLine className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleRemove(section)}
-                    className="text-red-600 hover:text-red-800"
-                    disabled={isRemoving}
-                  >
-                    <RiDeleteBinLine className="w-4 h-4" />
-                  </Button>
-                </TableCell>
+                {canEdit && (
+                  <TableCell className="text-center">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEdit(section.id)}
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      <RiEditLine className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemove(section)}
+                      className="text-red-600 hover:text-red-800"
+                      disabled={isRemoving}
+                    >
+                      <RiDeleteBinLine className="w-4 h-4" />
+                    </Button>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>

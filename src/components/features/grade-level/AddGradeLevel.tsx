@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,7 +12,7 @@ import * as Yup from 'yup';
 import { toast } from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
-
+import { useAuth } from '@/app/context/AuthContext';
 // Validation schema
 const gradeLevelSchema = Yup.object().shape({
   level: Yup.string()
@@ -40,10 +40,18 @@ const AddGradeLevel = () => {
   const { data: subjectsData } = useGetSubjects();
   const router = useRouter();
 
+  const { user } = useAuth();
+
   const initialValues: GradeLevelFormData = {
     level: '',
     subjectList: [],
   };
+
+  useEffect(() => {
+    if (user?.user.role !== 'DIRECTOR') {
+      router.push('/dashboard');
+    }
+  }, [user]);
 
   const handleSubmit = async (values: GradeLevelFormData, { resetForm }: any) => {
     try {

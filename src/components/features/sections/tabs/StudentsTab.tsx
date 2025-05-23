@@ -206,12 +206,14 @@ const StudentsTab: React.FC<StudentsTabProps> = ({ sectionId, sectionName, stude
         <h2 className="text-lg font-semibold text-gray-900">
           Students in {sectionName}
         </h2>
-        <Button
-          className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
-          onClick={() => setIsAddDialogOpen(true)}
-        >
-          <RiUserAddLine className="w-4 h-4" /> Add Students
-        </Button>
+        {(isHomeRoom || isDirector) && (
+          <Button
+            className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
+            onClick={() => setIsAddDialogOpen(true)}
+          >
+            <RiUserAddLine className="w-4 h-4" /> Add Students
+          </Button>
+        )}
       </div>
 
       {students.length > 0 ? (

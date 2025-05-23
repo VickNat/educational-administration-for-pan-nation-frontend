@@ -26,6 +26,7 @@ import { GradeLevel } from '@/lib/utils/types';
 import { useDeleteGradeLevel } from '@/queries/grade-level/mutations';
 import { toast } from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/app/context/AuthContext';
 
 // Dummy data for grade levels
 const initialGradeLevelsData = [
@@ -40,6 +41,7 @@ const initialGradeLevelsData = [
 ];
 
 const GradeLevelView = () => {
+  const { user } = useAuth();
   const [gradeLevelsData, setGradeLevelsData] = useState<GradeLevel[]>([]);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [gradeLevelToDelete, setGradeLevelToDelete] = useState<GradeLevel | null>(null);
@@ -84,9 +86,11 @@ const GradeLevelView = () => {
             <h1 className="text-2xl font-bold">Grade Levels</h1>
             {/* <p className="text-sm text-muted-foreground">Manage / Grade Levels</p> */}
           </div>
-          <Button asChild className="bg-blue-600 hover:bg-blue-700">
-            <Link href="/dashboard/grade-level/add">Add grade level</Link>
-          </Button>
+          {user?.user.role === 'DIRECTOR' && (
+            <Button asChild className="bg-blue-600 hover:bg-blue-700">
+              <Link href="/dashboard/grade-level/add">Add grade level</Link>
+            </Button>
+          )}
         </div>
 
         {/* Table Section */}
@@ -106,7 +110,9 @@ const GradeLevelView = () => {
                   <TableHead className="w-12 text-center">#</TableHead>
                   <TableHead>ID</TableHead>
                   <TableHead>Name</TableHead>
-                  <TableHead className="text-center">Action</TableHead>
+                  {user?.user.role === 'DIRECTOR' && (
+                    <TableHead className="text-center">Action</TableHead>
+                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -115,6 +121,7 @@ const GradeLevelView = () => {
                     <TableCell className="text-center">{index + 1}</TableCell>
                     <TableCell>{gradeLevel.id}</TableCell>
                     <TableCell>{gradeLevel.level}</TableCell>
+                    {user?.user.role === 'DIRECTOR' && (
                     <TableCell className="text-center">
                       <div className="flex justify-center gap-2">
                         <Button variant="ghost" size="icon" asChild>
@@ -130,8 +137,9 @@ const GradeLevelView = () => {
                         >
                           <RiDeleteBinLine className="h-5 w-5 text-red-500" />
                         </Button>
-                      </div>
-                    </TableCell>
+                        </div>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>

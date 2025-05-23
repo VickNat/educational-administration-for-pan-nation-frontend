@@ -7,7 +7,7 @@ export const useGetAnnouncements = () => {
   return useQuery({
     queryKey: ['announcements'],
     queryFn: () => fetchWithAuth('/announcement') as Promise<any>,
-    enabled: !!user && user.user.role === 'DIRECTOR',
+    enabled: !!user,
   });
 }
 
@@ -16,6 +16,6 @@ export const useGetAnnouncementById = (id: string) => {
   return useQuery({
     queryKey: ['announcements', id],
     queryFn: () => fetchWithAuth(`/announcement/${id}`) as Promise<any>,
-    enabled: !!user && user.user.role === 'DIRECTOR',
+    enabled: !!user,
   });
 }
