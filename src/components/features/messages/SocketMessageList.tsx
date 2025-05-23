@@ -37,6 +37,7 @@ const socket = io("https://capstone-class-bridge.onrender.com", {
   }
 });
 
+
 const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
   const { user } = useAuth();
   const { mutateAsync: sendMessage, isPending: isSending } = useSendMessage();
