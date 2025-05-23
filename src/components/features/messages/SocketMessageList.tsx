@@ -27,7 +27,7 @@ interface AllMessagesResponse {
 }
 
 // Create socket connection
-const socket = io('http://localhost:4000', {
+const socket = io("https://capstone-class-bridge.onrender.com", {
   reconnection: true,
   reconnectionAttempts: 5,
   reconnectionDelay: 1000,
