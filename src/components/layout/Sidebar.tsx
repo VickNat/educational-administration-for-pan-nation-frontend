@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '../../app/context/AuthContext';
 import { cn } from '@/lib/utils';
 import {
@@ -17,35 +18,14 @@ import {
   RiArrowRightSLine,
   RiSchoolLine,
   RiMegaphoneLine,
+  RiParentLine,
+  RiUserSettingsLine,
+  RiBookOpenLine,
+  RiBookmarkLine,
+  RiGraduationCapLine,
+  RiUserLine,
 } from 'react-icons/ri';
-
-const navItems = {
-  common: [
-    { name: 'Dashboard', href: '/dashboard', icon: <RiDashboardLine /> },
-    { name: 'Message', href: '/dashboard/messages', icon: <RiMessageLine /> },
-    { name: 'Settings', href: '/dashboard/settings', icon: <RiSettingsLine /> },
-    { name: 'Announcements', href: '/dashboard/announcements', icon: <RiMegaphoneLine /> },
-    { name: 'Grade Levels', href: '/dashboard/grade-level', icon: <RiBookLine /> },
-    { name: 'Sections', href: '/dashboard/sections', icon: <RiBookLine /> },
-    { name: 'Calendar', href: '/dashboard/calendar', icon: <RiCalendarEventLine /> },
-  ],
-  DIRECTOR: [
-    { name: 'Subjects', href: '/dashboard/subjects', icon: <RiFileListLine /> },
-    { name: 'Teachers', href: '/dashboard/teachers', icon: <RiTeamLine /> },
-    { name: 'Parents', href: '/dashboard/parents', icon: <RiSchoolLine /> },
-    { name: 'Students', href: '/dashboard/student', icon: <RiGroupLine /> },
-  ],
-  TEACHER: [
-    { name: 'Subjects', href: '/dashboard/subjects', icon: <RiFileListLine /> },
-    { name: 'Teachers', href: '/dashboard/teachers', icon: <RiTeamLine /> },
-    { name: 'Parents', href: '/dashboard/parents', icon: <RiSchoolLine /> },
-    { name: 'Students', href: '/dashboard/student', icon: <RiGroupLine /> },
-  ],
-  PARENT: [
-    // { name: 'Section Messages', href: '/dashboard/section-messages', icon: <RiMessageLine /> },
-    // { name: 'Children', href: '/dashboard/children', icon: <RiGroupLine /> },
-  ],
-};
+import { useTranslation } from 'react-i18next';
 
 interface SidebarProps {
   open: boolean;
@@ -55,6 +35,36 @@ interface SidebarProps {
 export default function Sidebar({ open, setOpen }: SidebarProps) {
   const { user } = useAuth();
   const role = user?.user?.role;
+  const pathname = usePathname();
+  const { t } = useTranslation();
+
+  const navItems = {
+    common: [
+      { name: t('common.dashboard'), href: '/dashboard', icon: <RiDashboardLine /> },
+      { name: t('common.message'), href: '/dashboard/messages', icon: <RiMessageLine /> },
+      { name: t('common.settings'), href: '/dashboard/settings', icon: <RiUserSettingsLine /> },
+      { name: t('common.announcements'), href: '/dashboard/announcements', icon: <RiMegaphoneLine /> },
+      { name: t('common.gradeLevels'), href: '/dashboard/grade-level', icon: <RiGraduationCapLine /> },
+      { name: t('common.sections'), href: '/dashboard/sections', icon: <RiBookmarkLine /> },
+      { name: t('common.calendar'), href: '/dashboard/calendar', icon: <RiCalendarEventLine /> },
+    ],
+    DIRECTOR: [
+      { name: t('common.subjects'), href: '/dashboard/subjects', icon: <RiBookOpenLine /> },
+      { name: t('common.teachers'), href: '/dashboard/teachers', icon: <RiTeamLine /> },
+      { name: t('common.parents'), href: '/dashboard/parents', icon: <RiParentLine /> },
+      { name: t('common.students'), href: '/dashboard/student', icon: <RiUserLine /> },
+    ],
+    TEACHER: [
+      { name: t('common.subjects'), href: '/dashboard/subjects', icon: <RiBookOpenLine /> },
+      { name: t('common.teachers'), href: '/dashboard/teachers', icon: <RiTeamLine /> },
+      { name: t('common.parents'), href: '/dashboard/parents', icon: <RiParentLine /> },
+      { name: t('common.students'), href: '/dashboard/student', icon: <RiUserLine /> },
+    ],
+    PARENT: [
+      // { name: 'Section Messages', href: '/dashboard/section-messages', icon: <RiMessageLine /> },
+      // { name: 'Children', href: '/dashboard/children', icon: <RiGroupLine /> },
+    ],
+  };
 
   // Compose navigation based on role
   const items = [
@@ -69,8 +79,8 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
         open ? 'w-64 px-4' : 'w-20 px-2'
       )}
     >
-      <div className={cn('flex items-center mb-8', open ? 'gap-2 px-2 justify-between' : 'justify-start')}>
-        <Link href="/dashboard" className="flex items-center gap-2">
+      <div className={cn('flex items-center mb-8', open ? 'gap-2 px-2 justify-between' : 'justify-center')}>
+        <Link href="/dashboard" className="flex items-center justify-center gap-2">
           <img
             src="/images/logo.png"
             alt="Class Bridge Logo"
@@ -78,7 +88,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
           />
           {open && <span className="font-bold text-xl text-primary">Class Bridge</span>}
         </Link>
-        <button
+        {/* <button
           className={cn(
             'ml-auto p-1 rounded hover:bg-muted transition-colors',
             open ? '' : 'absolute top-6 left-11'
@@ -87,25 +97,31 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
           onClick={() => setOpen(!open)}
         >
           {open ? <RiArrowLeftSLine className="text-2xl" /> : <RiArrowRightSLine className="text-2xl" />}
-        </button>
+        </button> */}
       </div>
       <nav className="flex-1">
         <ul className="space-y-1">
-          {items.map((item) => (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                className={cn(
-                  'flex items-center gap-3 px-3 py-2 rounded-lg text-base font-medium text-muted-foreground hover:bg-muted transition-colors',
-                  open ? 'justify-start' : 'justify-start'
-                )}
-                title={!open ? item.name : undefined}
-              >
-                <span className="text-xl">{item.icon}</span>
-                {open && item.name}
-              </Link>
-            </li>
-          ))}
+          {items.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className={cn(
+                    'flex items-center gap-3 px-3 py-2 rounded-lg text-base font-medium transition-colors',
+                    isActive 
+                      ? 'bg-primary/10 text-primary hover:bg-primary/20' 
+                      : 'text-muted-foreground hover:bg-muted',
+                    open ? 'justify-start' : 'justify-center'
+                  )}
+                  title={!open ? item.name : undefined}
+                >
+                  <span className={cn('text-xl', isActive && 'text-primary')}>{item.icon}</span>
+                  {open && item.name}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </nav>
     </aside>

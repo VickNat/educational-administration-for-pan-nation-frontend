@@ -9,6 +9,22 @@ import { Button } from '@/components/ui/button';
 import { RiArrowLeftLine, RiUserAddLine } from 'react-icons/ri';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useForgotPassword } from '@/queries/users/mutations';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Formik, Form, Field } from 'formik';
+import * as Yup from 'yup';
+import { Input } from '@/components/ui/input';
+import { Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
+
+const validationSchema = Yup.object().shape({
+  password: Yup.string()
+    .min(8, 'Password must be at least 8 characters')
+    .required('Password is required'),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref('password')], 'Passwords must match')
+    .required('Confirm password is required'),
+});
 
 const ParentsDetailView = () => {
   const router = useRouter();
@@ -17,12 +33,33 @@ const ParentsDetailView = () => {
   const { data } = useGetParentById(id as string);
   const [parentData, setParentData] = useState<Parent>(data?.result);
   const { user } = useAuth();
+  const { mutateAsync: resetPassword, isPending } = useForgotPassword();
+  const [showResetPassword, setShowResetPassword] = useState(false);
 
   useEffect(() => {
     if (data && data?.result) {
       setParentData(data.result);
     }
   }, [data]);
+
+  const handleResetPassword = async (values: { password: string; confirmPassword: string }) => {
+    try {
+      await resetPassword(
+        { userId: parentData?.user?.id, newPassword: values.password },
+        {
+          onSuccess: () => {
+            toast.success('Password reset successfully');
+            setShowResetPassword(false);
+          },
+          onError: (error) => {
+            toast.error(error.message || 'Failed to reset password');
+          },
+        }
+      );
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to reset password');
+    }
+  };
 
   return (
     <div className="max-w-6xl mx-auto p-6">
@@ -47,6 +84,17 @@ const ParentsDetailView = () => {
             >
               <RiUserAddLine className="w-4 h-4" />
               Add Student
+            </Button>
+          )}
+
+          {user?.user?.role === 'DIRECTOR' && (
+            <Button
+              variant="default"
+              onClick={() => {
+                setShowResetPassword(true);
+              }}
+            >
+              Reset Password
             </Button>
           )}
         </div>
@@ -102,6 +150,70 @@ const ParentsDetailView = () => {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={showResetPassword} onOpenChange={setShowResetPassword}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Reset Parent Password</DialogTitle>
+            <DialogDescription>
+              Enter a new password for {parentData?.user?.firstName} {parentData?.user?.lastName}
+            </DialogDescription>
+          </DialogHeader>
+          <Formik
+            initialValues={{ password: '', confirmPassword: '' }}
+            validationSchema={validationSchema}
+            onSubmit={handleResetPassword}
+          >
+            {({ errors, touched }) => (
+              <Form className="space-y-4">
+                <div className="space-y-2">
+                  <Field
+                    as={Input}
+                    name="password"
+                    type="password"
+                    placeholder="Enter new password"
+                    className={errors.password && touched.password ? 'border-red-500' : ''}
+                  />
+                  {errors.password && touched.password && (
+                    <div className="text-sm text-red-500">{errors.password}</div>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Field
+                    as={Input}
+                    name="confirmPassword"
+                    type="password"
+                    placeholder="Confirm new password"
+                    className={errors.confirmPassword && touched.confirmPassword ? 'border-red-500' : ''}
+                  />
+                  {errors.confirmPassword && touched.confirmPassword && (
+                    <div className="text-sm text-red-500">{errors.confirmPassword}</div>
+                  )}
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowResetPassword(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={isPending}>
+                    {isPending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Resetting...
+                      </>
+                    ) : (
+                      'Reset Password'
+                    )}
+                  </Button>
+                </div>
+              </Form>
+            )}
+          </Formik>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

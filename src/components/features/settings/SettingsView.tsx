@@ -15,28 +15,30 @@ export default function SettingsView() {
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: RiUserLine },
-    { id: 'notifications', label: 'Notifications', icon: RiBellLine },
-    { id: 'security', label: 'Security', icon: RiLockLine },
+    // { id: 'notifications', label: 'Notifications', icon: RiBellLine },
+    // { id: 'security', label: 'Security', icon: RiLockLine },
     { id: 'preferences', label: 'Preferences', icon: RiGlobalLine },
     ...(user?.user.role === 'PARENT' ? [{ id: 'children', label: 'Children', icon: RiUserHeartLine }] : []),
   ];
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-semibold text-gray-900 mb-6">Settings</h1>
+    <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 min-h-screen">
+      <h1 className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary mb-6">
+        Settings
+      </h1>
 
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
         {/* Sidebar */}
         <div className="lg:w-64">
-          <div className="bg-white rounded-xl p-2">
+          <div className="bg-gradient-to-br from-primary/5 to-secondary/5 dark:bg-input/20 rounded-xl border-2 border-primary/20 p-2">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm ${
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all duration-300 ${
                   activeTab === tab.id
-                    ? 'bg-blue-50 text-blue-600'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    ? 'bg-gradient-to-r from-primary/20 to-secondary/20 text-primary font-medium'
+                    : 'text-muted-foreground hover:bg-primary/5 hover:text-primary'
                 }`}
               >
                 <tab.icon className="w-5 h-5" />
@@ -48,10 +50,10 @@ export default function SettingsView() {
 
         {/* Content */}
         <div className="flex-1">
-          <div className="bg-white rounded-xl p-6">
+          <div className="bg-gradient-to-br from-primary/5 to-secondary/5 dark:bg-input/20 rounded-xl border-2 border-primary/20 p-4 sm:p-6 transition-all duration-300">
             {activeTab === 'profile' && <ProfileTab />}
-            {activeTab === 'notifications' && <NotificationsTab />}
-            {activeTab === 'security' && <SecurityTab />}
+            {/* {activeTab === 'notifications' && <NotificationsTab />}
+            {activeTab === 'security' && <SecurityTab />} */}
             {activeTab === 'preferences' && <PreferencesTab />}
             {activeTab === 'children' && user?.user.role === 'PARENT' && (
               <ChildrenTab id={user.roleId} />

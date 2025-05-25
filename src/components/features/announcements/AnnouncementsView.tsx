@@ -4,32 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
-import logo from '@/../public/images/logo.png';
 import { useGetAnnouncements } from '@/queries/announcements/queries';
 import { Announcement } from '@/lib/utils/types';
 import { useAuth } from '@/app/context/AuthContext';
-
-// Dummy data for announcements
-const announcementsData = [
-  {
-    topic: "Midterm Exam Schedule",
-    description: "Please review the attached schedule for midterms.",
-    image: logo,
-    directorId: "director123",
-  },
-  {
-    topic: "School Event: Science Fair",
-    description: "Join us for the annual Science Fair on May 10th!",
-    image: null,
-    directorId: "director124",
-  },
-  {
-    topic: "Parent-Teacher Meeting",
-    description: "Scheduled for May 15th. Please RSVP by May 12th.",
-    image: logo,
-    directorId: "director123",
-  },
-];
+import { RiAddLine, RiTimeLine } from 'react-icons/ri';
+import { formatDistanceToNow } from 'date-fns';
 
 interface AnnouncementCardProps {
   topic: string;
@@ -37,42 +16,56 @@ interface AnnouncementCardProps {
   image: any | null;
   directorId: string;
   id: string;
+  directorName: string;
 }
 
 // AnnouncementCard Component
-const AnnouncementCard = ({ topic, description, image, directorId, id }: AnnouncementCardProps) => {
+const AnnouncementCard = ({ topic, description, image, directorId, id, directorName }: AnnouncementCardProps) => {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-      <Link href={`/dashboard/announcements/${id}`}>
-        {/* Header: Topic and Director */}
-        <div className="flex justify-between items-center mb-3">
-          <h2 className="text-xl font-semibold text-gray-900">{topic}</h2>
-          <span className="text-sm text-muted-foreground">
-            Posted by Director ID: {directorId}
-          </span>
-        </div>
-
+    <Link href={`/dashboard/announcements/${id}`}>
+      <div className="group bg-gradient-to-br from-primary/5 to-secondary/5 dark:bg-input/20 rounded-xl border-2 border-primary/20 p-4 sm:p-6 transition-all duration-300 hover:border-primary/30 hover:scale-[1.02] mb-4 break-inside-avoid">
         {/* Image (if present) */}
         {image && (
-          <div className="relative w-full h-64 mb-4">
+          <div className="relative w-full aspect-video mb-4 rounded-lg overflow-hidden">
             <Image
               src={image}
               alt={topic}
               fill
-              className="object-cover rounded-md"
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
               priority={false}
               placeholder="blur"
               blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAErgJ9d3pG7wAAAABJRU5ErkJggg=="
-              loader={({ src }) => src} // Add custom loader to handle external URLs
-              unoptimized // Disable Next.js image optimization for external URLs
+              loader={({ src }) => src}
+              unoptimized
             />
           </div>
         )}
 
-        {/* Description */}
-        <p className="text-gray-700 leading-relaxed">{description}</p>
-      </Link>
-    </div>
+        {/* Content */}
+        <div className="space-y-3">
+          {/* Header: Topic and Time */}
+          <div className="flex justify-between items-start gap-4">
+            <h2 className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary line-clamp-2">
+              {topic}
+            </h2>
+            {/* <div className="flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap">
+              <RiTimeLine className="w-3 h-3" />
+              <span>{formatDistanceToNow(new Date(createdAt), { addSuffix: true })}</span>
+            </div> */}
+          </div>
+
+          {/* Description */}
+          <p className="text-muted-foreground line-clamp-3">{description}</p>
+
+          {/* Footer: Director Info */}
+          <div className="pt-2 border-t border-primary/10">
+            <span className="text-sm text-muted-foreground">
+              Posted by Director: {directorName}
+            </span>
+          </div>
+        </div>
+      </div>
+    </Link>
   );
 };
 
@@ -89,38 +82,45 @@ const AnnouncementsView = () => {
   }, [data]);
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      {/* Paper-like Background Container (No Shadow) */}
-      <div className="bg-white rounded-lg p-6">
-        {/* Header Section (No Path) */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Announcements</h1>
-          {user?.user.role === 'DIRECTOR' && (
-            <Button asChild className="bg-blue-600 hover:bg-blue-700">
-              <Link href="/dashboard/announcements/add">Add Announcement</Link>
-            </Button>
-          )}
-        </div>
+    <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 min-h-screen">
+      {/* Header Section */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+          Announcements
+        </h1>
+        {user?.user.role === 'DIRECTOR' && (
+          <Button asChild className="bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90 transition-opacity">
+            <Link href="/dashboard/announcements/add" className="flex items-center gap-2">
+              <RiAddLine className="w-5 h-5" />
+              Add Announcement
+            </Link>
+          </Button>
+        )}
+      </div>
 
-        {/* Feed Section */}
-        <div className="space-y-6">
-          {announcements.length > 0 ? (
-            announcements.map((announcement, index) => (
-              <AnnouncementCard
-                key={index}
-                id={announcement.id}
-                topic={announcement.topic}
-                description={announcement.description}
-                image={announcement.image}
-                directorId={announcement.directorId}
-              />
-            ))
-          ) : (
-            <p className="text-sm text-muted-foreground text-center">
-              No announcements available.
-            </p>
-          )}
-        </div>
+      {/* Feed Section: Masonry Columns */}
+      <div className="columns-1 md:columns-2 lg:columns-3 gap-2">
+        {announcements.length > 0 ? (
+          announcements.map((announcement, index) => (
+            <AnnouncementCard
+              key={index}
+              id={announcement.id}
+              topic={announcement.topic}
+              description={announcement.description}
+              image={announcement.image}
+              directorId={announcement.directorId}
+              directorName={""}
+            />
+          ))
+        ) : (
+          <div className="col-span-full">
+            <div className="bg-gradient-to-br from-primary/5 to-secondary/5 dark:bg-input/20 rounded-xl border-2 border-primary/20 p-8 text-center">
+              <p className="text-muted-foreground">
+                No announcements available.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

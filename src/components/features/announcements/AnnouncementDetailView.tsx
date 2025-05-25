@@ -109,15 +109,18 @@ const AnnouncementDetailView = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <div className="bg-white rounded-lg p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Announcement Details</h1>
+    <div className="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8 min-h-screen">
+      <div className="bg-gradient-to-br from-primary/5 to-secondary/5 dark:bg-input/20 rounded-xl border-2 border-primary/20 p-4 sm:p-8">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+            Announcement Details
+          </h1>
           <Button
             variant="ghost"
             onClick={() => router.push('/dashboard/announcements')}
+            className="text-primary hover:bg-primary/10"
           >
-            <ArrowLeft className="w-4 h-4" /> Back
+            <ArrowLeft className="w-4 h-4 mr-1" /> Back
           </Button>
         </div>
         {isDirector ? (
@@ -130,54 +133,63 @@ const AnnouncementDetailView = () => {
             {({ isSubmitting, setFieldValue, values }) => (
               <Form className="space-y-8">
                 <div>
-                  <Label className="text-sm font-medium text-gray-700">Topic</Label>
+                  <Label className="text-base font-semibold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">Topic</Label>
                   <Field
                     as={Input}
                     name="topic"
                     type="text"
-                    className="mt-1 border-blue-300 focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-2 border-primary/30 focus:border-primary focus:ring-primary"
                   />
                   <ErrorMessage name="topic" component="div" className="text-red-500 text-xs mt-1" />
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-gray-700">Description</Label>
+                  <Label className="text-base font-semibold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">Description</Label>
                   <Field
                     as={Input}
                     name="description"
                     type="text"
-                    className="mt-1 border-blue-300 focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-2 border-primary/30 focus:border-primary focus:ring-primary"
                   />
                   <ErrorMessage name="description" component="div" className="text-red-500 text-xs mt-1" />
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-gray-700">Image (Optional)</Label>
+                  <Label className="text-base font-semibold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">Image (Optional)</Label>
                   <Input
                     name="image"
                     type="file"
                     accept="image/*"
                     onChange={e => handleImageChange(e, setFieldValue)}
-                    className="mt-1 border-blue-300 focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-2 border-primary/30 focus:border-primary focus:ring-primary"
                   />
                   {imagePreview && (
-                    <div className="flex items-center mt-2">
-                      <Image
-                        src={imagePreview}
-                        alt={values.topic}
-                        width={120}
-                        height={120}
-                        className="object-cover rounded-lg border"
-                      />
+                    <div className="flex items-center mt-4 w-32 h-32 rounded-lg border-2 border-primary/20 bg-white overflow-hidden">
+                      {imagePreview.startsWith('http') ? (
+                        <img
+                          src={imagePreview}
+                          alt={values.topic}
+                          className="object-cover w-full h-full"
+                        />
+                      ) : (
+                        <Image
+                          src={imagePreview}
+                          alt={values.topic}
+                          width={128}
+                          height={128}
+                          className="object-cover w-full h-full"
+                          unoptimized
+                        />
+                      )}
                     </div>
                   )}
                   <ErrorMessage name="image" component="div" className="text-red-500 text-xs mt-1" />
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-gray-700">Posted by</Label>
+                  <Label className="text-base font-semibold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">Posted by</Label>
                   <Input
                     type="text"
                     value={`Director ID: ${announcement.directorId}`}
                     readOnly
-                    className="mt-1 bg-gray-50"
+                    className="mt-2 bg-gray-100 dark:bg-gray-800 border-primary/30 focus:border-primary focus:ring-primary max-w-md"
                   />
                 </div>
                 <div className="flex justify-between items-center">
@@ -191,7 +203,7 @@ const AnnouncementDetailView = () => {
                   </Button>
                   <Button
                     type="submit"
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                    className="bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80 text-white font-semibold"
                     disabled={isSubmitting || isUpdating}
                   >
                     {isSubmitting || isUpdating ? 'Saving...' : 'Save Changes'}
@@ -231,50 +243,43 @@ const AnnouncementDetailView = () => {
         ) : (
           <div className="space-y-8">
             <div>
-              <Label className="text-sm font-medium text-gray-700">Topic</Label>
-              <h2 className="mt-1 text-xl font-semibold text-gray-900">
+              <Label className="text-base font-semibold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">Topic</Label>
+              <h2 className="mt-2 text-xl font-semibold text-primary">
                 {announcement?.topic}
               </h2>
             </div>
             {announcement?.image && (
-              <div className="relative w-full h-96">
-                {/* <Image
-                  src={announcement?.image}
-                  alt={announcement?.topic}
-                  fill
-                  className="object-cover rounded-lg"
-                  priority={false}
-                  placeholder="blur"
-                  blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAErgJ9d3pG7wAAAABJRU5ErkJggg=="
-                  loader={({ src }) => src} // Add custom loader to handle external URLs
-                  unoptimized // Disable Next.js image optimization for external URLs
-                /> */}
-                 <Image
-                    src={announcement?.image}
-                    alt={announcement?.topic}
+              <div className="flex items-center justify-center w-full h-64 rounded-lg border-2 border-primary/20 bg-white overflow-hidden">
+                {announcement.image.startsWith('http') ? (
+                  <img
+                    src={announcement.image}
+                    alt={announcement.topic}
+                    className="object-cover w-full h-full"
+                  />
+                ) : (
+                  <Image
+                    src={announcement.image}
+                    alt={announcement.topic}
                     fill
-                    className="object-cover rounded-md"
-                    priority={false}
-                    placeholder="blur"
-                    blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAErgJ9d3pG7wAAAABJRU5ErkJggg=="
-                    loader={({ src }) => src} // Add custom loader to handle external URLs
-                    unoptimized // Disable Next.js image optimization for external URLs
-                />
+                    className="object-cover w-full h-full"
+                    unoptimized
+                  />
+                )}
               </div>
             )}
             <div>
-              <Label className="text-sm font-medium text-gray-700">Description</Label>
-              <p className="mt-2 text-gray-700 leading-relaxed">
+              <Label className="text-base font-semibold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">Description</Label>
+              <p className="mt-2 text-muted-foreground leading-relaxed">
                 {announcement?.description}
               </p>
             </div>
             <div>
-              <Label className="text-sm font-medium text-gray-700">Posted by</Label>
+              <Label className="text-base font-semibold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">Posted by</Label>
               <Input
                 type="text"
                 value={`Director ID: ${announcement?.directorId}`}
                 readOnly
-                className="mt-1 bg-gray-50"
+                className="mt-2 bg-gray-100 dark:bg-gray-800 border-primary/30 focus:border-primary focus:ring-primary max-w-md"
               />
             </div>
           </div>

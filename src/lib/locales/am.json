@@ -1,0 +1,44 @@
+{
+  "common": {
+    "settings": "ቅንብሮች",
+    "logout": "ውጣ",
+    "language": "ቋንቋ",
+    "preferences": "ምርጫዎች",
+    "profile": "መገለጫ",
+    "notifications": "ማስታወቂያዎች",
+    "security": "የደህንነት",
+    "children": "ልጆች",
+    "save": "ለውጦችን አስቀምጥ",
+    "cancel": "ሰርዝ",
+    "dashboard": "መገለጫ",
+    "message": "መልዕክት",
+    "announcements": "መመሪያዎች",
+    "gradeLevels": "የመጠባበቅ ሁኔታዎች",
+    "sections": "ህግትዎች",
+    "calendar": "የመመሪያ መመሪያ",
+    "subjects": "መመሪያዎች",
+    "teachers": "ጤናማዎች",
+    "parents": "ልጆቻችን",
+    "students": "ልጆቻችን"
+  },
+  "header": {
+    "search": "ፈልግ...",
+    "openSidebar": "የጎን አሞሌን ክፈት",
+    "closeSidebar": "የጎን አሞሌን ዝጋ"
+  },
+  "settings": {
+    "languageAndRegion": "ቋንቋ እና ክልል",
+    "timeZone": "የጊዜ ቀጠና",
+    "changePassword": "የይለፍ ቃል ቀይር",
+    "currentPassword": "አሁን ያለው የይለፍ ቃል",
+    "newPassword": "አዲስ የይለፍ ቃል",
+    "confirmPassword": "አዲሱን የይለፍ ቃል ያረጋግጡ",
+    "updatePassword": "የይለፍ ቃሉን ያዘምኑ"
+  },
+  "profile": {
+    "firstName": "የመጀመሪያ ስም",
+    "lastName": "የአያት ስም",
+    "phone": "ስልክ",
+    "changeProfilePicture": "የመገለጫ ስዕልዎን ለመቀየር በካሜራ አዶ ላይ ጠቅ ያድርጉ"
+  }
+} 

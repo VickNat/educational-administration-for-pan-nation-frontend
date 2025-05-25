@@ -35,6 +35,7 @@ export interface UpdateUserInput {
   firstName?: string;
   lastName?: string;
   phoneNumber?: string;
+  profile?: string | null;
 }
 
 export interface Parent {
@@ -79,6 +80,7 @@ export interface Student {
     lastName: string;
     phoneNumber: string;
     role: 'STUDENT';
+    profile?: string | null;
   };
 }
 
@@ -94,6 +96,7 @@ export interface Teacher {
     lastName: string;
     phoneNumber: string;
     role: 'TEACHER';
+    profile?: string | null;
   };
 }
 

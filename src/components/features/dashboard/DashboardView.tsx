@@ -10,73 +10,79 @@ import {
   RiGroupLine,
   RiFileListLine,
   RiCalendarEventLine,
+  RiMailLine,
 } from 'react-icons/ri';
 import Link from 'next/link';
+import Image from 'next/image';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useRouter } from 'next/navigation';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 const SHORTCUTS = {
   DIRECTOR: [
     {
-      icon: <RiTeamLine className="h-8 w-8 text-blue-500 bg-blue-100 rounded p-1" />,
+      icon: <RiTeamLine className="h-8 w-8 text-blue-500 bg-blue-100 rounded-lg p-1.5" />,
       title: 'Add Teachers',
-      description: 'Create rich course content and coaching products for your students. When you give them a pricing plan, they\'ll appear on your site!',
+      description: 'Create and manage teacher profiles for your school.',
       href: '/dashboard/teachers',
     },
     {
-      icon: <RiBookLine className="h-8 w-8 text-green-500 bg-green-100 rounded p-1" />,
-      title: 'Add classes',
-      description: 'Create rich course content and coaching products for your students. When you give them a pricing plan, they\'ll appear on your site!',
+      icon: <RiBookLine className="h-8 w-8 text-green-500 bg-green-100 rounded-lg p-1.5" />,
+      title: 'Add Classes',
+      description: 'Organize classes and assign teachers and students.',
       href: '/dashboard/classes',
     },
     {
-      icon: <RiGroupLine className="h-8 w-8 text-purple-500 bg-purple-100 rounded p-1" />,
-      title: 'Add students',
-      description: 'Add students to your school and assign them to classes.',
+      icon: <RiGroupLine className="h-8 w-8 text-purple-500 bg-purple-100 rounded-lg p-1.5" />,
+      title: 'Add Students',
+      description: 'Add students and assign them to classes.',
       href: '/dashboard/students',
     },
     {
-      icon: <RiFileListLine className="h-8 w-8 text-pink-500 bg-pink-100 rounded p-1" />,
-      title: 'Add subjects',
+      icon: <RiFileListLine className="h-8 w-8 text-pink-500 bg-pink-100 rounded-lg p-1.5" />,
+      title: 'Add Subjects',
       description: 'Manage subjects for your school curriculum.',
       href: '/dashboard/subjects',
     },
     {
-      icon: <RiCalendarEventLine className="h-8 w-8 text-yellow-500 bg-yellow-100 rounded p-1" />,
-      title: 'Add events',
-      description: 'Create and manage school events.',
+      icon: <RiCalendarEventLine className="h-8 w-8 text-yellow-500 bg-yellow-100 rounded-lg p-1.5" />,
+      title: 'Add Events',
+      description: 'Plan and manage school events.',
       href: '/dashboard/events',
     },
   ],
   TEACHER: [
     {
-      icon: <RiBookLine className="h-8 w-8 text-green-500 bg-green-100 rounded p-1" />,
+      icon: <RiBookLine className="h-8 w-8 text-green-500 bg-green-100 rounded-lg p-1.5" />,
       title: 'View Sections',
-      description: 'View and manage your sections.',
+      description: 'View and manage your assigned sections.',
       href: '/dashboard/sections',
     },
     {
-      icon: <RiFileListLine className="h-8 w-8 text-pink-500 bg-pink-100 rounded p-1" />,
+      icon: <RiGroupLine className="h-8 w-8 text-purple-500 bg-purple-100 rounded-lg p-1.5" />,
       title: 'View Students',
-      description: 'View and manage your students.',
+      description: 'Manage your students and track their progress.',
       href: '/dashboard/students',
     },
     {
-      icon: <RiCalendarEventLine className="h-8 w-8 text-yellow-500 bg-yellow-100 rounded p-1" />,
+      icon: <RiCalendarEventLine className="h-8 w-8 text-yellow-500 bg-yellow-100 rounded-lg p-1.5" />,
       title: 'School Calendar',
-      description: 'See upcoming school events.',
+      description: 'Stay updated with upcoming school events.',
       href: '/dashboard/calendar',
     },
   ],
   PARENT: [
     {
-      icon: <RiGroupLine className="h-8 w-8 text-purple-500 bg-purple-100 rounded p-1" />,
+      icon: <RiGroupLine className="h-8 w-8 text-purple-500 bg-purple-100 rounded-lg p-1.5" />,
       title: 'My Children',
-      description: 'View your children and their progress.',
+      description: "Monitor your children's progress and activities.",
       href: '/dashboard/children',
     },
     {
-      icon: <RiCalendarEventLine className="h-8 w-8 text-yellow-500 bg-yellow-100 rounded p-1" />,
+      icon: <RiCalendarEventLine className="h-8 w-8 text-yellow-500 bg-yellow-100 rounded-lg p-1.5" />,
       title: 'School Events',
-      description: 'See upcoming school events.',
+      description: 'View upcoming school events and activities.',
       href: '/dashboard/events',
     },
   ],
@@ -86,25 +92,90 @@ const DashboardView = () => {
   const { user } = useAuth();
   const role = user?.user?.role || 'DIRECTOR';
   const shortcuts = SHORTCUTS[role] || [];
+  const router = useRouter();
+  const getInitials = (firstName: string, lastName: string) => {
+    return `${firstName[0]}${lastName[0]}`.toUpperCase();
+  };
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold mb-1">Welcome to your dashboard, Pan-nation school</h1>
-        <p className="text-sm text-muted-foreground">{user?.user?.email}</p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {shortcuts.map((shortcut) => (
-          <Link href={shortcut.href}>
-            <Card key={shortcut.title} className="flex items-start gap-4 p-6 bg-white rounded-lg shadow-sm border hover:shadow-md hover:border-primary/20 transition-all duration-200">
-              <div>{shortcut.icon}</div>
-              <div className="flex-1">
-                <h2 className="text-lg font-semibold mb-1">{shortcut.title}</h2>
-                <p className="text-sm text-muted-foreground">{shortcut.description}</p>
+    <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 min-h-screen">
+      {/* Header Section */}
+      <div className="bg-gradient-to-r from-primary/10 to-secondary/10 dark:bg-input/20 rounded-xl border-2 border-primary/20 p-4 sm:p-6 mb-6 sm:mb-8 transition-all duration-300 hover:border-primary/30">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6">
+          {/* Logo and School Name */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden">
+              <Image
+                src="/images/logo.png"
+                alt="School Logo"
+                fill
+                className="object-contain transition-transform duration-300 hover:scale-105"
+                unoptimized
+              />
+            </div>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+                Pan-nation School
+              </h1>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">Empowering Education Excellence</p>
+            </div>
+          </div>
+
+          {/* User Profile Card */}
+          <Card
+            className="w-full md:w-auto p-3 sm:p-4 bg-gradient-to-r from-primary/10 to-secondary/10 dark:bg-input/30 border-2 border-primary/20 hover:border-primary/30 transition-all duration-300 cursor-pointer"
+            onClick={() => router.push('/dashboard/settings')}
+          >
+            <div className="flex items-center gap-3 sm:gap-4">
+              <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/30 transition-all duration-300 hover:border-primary/50">
+                <AvatarImage src={user?.user?.profile || undefined} />
+                <AvatarFallback className="bg-gradient-to-r from-primary/20 to-secondary/20 text-primary font-semibold">
+                  {getInitials(user?.user?.firstName || '', user?.user?.lastName || '')}
+                </AvatarFallback>
+              </Avatar>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h2 className="font-semibold text-base sm:text-lg bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary truncate">
+                    {`${user?.user?.firstName} ${user?.user?.lastName}`}
+                  </h2>
+                  <Badge
+                    variant="secondary"
+                    className="bg-gradient-to-r from-secondary/80 to-primary/80 text-white whitespace-nowrap"
+                  >
+                    {role}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground mt-1">
+                  <RiMailLine className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+                  <span className="truncate">{user?.user?.email}</span>
+                </div>
               </div>
-            </Card>
-          </Link>
-        ))}
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      {/* Quick Actions Section */}
+      <div className="mb-8">
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+          Quick Actions
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {shortcuts.map((shortcut) => (
+            <Link href={shortcut.href} key={shortcut.title}>
+              <Card className="flex items-start gap-3 sm:gap-4 p-4 sm:p-6 bg-gradient-to-br from-primary/5 to-secondary/5 dark:bg-input/20 rounded-xl border-2 border-primary/20 hover:border-primary/30 hover:scale-[1.02] transition-all duration-300">
+                <div className="relative group shrink-0">
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  {shortcut.icon}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h2 className="text-base sm:text-lg font-semibold text-primary mb-1 truncate">{shortcut.title}</h2>
+                  <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{shortcut.description}</p>
+                </div>
+              </Card>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );
