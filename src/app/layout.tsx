@@ -1,13 +1,15 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import Providers from "./Providers";
+import './globals.css';
+import { Inter } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
-const inter = Inter({ subsets: ["latin"] });
+import { AuthProvider } from './context/AuthContext';
+import I18nProvider from '@/components/providers/I18nProvider';
+import Providers from './Providers';
 
-export const metadata: Metadata = {
-  title: "Class Bridge - Educational Administration System",
-  description: "A comprehensive educational administration system for managing classes, teachers, and students.",
+const inter = Inter({ subsets: ['latin'] });
+
+export const metadata = {
+  title: 'School Management System',
+  description: 'A comprehensive school management system',
 };
 
 export default function RootLayout({
@@ -19,9 +21,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Providers>
-          {children}
+          <I18nProvider>
+            <AuthProvider>
+              {children}
+              <Toaster />
+            </AuthProvider>
+          </I18nProvider>
         </Providers>
-        <Toaster position="top-right" />
       </body>
     </html>
   );

@@ -45,31 +45,6 @@ const AddAnnouncementView = () => {
     image: Yup.mixed().nullable(),
   });
 
-  // const handleSubmit = async (values: any, { resetForm }: any) => {
-  //   if (!user) return;
-  //   let imageUrl: string | null = null;
-  //   if (values.image) {
-  //     // In a real app, upload the image and get the URL here
-  //     // For now, just use a preview URL or null
-  //     imageUrl = imagePreview;
-  //   }
-  //   const payload: any = {
-  //     topic: values.topic,
-  //     description: values.description,
-  //     directorId: user.roleId,
-  //   };
-  //   if (imageUrl) payload.image = imageUrl;
-  //   try {
-  //     await createAnnouncement(payload);
-  //     toast.success('Announcement posted successfully!');
-  //     resetForm();
-  //     setImagePreview(null);
-  //     router.push('/dashboard/announcements');
-  //   } catch (error: any) {
-  //     toast.error(error?.message || 'Failed to post announcement.');
-  //   }
-  // };
-
   const handleSubmit = async (values: any, { resetForm }: any) => {
     if (!user) return;
     let imageUrl: string | null = null;
@@ -106,13 +81,16 @@ const AddAnnouncementView = () => {
     }
   };
   return (
-    <div className="max-w-5xl mx-auto p-6">
-      <div className="bg-white rounded-lg p-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold">Post a New Announcement</h1>
+    <div className="max-w-2xl mx-auto p-4 sm:p-6 lg:p-8 min-h-screen">
+      <div className="bg-gradient-to-br from-primary/5 to-secondary/5 dark:bg-input/20 rounded-xl border-2 border-primary/20 p-4 sm:p-8">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+            Post a New Announcement
+          </h1>
           <Button
             variant="ghost"
             onClick={() => router.push('/dashboard/announcements')}
+            className="text-primary hover:bg-primary/10"
           >
             <ArrowLeft className="w-4 h-4 mr-1" /> Back
           </Button>
@@ -124,72 +102,81 @@ const AddAnnouncementView = () => {
         >
           {({ isSubmitting, setFieldValue, values }) => (
             <Form className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-4">
-                  <Label htmlFor="topic" className="text-sm font-medium text-gray-700">
-                    Topic
-                  </Label>
-                  <Field
-                    as={Input}
-                    id="topic"
-                    name="topic"
-                    type="text"
-                    placeholder="Enter announcement topic"
-                    className="border-blue-300 focus:border-blue-500 focus:ring-blue-500"
-                  />
-                  <ErrorMessage name="topic" component="div" className="text-red-500 text-xs mt-1" />
-                </div>
-                <div className="space-y-4">
-                  <Label htmlFor="description" className="text-sm font-medium text-gray-700">
-                    Description
-                  </Label>
-                  <Field
-                    as={Textarea}
-                    id="description"
-                    name="description"
-                    placeholder="Write your announcement details here..."
-                    className="min-h-[120px] border-blue-300 focus:border-blue-500 focus:ring-blue-500"
-                  />
-                  <ErrorMessage name="description" component="div" className="text-red-500 text-xs mt-1" />
-                </div>
+              {/* Topic Section */}
+              <div>
+                <Label htmlFor="topic" className="text-base font-semibold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+                  Topic
+                </Label>
+                <Field
+                  as={Input}
+                  id="topic"
+                  name="topic"
+                  type="text"
+                  placeholder="Enter announcement topic"
+                  className="mt-2 border-primary/30 focus:border-primary focus:ring-primary"
+                />
+                <ErrorMessage name="topic" component="div" className="text-red-500 text-xs mt-1" />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                <div className="space-y-4">
-                  <Label htmlFor="image" className="text-sm font-medium text-gray-700">
-                    Image (Optional)
-                  </Label>
+
+              {/* Description Section */}
+              <div>
+                <Label htmlFor="description" className="text-base font-semibold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+                  Description
+                </Label>
+                <Field
+                  as={Textarea}
+                  id="description"
+                  name="description"
+                  placeholder="Write your announcement details here..."
+                  className="mt-2 min-h-[120px] border-primary/30 focus:border-primary focus:ring-primary"
+                />
+                <ErrorMessage name="description" component="div" className="text-red-500 text-xs mt-1" />
+              </div>
+
+              {/* Image Upload Section */}
+              <div>
+                <Label htmlFor="image" className="text-base font-semibold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+                  Image (Optional)
+                </Label>
+                <div className="flex flex-col sm:flex-row items-center gap-4 mt-2">
                   <Input
                     id="image"
                     name="image"
                     type="file"
                     accept="image/*"
                     onChange={e => handleImageChange(e, setFieldValue)}
-                    className="border-blue-300 focus:border-blue-500 focus:ring-blue-500"
+                    className="border-primary/30 focus:border-primary focus:ring-primary"
                   />
-                  <ErrorMessage name="image" component="div" className="text-red-500 text-xs mt-1" />
+                  {imagePreview && (
+                    <div className="flex items-center justify-center w-24 h-24 rounded-lg border-2 border-primary/20 bg-white overflow-hidden">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                  )}
                 </div>
-                {imagePreview && (
-                  <div className="flex items-center justify-center">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="h-24 w-24 object-cover rounded-md border border-gray-200"
-                    />
-                  </div>
-                )}
+                <ErrorMessage name="image" component="div" className="text-red-500 text-xs mt-1" />
               </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-gray-700">Posted by (Director)</Label>
+
+              {/* Director Info Section */}
+              <div>
+                <Label className="text-base font-semibold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+                  Posted by (Director)
+                </Label>
                 <Input
                   value={user && user.user.firstName && user.user.lastName ? `${user.user.firstName} ${user.user.lastName}` : ''}
                   readOnly
-                  className="bg-gray-100 dark:bg-gray-800 border-blue-300 focus:border-blue-500 focus:ring-blue-500 max-w-md"
+                  className="mt-2 bg-gray-100 dark:bg-gray-800 border-primary/30 focus:border-primary focus:ring-primary max-w-md"
                 />
               </div>
+
+              {/* Submit Button */}
               <div className="flex justify-end">
                 <Button
                   type="submit"
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition-all duration-200"
+                  className="bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? 'Posting...' : 'Post Announcement'}

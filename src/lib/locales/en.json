@@ -1,0 +1,44 @@
+{
+  "common": {
+    "settings": "Settings",
+    "logout": "Logout",
+    "language": "Language",
+    "preferences": "Preferences",
+    "profile": "Profile",
+    "notifications": "Notifications",
+    "security": "Security",
+    "children": "Children",
+    "save": "Save Changes",
+    "cancel": "Cancel",
+    "dashboard": "Dashboard",
+    "message": "Message",
+    "announcements": "Announcements",
+    "gradeLevels": "Grade Levels",
+    "sections": "Sections",
+    "calendar": "Calendar",
+    "subjects": "Subjects",
+    "teachers": "Teachers",
+    "parents": "Parents",
+    "students": "Students"
+  },
+  "header": {
+    "search": "Search...",
+    "openSidebar": "Open sidebar",
+    "closeSidebar": "Close sidebar"
+  },
+  "settings": {
+    "languageAndRegion": "Language & Region",
+    "timeZone": "Time Zone",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm New Password",
+    "updatePassword": "Update Password"
+  },
+  "profile": {
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phone": "Phone",
+    "changeProfilePicture": "Click on the camera icon to change your profile picture"
+  }
+} 
