@@ -89,6 +89,7 @@ const MessagesView = () => {
       />
     </div>
   );
+  
 };
 
 export default MessagesView;

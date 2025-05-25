@@ -17,6 +17,7 @@ interface SocketMessage {
   success: boolean;
   senderId: string;
   receiverId: string;
+  error : string | null,
   data: Message | null;
 }
 
@@ -28,7 +29,8 @@ interface AllMessagesResponse {
 
 
 // Create socket connection
-const socket = io("https://capstone-class-bridge.onrender.com", {
+// const socket = io(process.env.NEXT_SOCKET_URL ?? "https://capstone-class-bridge.onrender.com", {
+const socket = io('http://localhost:4000', {
   reconnection: true,
   reconnectionAttempts: 5,
   reconnectionDelay: 1000,
@@ -62,14 +64,18 @@ const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
       // Handle incoming messages
       const handleReceiveMessage = (socketMessage: SocketMessage) => {
         console.log('Received socket message:', socketMessage);
-
+        
         // Validate if message is for current conversation
         if (!selectedConversation?.id || !user?.user?.id) return;
 
         const isRelevantMessage = 
           (socketMessage.senderId === user.user.id && socketMessage.receiverId === selectedConversation.id) ||
           (socketMessage.senderId === selectedConversation.id && socketMessage.receiverId === user.user.id);
-
+        
+          if (!socketMessage.success) {
+            toast.error(socketMessage.error ?? 'Failed to send message');
+            return;
+          }
         if (!isRelevantMessage) {
           console.log('Message not relevant for current conversation');
           return;

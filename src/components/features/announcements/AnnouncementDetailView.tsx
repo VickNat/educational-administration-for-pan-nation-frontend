@@ -238,7 +238,7 @@ const AnnouncementDetailView = () => {
             </div>
             {announcement?.image && (
               <div className="relative w-full h-96">
-                <Image
+                {/* <Image
                   src={announcement?.image}
                   alt={announcement?.topic}
                   fill
@@ -246,6 +246,19 @@ const AnnouncementDetailView = () => {
                   priority={false}
                   placeholder="blur"
                   blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAErgJ9d3pG7wAAAABJRU5ErkJggg=="
+                  loader={({ src }) => src} // Add custom loader to handle external URLs
+                  unoptimized // Disable Next.js image optimization for external URLs
+                /> */}
+                 <Image
+                    src={announcement?.image}
+                    alt={announcement?.topic}
+                    fill
+                    className="object-cover rounded-md"
+                    priority={false}
+                    placeholder="blur"
+                    blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAErgJ9d3pG7wAAAABJRU5ErkJggg=="
+                    loader={({ src }) => src} // Add custom loader to handle external URLs
+                    unoptimized // Disable Next.js image optimization for external URLs
                 />
               </div>
             )}

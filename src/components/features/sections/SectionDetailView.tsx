@@ -14,6 +14,7 @@ import SectionChatTab from './tabs/SectionChatTab';
 import { useAuth } from '@/app/context/AuthContext';
 import AttendanceTab from './tabs/AttendanceTab';
 import TeachersAssignedTab from './tabs/TeachersAssignedTab';
+import SectionChatTabSocket from './tabs/SectionSocketChatTab';
 
 export default function SectionDetailView() {
   const [sectionData, setSectionData] = useState<Section | null>(null);
@@ -112,7 +113,7 @@ export default function SectionDetailView() {
               <CollectiveResultTab section={sectionData} />
             )}
             {activeTab === 'chat' && (
-              <SectionChatTab sectionId={sectionData.id} />
+              <SectionChatTabSocket sectionId={sectionData.id} />
             )}
             {activeTab === 'attendance' && (
               <AttendanceTab sectionId={sectionData.id} sectionName={sectionData.name} isHomeRoom={isHomeRoom} />
