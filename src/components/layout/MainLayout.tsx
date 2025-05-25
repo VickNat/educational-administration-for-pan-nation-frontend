@@ -4,6 +4,7 @@ import { useAuth } from '../../app/context/AuthContext';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
+import { Notifications } from './not';
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const { user, logout } = useAuth();
@@ -44,6 +45,9 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
               </span>
               <span className="text-xs text-primary font-semibold">{user?.user?.role || ''}</span>
             </div>
+
+            <Notifications />
+            
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="ghost" size="icon" className="p-0 h-auto w-auto">

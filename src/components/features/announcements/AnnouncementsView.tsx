@@ -63,6 +63,8 @@ const AnnouncementCard = ({ topic, description, image, directorId, id }: Announc
               priority={false}
               placeholder="blur"
               blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAErgJ9d3pG7wAAAABJRU5ErkJggg=="
+              loader={({ src }) => src} // Add custom loader to handle external URLs
+              unoptimized // Disable Next.js image optimization for external URLs
             />
           </div>
         )}

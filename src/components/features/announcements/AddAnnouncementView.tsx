@@ -12,6 +12,7 @@ import { useCreateAnnouncement } from '@/queries/announcements/mutations';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { toast } from 'react-hot-toast';
+import { uploadImage } from '@/utils/helper';
 
 const AddAnnouncementView = () => {
   const router = useRouter();
@@ -44,20 +45,56 @@ const AddAnnouncementView = () => {
     image: Yup.mixed().nullable(),
   });
 
+  // const handleSubmit = async (values: any, { resetForm }: any) => {
+  //   if (!user) return;
+  //   let imageUrl: string | null = null;
+  //   if (values.image) {
+  //     // In a real app, upload the image and get the URL here
+  //     // For now, just use a preview URL or null
+  //     imageUrl = imagePreview;
+  //   }
+  //   const payload: any = {
+  //     topic: values.topic,
+  //     description: values.description,
+  //     directorId: user.roleId,
+  //   };
+  //   if (imageUrl) payload.image = imageUrl;
+  //   try {
+  //     await createAnnouncement(payload);
+  //     toast.success('Announcement posted successfully!');
+  //     resetForm();
+  //     setImagePreview(null);
+  //     router.push('/dashboard/announcements');
+  //   } catch (error: any) {
+  //     toast.error(error?.message || 'Failed to post announcement.');
+  //   }
+  // };
+
   const handleSubmit = async (values: any, { resetForm }: any) => {
     if (!user) return;
     let imageUrl: string | null = null;
+    
     if (values.image) {
-      // In a real app, upload the image and get the URL here
-      // For now, just use a preview URL or null
-      imageUrl = imagePreview;
+      try {
+        const { error, url } = await uploadImage(values.image);
+        if (error) {
+          toast.error('Failed to upload image: ' + error);
+          return;
+        }
+        imageUrl = url;
+      } catch (error: any) {
+        toast.error('Failed to upload image: ' + error.message);
+        return;
+      }
     }
+
     const payload: any = {
       topic: values.topic,
       description: values.description,
       directorId: user.roleId,
     };
     if (imageUrl) payload.image = imageUrl;
+
     try {
       await createAnnouncement(payload);
       toast.success('Announcement posted successfully!');
@@ -68,7 +105,6 @@ const AddAnnouncementView = () => {
       toast.error(error?.message || 'Failed to post announcement.');
     }
   };
-
   return (
     <div className="max-w-5xl mx-auto p-6">
       <div className="bg-white rounded-lg p-8">
