@@ -9,6 +9,10 @@ import { Message, MessagesResponse } from "./types";
 import { toast } from "react-hot-toast";
 import io from "socket.io-client";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface MessageListProps {
   selectedConversation: any | null;
@@ -28,6 +32,13 @@ interface AllMessagesResponse {
   error?: string;
 }
 
+interface DeleteMessageResponse {
+  success: boolean;
+  data?: string;
+  senderId?: string;
+  recieverId?: string;
+  error?: string | null;
+}
 
 // Create socket connection
 const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL ?? "https://capstone-class-bridge.onrender.com", {
@@ -133,6 +144,28 @@ const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
         setIsLoading(false);
       };
 
+      // Handle deleted message response
+      const handleMessageDeleted = (response: DeleteMessageResponse) => {
+        console.log('Message deleted response:', response);
+        
+        if (!response.success) {
+          toast.error(response.error || 'Failed to delete message');
+          return;
+        }
+
+        // Remove deleted message from state
+        if (response.data) {
+          setMessagesData(prev => {
+            if (!prev) return null;
+            return {
+              ...prev,
+              result: prev.result.filter(msg => msg.id !== response.data)
+            };
+          });
+          toast.success('Message deleted successfully');
+        }
+      };
+
       // Set up socket listeners
       socket.on('connect', () => {
         console.log('Socket connected');
@@ -144,7 +177,8 @@ const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
 
       socket.on('receive_message', handleReceiveMessage);
       socket.on('all_messages_response', handleAllMessagesResponse);
-
+      socket.on('message_deleted', handleMessageDeleted);
+      
       socketInitialized.current = true;
 
       // Cleanup
@@ -158,6 +192,8 @@ const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
       };
     }
   }, [user?.user?.id, selectedConversation?.id]);
+
+  
 
   // Fetch messages when conversation changes
   useEffect(() => {
@@ -198,10 +234,21 @@ const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
         {selectedConversation ? (
           <>
             <Avatar className="h-10 w-10 mr-3">
-              <AvatarFallback>
-                {selectedConversation.name?.split(" ")[0][0]}
-                {selectedConversation.name?.split(" ")[1]?.[0]}
-              </AvatarFallback>
+              {selectedConversation.profile ? (
+                <Image 
+                  src={selectedConversation.profile}
+                  alt={selectedConversation.name}
+                  width={40}
+                  height={40}
+                  unoptimized
+                  loader={({ src }) => src}
+                />
+              ) : (
+                <AvatarFallback className="bg-gradient-to-r from-primary to-secondary text-white uppercase">
+                  {selectedConversation.name?.split(" ")[0][0]}
+                  {selectedConversation.name?.split(" ")[1]?.[0]}
+                </AvatarFallback>
+              )}
             </Avatar>
             <div>
               <h2 className="text-lg font-semibold text-gray-900">
@@ -209,6 +256,7 @@ const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
               </h2>
               <p className="text-sm text-muted-foreground">
                 {selectedConversation.role}
+                
               </p>
             </div>
           </>
@@ -217,7 +265,7 @@ const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
         )}
       </div>
 
-      <ScrollArea className="flex-1 h-full p-4 overflow-auto">
+      <div className="flex-1 h-full p-4 overflow-y-auto">
         {selectedConversation ? (
           isLoading ? (
             <div className="flex justify-center items-center h-full">
@@ -251,34 +299,11 @@ const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
                         </p>
                         {isCurrentUser && (
                           <span className="text-xs opacity-70">
-                            {message.seen ? "✓✓" : "✓"}
+                            ✓
                           </span>
                         )}
                       </div>
                     </div>
-
-                    {isCurrentUser && (
-                      // <>wowrking</>
-                      <div className="absolute top-2 -right-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="r">
-                          <Button
-                            variant="ghost" 
-                            size="sm"
-                            className="h-6 w-6 p-0"
-                          >
-                            working
-                          </Button>
-                          <div className="absolute right-0 mt-1 w-32 py-2 bg-white rounded-lg shadow-lg border border-gray-200 invisible group-hover/menu:visible">
-                            <button className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100">
-                              Edit Message
-                            </button>
-                            <button className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100">
-                              Delete Message
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
               );
@@ -294,7 +319,7 @@ const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
           </p>
         )}
         <div ref={scrollRef}></div>
-      </ScrollArea>
+      </div >
 
       {selectedConversation && (
         <div className="sticky bottom-0 bg-background border-t">

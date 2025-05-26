@@ -43,21 +43,25 @@ const MessagesView = () => {
 
   let conversations: any[] = [];
   if (user?.user.role === 'DIRECTOR' && directorData) {
-    conversations = directorData.result.map((user: any) => ({
-      id: user.id,
-      name: `${user.firstName} ${user.lastName}`,
-      role: user.role,
+    conversations = directorData.result.map((currUser: any) => ({
+      id: currUser.id,
+      name: `${currUser.firstName} ${currUser.lastName}`,
+      role: currUser.role,
+      profile : currUser.profile
     }));
   } else if (user?.user.role === 'PARENT' && parentData) {
     const directors = parentData.result.directors.map((item: any) => ({
       id: item.user.id,
       name: `${item.user.firstName} ${item.user.lastName}`,
       role: item.user.role,
+      profile: item.user.role,
     }));
     const teachers = parentData.result.teachers.map((item: any) => ({
       id: item.user.id,
       name: `${item.user.firstName} ${item.user.lastName}`,
       role: item.user.role,
+      profile: item.user.role,
+
     }));
     conversations = [...directors, ...teachers];
   } else if (user?.user.role === 'TEACHER' && teacherData) {
@@ -65,11 +69,15 @@ const MessagesView = () => {
       id: item.user.id,
       name: `${item.user.firstName} ${item.user.lastName}`,
       role: item.user.role,
+      profile: item.user.role,
+
     }));
     const directors = teacherData.result.director.map((item: any) => ({
       id: item.user.id,
       name: `${item.user.firstName} ${item.user.lastName}`,
       role: item.user.role,
+      profile: item.user.role,
+
     }));
     conversations = [...parents, ...directors];
   }
