@@ -13,6 +13,7 @@ import GradeLevelDetailsTab from './tabs/GradeLevelDetailsTab';
 import SectionsTab from './tabs/SectionsTab';
 import GradeLevelChatTab from './tabs/GradeLevelChatTab';
 import { useAuth } from '@/app/context/AuthContext';
+import SocketGradeLevelChatTab from './tabs/SocketGradeLevelChat';
 
 const gradeLevelData = {
   id: "grade001",
@@ -100,7 +101,7 @@ const GradeLevelDetail = () => {
               />
             )}
             {activeTab === 'chat' && (
-              <GradeLevelChatTab 
+              <SocketGradeLevelChatTab 
                 gradeLevelId={gradeLevel.id} 
               />
             )}

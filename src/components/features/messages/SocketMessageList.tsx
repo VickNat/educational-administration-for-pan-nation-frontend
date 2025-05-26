@@ -8,6 +8,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import { Message, MessagesResponse } from "./types";
 import { toast } from "react-hot-toast";
 import io from "socket.io-client";
+import { Button } from "@/components/ui/button";
 
 interface MessageListProps {
   selectedConversation: any | null;
@@ -29,8 +30,7 @@ interface AllMessagesResponse {
 
 
 // Create socket connection
-// const socket = io(process.env.NEXT_SOCKET_URL ?? "https://capstone-class-bridge.onrender.com", {
-const socket = io('http://localhost:4000', {
+const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL ?? "https://capstone-class-bridge.onrender.com", {
   reconnection: true,
   reconnectionAttempts: 5,
   reconnectionDelay: 1000,
@@ -80,11 +80,19 @@ const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
           console.log('Message not relevant for current conversation');
           return;
         }
+        
 
         if (!socketMessage.success) {
           toast.error('Failed to send message');
           return;
         }
+        const data = {
+          recieverId : user.user.id,
+          senderId : selectedConversation?.id
+        }
+        console.log("EMitting",data)
+        socket.emit("seen-messages", data)
+
 
         if (socketMessage.data) {
           setMessagesData(prev => {
@@ -95,11 +103,14 @@ const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
                 result: [socketMessage.data!]
               };
             }
+         
+
             return {
               ...prev,
               result: [...prev.result, socketMessage.data!]
             };
           });
+
         }
       };
 
@@ -110,6 +121,7 @@ const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
           toast.error(response.error || 'Failed to fetch messages');
           return;
         }
+       
 
         if (response.data) {
           setMessagesData({
@@ -212,37 +224,65 @@ const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
               <p className="text-sm text-muted-foreground">Loading messages...</p>
             </div>
           ) : messages.length > 0 ? (
-            messages.map((message: Message) => (
-              <div
-                key={message.id}
-                className={`flex mb-4 ${
-                  message.senderId === user?.user?.id ? "justify-end" : "justify-start"
-                }`}
-              >
+            messages.map((message: Message) => {
+              const isCurrentUser = message.senderId === user?.user?.id;
+              return (
                 <div
-                  className={`max-w-xs p-3 rounded-lg ${
-                    message.senderId === user?.user?.id
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-200 text-gray-900"
+                  key={message.id}
+                  className={`flex mb-4 group ${
+                    isCurrentUser ? "justify-end" : "justify-start"
                   }`}
                 >
-                  <p className="text-sm">{message.content}</p>
-                  <div className="flex items-center justify-end gap-1 mt-1">
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(message.createdAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
-                    {message.senderId === user?.user?.id && (
-                      <span className="text-xs text-muted-foreground">
-                        {message.seen ? "✓✓" : "✓"}
-                      </span>
+                  <div className="relative">
+                    <div
+                      className={`max-w-xs p-3 rounded-2xl ${
+                        isCurrentUser
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      <p className="text-sm">{message.content}</p>
+                      <div className="flex items-center justify-end gap-1.5 mt-1">
+                        <p className="text-xs opacity-70">
+                          {new Date(message.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                        {isCurrentUser && (
+                          <span className="text-xs opacity-70">
+                            {message.seen ? "✓✓" : "✓"}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {isCurrentUser && (
+                      // <>wowrking</>
+                      <div className="absolute top-2 -right-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="r">
+                          <Button
+                            variant="ghost" 
+                            size="sm"
+                            className="h-6 w-6 p-0"
+                          >
+                            working
+                          </Button>
+                          <div className="absolute right-0 mt-1 w-32 py-2 bg-white rounded-lg shadow-lg border border-gray-200 invisible group-hover/menu:visible">
+                            <button className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100">
+                              Edit Message
+                            </button>
+                            <button className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100">
+                              Delete Message
+                            </button>
+                          </div>
+                        </div>
+                      </div>
                     )}
                   </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           ) : (
             <p className="text-sm text-muted-foreground text-center">
               No messages yet. Start the conversation!
@@ -257,7 +297,7 @@ const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
       </ScrollArea>
 
       {selectedConversation && (
-        <div className="sticky bottom-0">
+        <div className="sticky bottom-0 bg-background border-t">
           <MessageInput onSend={handleSendMessage} disabled={isSending} />
         </div>
       )}

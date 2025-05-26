@@ -12,16 +12,16 @@ import { ImageUpload } from '@/components/ui/image-upload';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import io from 'socket.io-client';
 
-interface SectionChatTabProps {
-  sectionId: string;
+interface GradeLevelChatTabProps {
+  gradeLevelId: string;
 }
 
-interface SectionMessage {
+interface GradeLevelMessage {
   id: string;
   content: string;
   image?: string;
   createdAt: string;
-  sectionId: string;
+  gradeLevelId: string;
   senderId: string;
   sender: {
     id: string;
@@ -31,11 +31,11 @@ interface SectionMessage {
   };
 }
 
-interface SectionMessageResponse {
+interface GradeLevelMessageResponse {
   success: boolean;
-  data: SectionMessage[] | null;
+  data: GradeLevelMessage[] | null;
   error: string | null;
-  sectionId: string;
+  gradeLevelId: string;
 }
 
 // Create socket connection
@@ -49,8 +49,8 @@ const socket = io('http://localhost:4000', {
   }
 });
 
-const SocketSectionChatTab = ({ sectionId }: SectionChatTabProps) => {
-  const [messages, setMessages] = useState<SectionMessage[]>([]);
+const SocketGradeLevelChatTab = ({ gradeLevelId }: GradeLevelChatTabProps) => {
+  const [messages, setMessages] = useState<GradeLevelMessage[]>([]);
   const { user } = useAuth();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
@@ -68,13 +68,11 @@ const SocketSectionChatTab = ({ sectionId }: SectionChatTabProps) => {
   // Socket connection and message handling
   useEffect(() => {
     if (!socketInitialized.current && user?.user?.id) {
-      console.log("working")
-
-      console.log('Initializing socket connection for section chat');
+      console.log('Initializing socket connection for grade level chat');
 
       // Handle incoming messages
       const handleReceiveMessage = (response: any) => {
-        console.log('Received section message:', response);
+        console.log('Received grade level message:', response);
 
         if (!response.success) {
           toast.error(response.error || 'Failed to send message');
@@ -96,8 +94,8 @@ const SocketSectionChatTab = ({ sectionId }: SectionChatTabProps) => {
       };
 
       // Handle initial messages fetch response
-      const handleAllMessagesResponse = (response: SectionMessageResponse) => {
-        console.log('Received all section messages:', response);
+      const handleAllMessagesResponse = (response: GradeLevelMessageResponse) => {
+        console.log('Received all grade level messages:', response);
         if (!response.success) {
           toast.error(response.error || 'Failed to fetch messages');
           return;
@@ -111,44 +109,41 @@ const SocketSectionChatTab = ({ sectionId }: SectionChatTabProps) => {
 
       // Set up socket listeners
       socket.on('connect', () => {
-        console.log('Socket connected for section chat');
+        console.log('Socket connected for grade level chat');
       });
 
       socket.on('disconnect', () => {
-        console.log('Socket disconnected from section chat');
+        console.log('Socket disconnected from grade level chat');
       });
 
-      socket.on('section_receive_message', handleReceiveMessage);
-      socket.on('section_all_messages_response', handleAllMessagesResponse);
+      socket.on('grade_level_receive_message', handleReceiveMessage);
+      socket.on('grade_level_all_messages_response', handleAllMessagesResponse);
 
       socketInitialized.current = true;
 
       // Cleanup
       return () => {
-        console.log('Cleaning up section chat socket listeners');
+        console.log('Cleaning up grade level chat socket listeners');
         socket.off('connect');
         socket.off('disconnect');
-        socket.off('section_receive_message', handleReceiveMessage);
-        socket.off('section_all_messages_response', handleAllMessagesResponse);
+        socket.off('grade_level_receive_message', handleReceiveMessage);
+        socket.off('grade_level_all_messages_response', handleAllMessagesResponse);
         socketInitialized.current = false;
       };
-    } else {
-        console.log("Not working")
     }
   }, [user?.user?.id]);
 
-  // Fetch messages when component mounts or sectionId changes
+  // Fetch messages when component mounts or gradeLevelId changes
   useEffect(() => {
-    if (!sectionId || !user?.user?.id) return;
-    console.log("Emitted!!!....")
+    if (!gradeLevelId || !user?.user?.id) return;
 
     setIsLoading(true);
-    // Emit event to fetch all messages for this section
-    socket.emit('section_all_messages', sectionId);
+    // Emit event to fetch all messages for this grade level
+    socket.emit('grade_level_all_messages', gradeLevelId);
 
-  }, [sectionId, user?.user?.id]);
+  }, [gradeLevelId, user?.user?.id]);
 
-  const handleImageSelect = (file: File) => {
+  const handleImageSelect = (file: File): void => {
     const reader = new FileReader();
     reader.onloadend = () => {
       setSelectedImage(reader.result as string);
@@ -167,13 +162,13 @@ const SocketSectionChatTab = ({ sectionId }: SectionChatTabProps) => {
     try {
       const messageData = {
         content: values.content,
-        sectionId,
+        gradeLevelId,
         senderId: user.user.id,
-        images: selectedImage ? [selectedImage] : [],
+        image: selectedImage || undefined,
       };
 
       // Send message through socket
-      socket.emit("section_send_message", messageData);
+      socket.emit("grade_level_send_message", messageData);
       resetForm();
       setSelectedImage(null);
     } catch (error) {
@@ -321,4 +316,4 @@ const SocketSectionChatTab = ({ sectionId }: SectionChatTabProps) => {
   );
 };
 
-export default SocketSectionChatTab;
+export default SocketGradeLevelChatTab;
