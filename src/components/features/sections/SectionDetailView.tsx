@@ -15,6 +15,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import AttendanceTab from './tabs/AttendanceTab';
 import TeachersAssignedTab from './tabs/TeachersAssignedTab';
 import SectionChatTabSocket from './tabs/SectionSocketChatTab';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 export default function SectionDetailView() {
   const [sectionData, setSectionData] = useState<Section | null>(null);
@@ -31,12 +32,6 @@ export default function SectionDetailView() {
     }
   }, [data]);
 
-  // useEffect(() => {
-  //   if (user?.user.role === 'TEACHER' && sectionData?.homeRoom?.id === user?.roleId) {
-  //     setDisplayChat(true);
-  //   }
-  // }, [data, user]);
-  
   useEffect(() => {
     if (user?.user.role === 'TEACHER' && sectionData?.homeRoom?.id === user?.roleId) {
       setIsHomeRoom(true);
@@ -56,18 +51,43 @@ export default function SectionDetailView() {
     { id: 'attendance', label: 'Attendance', icon: RiCalendarLine }
   ];
 
+  // Homeroom teacher info
+  const homeRoomTeacher = sectionData?.homeRoom;
+  const teacherName = homeRoomTeacher ? `${homeRoomTeacher.user.firstName} ${homeRoomTeacher.user.lastName}` : 'N/A';
+  const teacherProfile = homeRoomTeacher?.user?.profile;
+  const teacherInitials = homeRoomTeacher ? `${homeRoomTeacher.user.firstName?.[0] || ''}${homeRoomTeacher.user.lastName?.[0] || ''}`.toUpperCase() : '';
+
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-6">Section Details</h1>
-        <Button
-          asChild
-          variant="ghost"
-        >
-          <Link href="/dashboard/sections">
-            <RiArrowLeftLine className="w-5 h-5" /> Back
-          </Link>
-        </Button>
+      {/* Modern Section Card Header */}
+      <div className="max-w-4xl mx-auto mb-8">
+        <div className="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl border border-primary/20 p-8 flex flex-col sm:flex-row items-center gap-6 shadow-none">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{sectionData.name}</h1>
+            <div className="flex items-center gap-3 mt-2">
+              <span className="text-sm text-muted-foreground font-medium">Homeroom Teacher:</span>
+              <Avatar className="h-10 w-10">
+                {teacherProfile ? (
+                  <AvatarImage src={teacherProfile} />
+                ) : (
+                  <AvatarFallback className="bg-primary/20 text-primary font-semibold">
+                    {teacherInitials}
+                  </AvatarFallback>
+                )}
+              </Avatar>
+              <span className="text-base font-semibold text-gray-800">{teacherName}</span>
+            </div>
+          </div>
+          <Button
+            asChild
+            variant="ghost"
+            className="self-start"
+          >
+            <Link href="/dashboard/sections">
+              <RiArrowLeftLine className="w-5 h-5" /> Back
+            </Link>
+          </Button>
+        </div>
       </div>
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Sidebar */}

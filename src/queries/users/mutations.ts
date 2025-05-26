@@ -78,3 +78,17 @@ export const useForgotPassword = () => {
     },
   });
 }
+
+export const useChangePassword = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { currentPassword: string, newPassword: string }) =>
+      fetchWithAuth(`/users/change-password`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+    },
+  });
+}

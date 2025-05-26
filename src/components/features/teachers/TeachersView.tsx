@@ -28,6 +28,8 @@ import { useAuth } from '@/app/context/AuthContext';
 import toast from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Image from 'next/image';
 
 // Dummy data for teachers
 const teachersData = [
@@ -55,6 +57,10 @@ const TeachersView = () => {
   const { mutateAsync: deleteTeacher, isPending } = useDeleteTeacher(selectedTeacher?.id as string);
   const { user } = useAuth();
   const router = useRouter();
+  const [search, setSearch] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [activationFilter, setActivationFilter] = useState<string>('all');
 
   useEffect(() => {
     if (data) {
@@ -82,77 +88,150 @@ const TeachersView = () => {
     }
   };
 
+  // Filter teachers based on search and activation filter
+  const filteredTeachers = teachersData.filter(teacher => {
+    const fullName = `${teacher.user.firstName} ${teacher.user.lastName}`.toLowerCase();
+    const email = teacher.user.email.toLowerCase();
+    const matchesSearch = fullName.includes(search.toLowerCase()) || email.includes(search.toLowerCase());
+    const matchesActivation = activationFilter === 'all' ? true : activationFilter === 'activated' ? teacher.isActivated : !teacher.isActivated;
+    return matchesSearch && matchesActivation;
+  });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredTeachers.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedTeachers = filteredTeachers.slice(startIndex, startIndex + itemsPerPage);
+
   return (
     <div className="max-w-6xl mx-auto p-6">
-      {/* Paper-like Background Container (No Shadow) */}
-      <div className="bg-white rounded-lg p-6">
-        {/* Header Section */}
+      <div className="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl border border-primary/20 p-6">
         <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-2xl font-bold">Teachers</h1>
-            {/* <p className="text-sm text-muted-foreground">Manage / Teachers</p> */}
-          </div>
+          <h1 className="text-2xl font-bold text-gray-900">Teachers</h1>
           {canEdit && (
-            <Button asChild className="bg-blue-600 hover:bg-blue-700">
+            <Button asChild>
               <Link href="/dashboard/teachers/add">Add teacher</Link>
             </Button>
           )}
         </div>
 
-        {/* Table Section */}
-        <div>
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold mb-4">Current Teachers</h2>
-            <div>
-              <Input
-                type="text"
-                placeholder="Search..."
-                className="w-48 ml-auto"
-              />
-            </div>
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+            <Input
+              type="text"
+              placeholder="Search by name or email..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full sm:w-64"
+            />
+            <Select value={activationFilter} onValueChange={setActivationFilter}>
+              <SelectTrigger className="w-full sm:w-48">
+                <SelectValue placeholder="Filter by activation" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Teachers</SelectItem>
+                <SelectItem value="activated">Activated</SelectItem>
+                <SelectItem value="deactivated">Deactivated</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <div className="border rounded-lg">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-12 text-center">#</TableHead>
-                  <TableHead>Teacher name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Phone Number</TableHead>
-                  <TableHead className="text-center">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {teachersData.map((teacher, index) => (
-                  <TableRow onClick={() => router.push(`/dashboard/teachers/${teacher.id}`)} key={teacher.id}>
-                    <TableCell className="text-center">{index + 1}</TableCell>
-                    <TableCell>{`${teacher.user.firstName} ${teacher.user.lastName}`}</TableCell>
-                    <TableCell>{teacher.user.email}</TableCell>
-                    <TableCell>{teacher.user.phoneNumber}</TableCell>
-                    <TableCell className="text-center">
-                      <div className="flex justify-center gap-2">
-                        {canEdit && (
-                          <>
-                            <Button variant="ghost" size="icon" asChild>
-                              <Link href={`/dashboard/teachers/${teacher.id}`}>
-                                <RiEdit2Line className="h-5 w-5 text-gray-600" />
-                              </Link>
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="icon"
-                              onClick={() => handleDeleteClick(teacher)}
-                            >
-                              <RiDeleteBinLine className="h-5 w-5 text-red-500" />
-                            </Button>
-                          </>
-                        )}
+        </div>
+
+        <div className="border rounded-lg">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-12 text-center">#</TableHead>
+                <TableHead>Profile</TableHead>
+                <TableHead>Teacher Name</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Phone Number</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-center">Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {paginatedTeachers.map((teacher, index) => (
+                <TableRow onClick={() => router.push(`/dashboard/teachers/${teacher.id}`)} key={teacher.id}>
+                  <TableCell className="text-center">{startIndex + index + 1}</TableCell>
+                  <TableCell>
+                    {teacher.user.profile ? (
+                      <img
+                        src={teacher.user.profile || ''}
+                        alt={`${teacher.user.firstName} ${teacher.user.lastName}`}
+                        width={40}
+                        height={40}
+                        className="rounded-full object-cover w-10 h-10"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold">
+                        {teacher.user.firstName.charAt(0)}{teacher.user.lastName.charAt(0)}
                       </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                    )}
+                  </TableCell>
+                  <TableCell>{`${teacher.user.firstName} ${teacher.user.lastName}`}</TableCell>
+                  <TableCell>{teacher.user.email}</TableCell>
+                  <TableCell>{teacher.user.phoneNumber}</TableCell>
+                  <TableCell>{teacher.isActivated ? 'Activated' : 'Deactivated'}</TableCell>
+                  <TableCell className="text-center">
+                    <div className="flex justify-center gap-2">
+                      {canEdit && (
+                        <>
+                          <Button variant="ghost" size="icon" asChild>
+                            <Link href={`/dashboard/teachers/${teacher.id}`}>
+                              <RiEdit2Line className="h-5 w-5 text-gray-600" />
+                            </Link>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDeleteClick(teacher)}
+                          >
+                            <RiDeleteBinLine className="h-5 w-5 text-red-500" />
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Pagination Controls */}
+        <div className="flex justify-between items-center mt-4">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600">Rows per page:</span>
+            <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(Number(value))}>
+              <SelectTrigger className="w-20">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </Button>
+            <span className="text-sm text-gray-600">
+              Page {currentPage} of {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </Button>
           </div>
         </div>
       </div>

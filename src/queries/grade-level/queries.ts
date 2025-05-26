@@ -14,7 +14,7 @@ export const useGetGradeLevels = () => {
 export const useGetGradeLevelById = (id: string) => {
   const { user } = useAuth();
   return useQuery({
-    queryKey: ['grade-level', id],
+    queryKey: ['grade-levels', id],
     queryFn: () => fetchWithAuth(`/gradeLevel/${id}`) as Promise<any>,
     enabled: !!user,
   });

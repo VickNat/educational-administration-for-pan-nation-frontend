@@ -21,3 +21,12 @@ export const useGetParentById = (id: string) => {
     enabled: !!user,
   });
 };
+
+export const useGetParentSMSToggle = () => {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: ['parents'],
+    queryFn: () => fetchWithAuth(`/parent/${user?.roleId}`) as Promise<any>,
+    enabled: !!user && user.user.role === 'PARENT',
+  });
+};
