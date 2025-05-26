@@ -15,8 +15,8 @@ export default function SettingsView() {
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: RiUserLine },
-    // { id: 'notifications', label: 'Notifications', icon: RiBellLine },
-    // { id: 'security', label: 'Security', icon: RiLockLine },
+    { id: 'notifications', label: 'Notifications', icon: RiBellLine },
+    { id: 'security', label: 'Security', icon: RiLockLine },
     { id: 'preferences', label: 'Preferences', icon: RiGlobalLine },
     ...(user?.user.role === 'PARENT' ? [{ id: 'children', label: 'Children', icon: RiUserHeartLine }] : []),
   ];
@@ -52,8 +52,8 @@ export default function SettingsView() {
         <div className="flex-1">
           <div className="bg-gradient-to-br from-primary/5 to-secondary/5 dark:bg-input/20 rounded-xl border-2 border-primary/20 p-4 sm:p-6 transition-all duration-300">
             {activeTab === 'profile' && <ProfileTab />}
-            {/* {activeTab === 'notifications' && <NotificationsTab />}
-            {activeTab === 'security' && <SecurityTab />} */}
+            {activeTab === 'notifications' && <NotificationsTab />}
+            {activeTab === 'security' && <SecurityTab />}
             {activeTab === 'preferences' && <PreferencesTab />}
             {activeTab === 'children' && user?.user.role === 'PARENT' && (
               <ChildrenTab id={user.roleId} />

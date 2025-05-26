@@ -30,7 +30,7 @@ export default function PreferencesTab() {
               </SelectContent>
             </Select>
           </div>
-          <div>
+          {/* <div>
             <Label className="block text-sm font-medium text-gray-700 mb-1">{t('settings.timeZone')}</Label>
             <Select>
               <SelectTrigger className="w-full">
@@ -42,7 +42,7 @@ export default function PreferencesTab() {
                 <SelectItem value="GMT-07:00">(GMT-07:00) Mountain Time</SelectItem>
               </SelectContent>
             </Select>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

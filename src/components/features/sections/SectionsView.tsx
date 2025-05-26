@@ -3,15 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { RiEdit2Line, RiDeleteBinLine } from 'react-icons/ri';
+import { RiEdit2Line, RiDeleteBinLine, RiMore2Line } from 'react-icons/ri';
 import Link from 'next/link';
 import { useGetSections } from '@/queries/sections/queries';
 import { useDeleteSection } from '@/queries/sections/mutations';
@@ -28,11 +20,16 @@ import { toast } from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/app/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+
 const SectionsView = () => {
   const router = useRouter();
   const [sections, setSections] = useState<Section[]>([]);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [sectionToDelete, setSectionToDelete] = useState<Section | null>(null);
+  const [popoverOpenId, setPopoverOpenId] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
   const { user } = useAuth();
   const { data, refetch } = useGetSections();
   const { mutateAsync: deleteSection, isPending: isDeleting } = useDeleteSection(sectionToDelete?.id || '');
@@ -45,7 +42,6 @@ const SectionsView = () => {
 
   const handleDeleteSection = async () => {
     if (!sectionToDelete) return;
-
     try {
       await deleteSection(undefined, {
         onSuccess: () => {
@@ -68,119 +64,140 @@ const SectionsView = () => {
   const openDeleteDialog = (section: Section) => {
     setSectionToDelete(section);
     setIsDeleteDialogOpen(true);
+    setPopoverOpenId(null);
+  };
+
+  // Filtered sections
+  const filteredSections = sections.filter(section =>
+    section.name.toLowerCase().includes(search.toLowerCase()) ||
+    section.gradeLevel?.level?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  // Card for each section
+  const SectionCard = ({ section }: { section: Section }) => {
+    const homeRoom = section.homeRoom;
+    const teacherName = homeRoom ? `${homeRoom.user.firstName} ${homeRoom.user.lastName}` : 'N/A';
+    const teacherProfile = homeRoom?.user?.profile;
+    const teacherInitials = homeRoom ? `${homeRoom.user.firstName?.[0] || ''}${homeRoom.user.lastName?.[0] || ''}`.toUpperCase() : '';
+    const canEditOrDelete = user?.user.role === 'DIRECTOR' || user?.roleId === homeRoom?.id;
+    return (
+      <div
+        className="relative bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl border border-primary/20 p-8 flex flex-col gap-4 shadow-none hover:border-primary/40 transition-all cursor-pointer min-h-[140px] group"
+        onClick={() => router.push(`/dashboard/sections/${section.id}`)}
+      >
+        {/* 3-dots popover menu */}
+        {canEditOrDelete && (
+          <Popover open={popoverOpenId === section.id} onOpenChange={open => setPopoverOpenId(open ? section.id : null)}>
+            <PopoverTrigger asChild>
+              <button
+                className="absolute top-4 right-4 p-2 rounded-full hover:bg-primary/10 focus:outline-none"
+                onClick={e => { e.stopPropagation(); setPopoverOpenId(section.id); }}
+              >
+                <RiMore2Line className="w-6 h-6 text-gray-500" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-40 p-2">
+              <Link href={`/dashboard/sections/${section.id}`} className="flex items-center gap-2 px-3 py-2 rounded hover:bg-primary/5 text-sm text-gray-800">
+                <RiEdit2Line className="w-4 h-4" /> Edit
+              </Link>
+              <button
+                className="flex items-center gap-2 px-3 py-2 rounded hover:bg-red-50 text-sm text-red-600 w-full"
+                onClick={e => { e.stopPropagation(); openDeleteDialog(section); }}
+              >
+                <RiDeleteBinLine className="w-4 h-4" /> Delete
+              </button>
+            </PopoverContent>
+          </Popover>
+        )}
+        <div className="flex-1 min-w-0">
+          <div className="text-xl font-bold text-gray-900 mb-1">{section.name}</div>
+          <div className="text-sm text-muted-foreground mb-1">Grade Level: {section.gradeLevel?.level || 'N/A'}</div>
+        </div>
+        <div className="flex items-center gap-2 mt-2">
+          <span className="text-xs text-muted-foreground">Homeroom:</span>
+          <Avatar className="h-7 w-7">
+            {teacherProfile ? (
+              <AvatarImage src={teacherProfile} />
+            ) : (
+              <AvatarFallback className="bg-primary/20 text-primary font-semibold text-xs">
+                {teacherInitials}
+              </AvatarFallback>
+            )}
+          </Avatar>
+          <span className="text-xs text-gray-800 font-medium">{teacherName}</span>
+        </div>
+      </div>
+    );
   };
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      {/* Paper-like Background Container (No Shadow) */}
-      <div className="bg-white rounded-lg p-6">
-        {/* Header Section (No Path) */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Sections</h1>
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <h1 className="text-2xl font-bold text-gray-900">Sections</h1>
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <Input
+            type="text"
+            placeholder="Search sections..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="w-full sm:w-64"
+          />
           {user?.user.role === 'DIRECTOR' && (
-            <Button asChild className="bg-blue-600 hover:bg-blue-700">
+            <Button asChild>
               <Link href="/dashboard/sections/add">Add section</Link>
             </Button>
           )}
         </div>
-
-        {/* Table Section */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Current Sections</h2>
-          <div className="relative mb-4">
-            <Input
-              type="text"
-              placeholder="Search..."
-              className="w-48 ml-auto"
-            />
-          </div>
-          <div className="border rounded-lg">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-12 text-center">#</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Grade Level</TableHead>
-                  <TableHead>Home Room Teacher</TableHead>
-                  <TableHead className="text-center">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sections.map((section, index) => (
-                  <TableRow onClick={() => router.push(`/dashboard/sections/${section.id}`)} key={section.id}>
-                    <TableCell className="text-center">{index + 1}</TableCell>
-                    <TableCell>{section.name}</TableCell>
-                    <TableCell>{section.gradeLevel?.level || 'N/A'}</TableCell>
-                    <TableCell>
-                      {section.homeRoom?.user.firstName} {section.homeRoom?.user.lastName}
-                    </TableCell>
-                    {(user?.user.role === 'DIRECTOR' || user?.roleId === section.homeRoom?.id) && (
-                      <TableCell className="text-center">
-                        <div className="flex justify-center gap-2">
-                          <Button variant="ghost" size="icon" asChild>
-                            <Link href={`/dashboard/sections/${section.id}`}>
-                              <RiEdit2Line className="h-5 w-5 text-gray-600" />
-                            </Link>
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => openDeleteDialog(section)}
-                            disabled={isDeleting}
-                          >
-                            <RiDeleteBinLine className="h-5 w-5 text-red-500" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    )}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
-
-        {/* Delete Confirmation Dialog */}
-        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Confirm Deletion</DialogTitle>
-              <DialogDescription>
-                Are you sure you want to delete the section "{sectionToDelete?.name}"? This action cannot be undone.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  setIsDeleteDialogOpen(false);
-                  setSectionToDelete(null);
-                }}
-                className="border-gray-300 text-gray-700 hover:bg-gray-50"
-                disabled={isDeleting}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                onClick={handleDeleteSection}
-                className="bg-red-600 hover:bg-red-700"
-                disabled={isDeleting}
-              >
-                {isDeleting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Deleting...
-                  </>
-                ) : (
-                  'Delete'
-                )}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </div>
+
+      {/* Sections Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {filteredSections.map((section) => (
+          <SectionCard key={section.id} section={section} />
+        ))}
+      </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete the section "{sectionToDelete?.name}"? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setIsDeleteDialogOpen(false);
+                setSectionToDelete(null);
+              }}
+              className="border-gray-300 text-gray-700 hover:bg-gray-50"
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleDeleteSection}
+              className="bg-red-600 hover:bg-red-700"
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                'Delete'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

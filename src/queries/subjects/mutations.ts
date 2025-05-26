@@ -28,6 +28,9 @@ export const useDeleteSubject = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => fetchWithAuth(`/subject/${id}`, { method: 'DELETE' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subjects'] });
+    }
   });
 }
 

@@ -125,9 +125,11 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
           })}
         </ul>
         <div className="mt-auto">
-          <Button variant="ghost" className="w-full flex justify-start">
-            <RiUserSettingsLine /> {t('common.settings')}
-          </Button>
+          <Link href="/dashboard/settings">
+            <Button variant="ghost" className="w-full flex justify-start">
+              <RiUserSettingsLine /> {t('common.settings')}
+            </Button>
+          </Link>
 
           <Button variant="ghost" className="w-full flex justify-start text-red-500 hover:bg-red-100 hover:text-red-600" onClick={logout}>
             <RiLogoutBoxLine /> {t('common.logout')}
