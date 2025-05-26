@@ -12,6 +12,7 @@ import { Loader2, Camera } from 'lucide-react';
 import { useAuth } from '@/app/context/AuthContext';
 import Image from 'next/image';
 import { uploadImage } from '@/utils/helper';
+import logo from '@/../public/images/logo.png'
 
 interface StudentFormData {
   firstName: string;
@@ -23,19 +24,23 @@ interface StudentFormData {
   profile?: string | null;
 }
 
-const AddStudentsView = () => {
+interface AddStudentsViewProps {
+  parentId?: string;
+  onStudentAdded?: () => void;
+}
+
+const AddStudentsView = ({ parentId, onStudentAdded }: AddStudentsViewProps) => {
   const { mutateAsync: addStudent, isPending } = useAddStudent();
   const router = useRouter();
+  const parentIdFromUrl = useSearchParams().get('parentId');
   const { user } = useAuth();
-  const searchParams = useSearchParams();
-  const parentId = searchParams.get('parentId');
   const [formData, setFormData] = useState<StudentFormData>({
     firstName: '',
     lastName: '',
     email: 'temp'+Math.random()+parentId+'@gmail.com',
     phoneNumber: '',
     password: '',
-    parentId: parentId || '',
+    parentId: parentIdFromUrl || parentId || '',
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -76,7 +81,11 @@ const AddStudentsView = () => {
         profile: profileUrl,
       });
       toast.success('Student added successfully');
-      router.back();
+      if (onStudentAdded) {
+        onStudentAdded();
+      } else {
+        router.back();
+      }
     } catch (error) {
       toast.error(`Failed to add student: ${error}`);
       console.error('Error adding student:', error);
@@ -95,11 +104,10 @@ const AddStudentsView = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      {/* Paper-like Background Container */}
       <div className="bg-white rounded-lg p-6">
         {/* Header Section */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold">Add Student</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Add Student</h1>
           <p className="text-sm text-muted-foreground">Students / Add Student</p>
         </div>
 
@@ -111,7 +119,7 @@ const AddStudentsView = () => {
               <div className="relative group">
                 <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-primary/20 shadow-lg">
                   <Image
-                    src={imagePreview || '/images/logo.png'}
+                    src={imagePreview || logo}
                     alt="Profile"
                     fill
                     className="object-cover"

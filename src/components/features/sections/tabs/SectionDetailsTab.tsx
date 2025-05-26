@@ -27,7 +27,7 @@ interface SectionDetailsTabProps {
 
 const validationSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
-  homeRoomId: Yup.string().required('Home room teacher is required'),
+  homeRoom: Yup.string().required('Home room teacher is required'),
 });
 
 const SectionDetailsTab: React.FC<SectionDetailsTabProps> = ({ sectionData, isHomeRoom }) => {
@@ -37,7 +37,7 @@ const SectionDetailsTab: React.FC<SectionDetailsTabProps> = ({ sectionData, isHo
 
   const initialValues = {
     name: sectionData.name,
-    homeRoomId: sectionData.homeRoom?.id || '',
+    homeRoom: sectionData.homeRoom?.id || '',
   };
 
   const handleSubmit = async (values: typeof initialValues) => {
@@ -127,8 +127,8 @@ const SectionDetailsTab: React.FC<SectionDetailsTabProps> = ({ sectionData, isHo
                   Home Room Teacher
                 </Label>
                 <Select
-                  value={values.homeRoomId}
-                  onValueChange={(value) => setFieldValue('homeRoomId', value)}
+                  value={values.homeRoom}
+                  onValueChange={(value) => setFieldValue('homeRoom', value)}
                 >
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select teacher" />
@@ -141,14 +141,14 @@ const SectionDetailsTab: React.FC<SectionDetailsTabProps> = ({ sectionData, isHo
                     ))}
                   </SelectContent>
                 </Select>
-                {errors.homeRoomId && touched.homeRoomId && (
-                  <div className="text-red-500 text-sm mt-1">{errors.homeRoomId}</div>
+                {errors.homeRoom && touched.homeRoom && (
+                  <div className="text-red-500 text-sm mt-1">{errors.homeRoom}</div>
                 )}
               </div>
             </div>
 
             {/* Save Button */}
-            {user?.user.role === 'DIRECTOR' || isHomeRoom && (
+            {(user?.user.role === 'DIRECTOR' || isHomeRoom) && (
               <div className="flex justify-end">
                 <Button
                   type="submit"

@@ -1,4 +1,4 @@
-'use client'  
+'use client'
 
 import React from 'react';
 import Link from 'next/link';
@@ -24,8 +24,10 @@ import {
   RiBookmarkLine,
   RiGraduationCapLine,
   RiUserLine,
+  RiLogoutBoxLine,
 } from 'react-icons/ri';
 import { useTranslation } from 'react-i18next';
+import { Button } from '../ui/button';
 
 interface SidebarProps {
   open: boolean;
@@ -33,7 +35,7 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ open, setOpen }: SidebarProps) {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const role = user?.user?.role;
   const pathname = usePathname();
   const { t } = useTranslation();
@@ -42,7 +44,6 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
     common: [
       { name: t('common.dashboard'), href: '/dashboard', icon: <RiDashboardLine /> },
       { name: t('common.message'), href: '/dashboard/messages', icon: <RiMessageLine /> },
-      { name: t('common.settings'), href: '/dashboard/settings', icon: <RiUserSettingsLine /> },
       { name: t('common.announcements'), href: '/dashboard/announcements', icon: <RiMegaphoneLine /> },
       { name: t('common.gradeLevels'), href: '/dashboard/grade-level', icon: <RiGraduationCapLine /> },
       { name: t('common.sections'), href: '/dashboard/sections', icon: <RiBookmarkLine /> },
@@ -99,7 +100,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
           {open ? <RiArrowLeftSLine className="text-2xl" /> : <RiArrowRightSLine className="text-2xl" />}
         </button> */}
       </div>
-      <nav className="flex-1">
+      <nav className="h-full flex flex-col justify-between">
         <ul className="space-y-1">
           {items.map((item) => {
             const isActive = pathname === item.href;
@@ -109,8 +110,8 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
                   href={item.href}
                   className={cn(
                     'flex items-center gap-3 px-3 py-2 rounded-lg text-base font-medium transition-colors',
-                    isActive 
-                      ? 'bg-primary/10 text-primary hover:bg-primary/20' 
+                    isActive
+                      ? 'bg-primary/10 text-primary hover:bg-primary/20'
                       : 'text-muted-foreground hover:bg-muted',
                     open ? 'justify-start' : 'justify-center'
                   )}
@@ -123,6 +124,15 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
             );
           })}
         </ul>
+        <div className="mt-auto">
+          <Button variant="ghost" className="w-full flex justify-start">
+            <RiUserSettingsLine /> {t('common.settings')}
+          </Button>
+
+          <Button variant="ghost" className="w-full flex justify-start text-red-500 hover:bg-red-100 hover:text-red-600" onClick={logout}>
+            <RiLogoutBoxLine /> {t('common.logout')}
+          </Button>
+        </div>
       </nav>
     </aside>
   );

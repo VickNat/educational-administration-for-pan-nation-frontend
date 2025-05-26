@@ -75,7 +75,7 @@ const ParentsView = () => {
           </div>
           {user?.user.role === 'DIRECTOR' && (
             <Button asChild className="bg-blue-600 hover:bg-blue-700">
-              <Link href="/dashboard/parents/add">Add parent</Link>
+              <Link href="/dashboard/parents/add-with-child">Add parent</Link>
             </Button>
           )}
         </div>
