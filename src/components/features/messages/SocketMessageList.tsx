@@ -1,7 +1,7 @@
 "use client"
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import React, { useEffect, useRef } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import MessageInput from "./MessageInput"
 import { useSendMessage } from "@/queries/messages/mutations"
 import { useAuth } from "@/app/context/AuthContext"
@@ -10,6 +10,7 @@ import { toast } from "react-hot-toast"
 import io from "socket.io-client"
 import Image from "next/image"
 import { CheckCheck, Loader2 } from "lucide-react"
+import { uploadImage } from "@/utils/helper"
 
 interface MessageListProps {
   selectedConversation: any | null
@@ -200,7 +201,6 @@ const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
 
       socket.on("receive_message", handleReceiveMessage)
       socket.on("all_messages_response", handleAllMessagesResponse)
-      socket.on("message_deleted", handleMessageDeleted)
 
       socketInitialized.current = true
 
