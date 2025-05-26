@@ -16,6 +16,7 @@ export interface DirectorRelatedUser {
   firstName: string;
   lastName: string;
   role: string;
+  profile: string;
   roleSpecificId: string;
 }
 

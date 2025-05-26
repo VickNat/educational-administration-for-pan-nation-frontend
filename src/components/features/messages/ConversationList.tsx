@@ -5,6 +5,7 @@ import React from 'react';
 import { useGetDirectorRelatedUsers, useGetParentRelatedUsers, useGetTeacherRelatedUsers } from '@/queries/messages/queries';
 import { useAuth } from '@/app/context/AuthContext';
 import { DirectorRelatedUsersResponse, ParentRelatedUsersResponse, TeacherRelatedUsersResponse } from './types';
+import Image from "next/image"
 
 interface ConversationProps {
   selectedConversationId: string;
@@ -27,6 +28,7 @@ const ConversationList = ({ selectedConversationId, onSelectConversation }: Conv
       role: user.role,
       lastMessage: '',
       timestamp: '',
+      profile : user.profile
     }));
   } else if (user?.user.role === 'PARENT' && parentData) {
     const parentResponse = parentData as ParentRelatedUsersResponse;
@@ -36,6 +38,8 @@ const ConversationList = ({ selectedConversationId, onSelectConversation }: Conv
       role: item.user.role,
       lastMessage: '',
       timestamp: '',
+      profile : item.user.profile
+
     }));
     const teachers = parentResponse.result.teachers.map((item) => ({
       id: item.user.id,
@@ -43,6 +47,8 @@ const ConversationList = ({ selectedConversationId, onSelectConversation }: Conv
       role: item.user.role,
       lastMessage: '',
       timestamp: '',
+      profile : item.user.profile
+
     }));
     conversations = [...directors, ...teachers];
   } else if (user?.user.role === 'TEACHER' && teacherData) {
@@ -53,6 +59,8 @@ const ConversationList = ({ selectedConversationId, onSelectConversation }: Conv
       role: item.user.role,
       lastMessage: '',
       timestamp: '',
+      profile : item.user.profile
+
     }));
     const directors = teacherResponse.result.director.map((item) => ({
       id: item.user.id,
@@ -60,6 +68,8 @@ const ConversationList = ({ selectedConversationId, onSelectConversation }: Conv
       role: item.user.role,
       lastMessage: '',
       timestamp: '',
+      profile : item.user.profile
+
     }));
     conversations = [...parents, ...directors];
   }
@@ -69,7 +79,7 @@ const ConversationList = ({ selectedConversationId, onSelectConversation }: Conv
       <div className="p-4 border-b border-gray-200 min-h-[80px] ">
         <h2 className="text-xl font-semibold text-gray-900">Messaging</h2>
       </div>
-      <ScrollArea className="h-full flex-1 pb-12">
+      <div className="h-full overflow-auto flex-1 pb-12">
         {conversations.map((conversation) => (
           <div
             key={conversation.id}
@@ -79,9 +89,20 @@ const ConversationList = ({ selectedConversationId, onSelectConversation }: Conv
             onClick={() => onSelectConversation(conversation.id)}
           >
             <Avatar className="h-10 w-10 mr-3">
-              <AvatarFallback>
-                {conversation.name.split(' ')[0][0] + conversation.name.split(' ')[1][0]}
-              </AvatarFallback>
+              {conversation.profile ? (
+                <Image 
+                  src={conversation.profile}
+                  alt={conversation.name}
+                  width={40}
+                  height={40}
+                  loader={({ src }) => src}
+                  unoptimized
+                />
+              ) : (
+                <AvatarFallback className="bg-gradient-to-r from-primary to-secondary text-white uppercase">
+                  {conversation.name.split(' ')[0][0] + conversation.name.split(' ')[1][0]}
+                </AvatarFallback>
+              )}
             </Avatar>
             <div className="flex-1">
               <div className="flex justify-between items-center">
@@ -96,7 +117,7 @@ const ConversationList = ({ selectedConversationId, onSelectConversation }: Conv
             </div>
           </div>
         ))}
-      </ScrollArea>
+      </div>
     </Card>
   );
 };
