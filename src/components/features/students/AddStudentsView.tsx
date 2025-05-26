@@ -25,7 +25,7 @@ interface StudentFormData {
 }
 
 interface AddStudentsViewProps {
-  parentId: string;
+  parentId?: string;
   onStudentAdded?: () => void;
 }
 
@@ -40,7 +40,7 @@ const AddStudentsView = ({ parentId, onStudentAdded }: AddStudentsViewProps) => 
     email: 'temp'+Math.random()+parentId+'@gmail.com',
     phoneNumber: '',
     password: '',
-    parentId: parentIdFromUrl || parentId,
+    parentId: parentIdFromUrl || parentId || '',
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
