@@ -29,8 +29,7 @@ interface AllMessagesResponse {
 
 
 // Create socket connection
-// const socket = io(process.env.NEXT_SOCKET_URL ?? "https://capstone-class-bridge.onrender.com", {
-const socket = io('http://localhost:4000', {
+const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL ?? "https://capstone-class-bridge.onrender.com", {
   reconnection: true,
   reconnectionAttempts: 5,
   reconnectionDelay: 1000,
@@ -42,6 +41,7 @@ const socket = io('http://localhost:4000', {
 
 
 const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
+  console.log(process.env.NEXT_PUBLIC_SOCKET_URL,"....SOCKET....")
   const { user } = useAuth();
   const { mutateAsync: sendMessage, isPending: isSending } = useSendMessage();
   const [isLoading, setIsLoading] = React.useState(false);
