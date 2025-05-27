@@ -64,6 +64,15 @@ const AddResultView = () => {
     }
   }, [data, subjectsData, teachersData]);
 
+  if(!subjectId) {
+    return <div className="flex justify-center items-center h-64">
+      <p className="text-red-600 font-semibold">Missing required parameters.</p>
+      <Button variant="outline" onClick={() => router.back()}>
+        <ArrowLeft className="w-4 h-4" /> Go back
+      </Button>
+    </div>
+  }
+
   if (isStudentLoading || isSubjectLoading || isTeacherLoading) {
     return (
       <div className="flex justify-center items-center h-64">

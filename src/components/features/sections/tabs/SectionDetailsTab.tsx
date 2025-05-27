@@ -60,7 +60,7 @@ const SectionDetailsTab: React.FC<SectionDetailsTabProps> = ({ sectionData, isHo
         {({ values, errors, touched, handleChange, setFieldValue, isSubmitting }) => (
           <Form className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Section ID */}
+              {/* Section ID
               <div>
                 <Label htmlFor="id" className="text-sm font-medium text-gray-700">
                   Section ID
@@ -72,7 +72,7 @@ const SectionDetailsTab: React.FC<SectionDetailsTabProps> = ({ sectionData, isHo
                   readOnly
                   className="mt-1 bg-gray-50"
                 />
-              </div>
+              </div> */}
 
               {/* Name */}
               <div>
@@ -94,7 +94,7 @@ const SectionDetailsTab: React.FC<SectionDetailsTabProps> = ({ sectionData, isHo
               </div>
 
               {/* Grade Level ID */}
-              <div>
+              {/* <div>
                 <Label htmlFor="gradeLevelId" className="text-sm font-medium text-gray-700">
                   Grade Level ID
                 </Label>
@@ -105,7 +105,7 @@ const SectionDetailsTab: React.FC<SectionDetailsTabProps> = ({ sectionData, isHo
                   readOnly
                   className="mt-1 bg-gray-50"
                 />
-              </div>
+              </div> */}
 
               {/* Grade Level */}
               <div>
