@@ -279,18 +279,6 @@ const SubjectsView = () => {
               {({ isSubmitting }) => (
                 <Form className="space-y-4">
                   <div>
-                    <Label htmlFor="id" className="text-sm font-medium text-gray-700">
-                      ID
-                    </Label>
-                    <Input
-                      id="id"
-                      type="text"
-                      value={editSubject.id}
-                      readOnly
-                      className="mt-1 bg-gray-50"
-                    />
-                  </div>
-                  <div>
                     <Label htmlFor="name" className="text-sm font-medium text-gray-700">
                       Name
                     </Label>
@@ -306,21 +294,6 @@ const SubjectsView = () => {
                       name="name"
                       component="div"
                       className="text-red-500 text-sm mt-1"
-                    />
-                  </div>
-                  <div>
-                    <Label
-                      htmlFor="gradeLevelId"
-                      className="text-sm font-medium text-gray-700"
-                    >
-                      Grade Level ID
-                    </Label>
-                    <Input
-                      id="gradeLevelId"
-                      type="text"
-                      value={editSubject.gradeLevelId || ''}
-                      readOnly
-                      className="mt-1 bg-gray-50"
                     />
                   </div>
                   <DialogFooter className="mt-6">
