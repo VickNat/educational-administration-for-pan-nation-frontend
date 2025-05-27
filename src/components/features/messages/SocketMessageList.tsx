@@ -9,8 +9,11 @@ import type { Message, MessagesResponse } from "./types"
 import { toast } from "react-hot-toast"
 import io from "socket.io-client"
 import Image from "next/image"
-import { CheckCheck, Loader2 } from "lucide-react"
+import { CheckCheck, Loader2, X } from "lucide-react"
 import { uploadImage } from "@/utils/helper"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { ImageIcon, Send } from "lucide-react"
 
 interface MessageListProps {
   selectedConversation: any | null
@@ -56,6 +59,9 @@ const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
   const [messagesData, setMessagesData] = React.useState<MessagesResponse | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const socketInitialized = useRef(false)
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [inputValue, setInputValue] = useState('')
 
   // Scroll to bottom when messages update
   useEffect(() => {
@@ -228,19 +234,46 @@ const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
     })
   }, [user?.user?.id, selectedConversation?.id])
 
+  // Handle image file selection
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setImageFile(file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleImageRemove = () => {
+    setImageFile(null)
+    setImagePreview(null)
+  }
+
   const handleSendMessage = async (content: string) => {
     if (!selectedConversation || !user?.user?.id) return
-
+    let imageUrl = undefined
+    if (imageFile) {
+      const { url, error } = await uploadImage(imageFile)
+      if (error) {
+        toast.error("Failed to upload image")
+        return
+      }
+      imageUrl = url
+    }
     try {
       const messageData = {
         senderId: user.user.id,
         receiverId: selectedConversation.id,
         content,
-        images: [],
+        images: imageUrl ? [imageUrl] : [],
       }
-
-      // Only send through socket - the server will handle persistence
       socket.emit("send_message", messageData)
+      setImageFile(null)
+      setImagePreview(null)
+      setInputValue('')
     } catch (error: any) {
       toast.error(error.message || "Failed to send message")
     }
@@ -272,12 +305,12 @@ const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
                       {selectedConversation.name?.split(" ")[0][0]}
                       {selectedConversation.name?.split(" ")[1]?.[0]}
                     </AvatarFallback>
-                  )}
+                  )}  
                 </Avatar>
               </div>
               <div className="flex-1 min-w-0">
                 <h2 className="text-lg font-semibold text-foreground truncate">{selectedConversation.name}</h2>
-                <p className="text-[5px] text-muted-foreground flex items-center gap-2">{selectedConversation.role}</p>
+                <p className="text-[12px] text-muted-foreground flex items-center gap-2">{selectedConversation.role}</p>
               </div>
             </>
           ) : (
@@ -346,6 +379,19 @@ const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
                                 : "bg-card border border-border/50 text-card-foreground rounded-bl-md"
                             }`}
                           >
+                            {/* Message image */}
+                            {message.images && message.images.length > 0 && (
+                              <div className="mb-3 -mx-1">
+                                <div className="relative overflow-hidden rounded-xl">
+                                  <img
+                                    src={message.images[0] || "/placeholder.svg"}
+                                    alt="Message attachment"
+                                    className="max-w-[280px] w-full h-auto object-cover transition-transform duration-300 hover:scale-[1.02]"
+                                  />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-200" />
+                                </div>
+                              </div>
+                            )}
                             <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">{message.content}</p>
                           </div>
 
@@ -397,7 +443,77 @@ const SocketMessageList = ({ selectedConversation }: MessageListProps) => {
       {selectedConversation && (
         <div className="sticky bottom-0 w-full bg-background/95 backdrop-blur-sm border-t border-border/50 p-4">
           <div className="w-full max-w-none">
-            <MessageInput onSend={handleSendMessage} disabled={isSending} />
+            {/* Image preview */}
+            {imagePreview && (
+              <div className="flex justify-center mb-2">
+                <div className="relative group">
+                  <div className="relative overflow-hidden rounded-2xl shadow-lg">
+                    <img
+                      src={imagePreview || "/placeholder.svg"}
+                      alt="Selected"
+                      className="max-h-[200px] object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="absolute -top-2 -right-2 h-8 w-8 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
+                    onClick={handleImageRemove}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+            <div className="flex gap-3 items-end">
+              <Input
+                placeholder="Type your message..."
+                className="flex-1"
+                value={inputValue}
+                onChange={e => setInputValue(e.target.value)}
+                onKeyDown={async (e) => {
+                  if (e.key === 'Enter' && !e.shiftKey && (!imageFile || imagePreview)) {
+                    e.preventDefault();
+                    await handleSendMessage(inputValue);
+                  }
+                }}
+                disabled={isSending}
+              />
+              {/* Image Upload Button */}
+              <div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  id="message-chat-image-upload"
+                  style={{ display: 'none' }}
+                  onChange={handleFileInputChange}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="rounded-2xl h-12 w-12 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 shadow-sm"
+                  onClick={() => document.getElementById('message-chat-image-upload')?.click()}
+                  disabled={!!imagePreview}
+                >
+                  <ImageIcon className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                </Button>
+              </div>
+              <Button
+                onClick={async () => {
+                  if ((!imageFile || imagePreview)) {
+                    await handleSendMessage(inputValue);
+                  }
+                }}
+                className="rounded-2xl h-12 px-6 bg-gradient-to-r from-blue-500 via-blue-600 to-purple-600 hover:from-blue-600 hover:via-blue-700 hover:to-purple-700 text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+                disabled={isSending || (!!imageFile && !imagePreview)}
+              >
+                <Send className="h-5 w-5 mr-2" />
+                <span className="font-medium">Send</span>
+              </Button>
+            </div>
           </div>
         </div>
       )}
