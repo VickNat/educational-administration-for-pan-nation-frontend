@@ -30,6 +30,7 @@ import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 
 // Dummy data for teachers
 const teachersData = [
@@ -61,6 +62,7 @@ const TeachersView = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [activationFilter, setActivationFilter] = useState<string>('all');
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (data) {
@@ -103,14 +105,22 @@ const TeachersView = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedTeachers = filteredTeachers.slice(startIndex, startIndex + itemsPerPage);
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-6xl mx-auto p-6">
       <div className="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl border border-primary/20 p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Teachers</h1>
-          {canEdit && (
+          <h1 className="text-2xl font-bold text-gray-900">{t('teachers.title')}</h1>
+          {user?.user.role === 'DIRECTOR' && (
             <Button asChild>
-              <Link href="/dashboard/teachers/add">Add teacher</Link>
+              <Link href="/dashboard/teachers/add">{t('teachers.addTeacher')}</Link>
             </Button>
           )}
         </div>
@@ -119,120 +129,93 @@ const TeachersView = () => {
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <Input
               type="text"
-              placeholder="Search by name or email..."
+              placeholder={t('teachers.searchPlaceholder')}
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="w-full sm:w-64"
             />
             <Select value={activationFilter} onValueChange={setActivationFilter}>
               <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder="Filter by activation" />
+                <SelectValue placeholder={t('teachers.filterByStatus')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Teachers</SelectItem>
-                <SelectItem value="activated">Activated</SelectItem>
-                <SelectItem value="deactivated">Deactivated</SelectItem>
+                <SelectItem value="all">{t('common.all')}</SelectItem>
+                <SelectItem value="activated">{t('common.activated')}</SelectItem>
+                <SelectItem value="deactivated">{t('common.deactivated')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
 
-        <div className="border rounded-lg">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-12 text-center">#</TableHead>
-                <TableHead>Profile</TableHead>
-                <TableHead>Teacher Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Phone Number</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-center">Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedTeachers.map((teacher, index) => (
-                <TableRow key={teacher.id}>
-                  <TableCell  onClick={() => router.push(`/dashboard/teachers/${teacher.id}`)} className="text-center">{startIndex + index + 1}</TableCell>
-                  <TableCell  onClick={() => router.push(`/dashboard/teachers/${teacher.id}`)}>
-                    {teacher.user.profile ? (
-                      <img
-                        src={teacher.user.profile || ''}
-                        alt={`${teacher.user.firstName} ${teacher.user.lastName}`}
-                        width={40}
-                        height={40}
-                        className="rounded-full object-cover w-10 h-10"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold">
-                        {teacher.user.firstName.charAt(0)}{teacher.user.lastName.charAt(0)}
-                      </div>
-                    )}
-                  </TableCell>
-                  <TableCell  onClick={() => router.push(`/dashboard/teachers/${teacher.id}`)}>{`${teacher.user.firstName} ${teacher.user.lastName}`}</TableCell>
-                  <TableCell  onClick={() => router.push(`/dashboard/teachers/${teacher.id}`)}>{teacher.user.email}</TableCell>
-                  <TableCell  onClick={() => router.push(`/dashboard/teachers/${teacher.id}`)}>{teacher.user.phoneNumber}</TableCell>
-                  <TableCell  onClick={() => router.push(`/dashboard/teachers/${teacher.id}`)}>{teacher.isActivated ? 'Activated' : 'Deactivated'}</TableCell>
-                  <TableCell className="text-center">
-                    <div className="flex justify-center gap-2">
+        <div>
+          <div className="border rounded-lg">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-12 text-center">#</TableHead>
+                  <TableHead>{t('common.profile')}</TableHead>
+                  <TableHead>{t('teachers.teacherName')}</TableHead>
+                  <TableHead>{t('common.email')}</TableHead>
+                  <TableHead>{t('common.phoneNumber')}</TableHead>
+                  <TableHead>{t('common.status')}</TableHead>
+                  <TableHead className="text-center">{t('common.action')}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedTeachers.map((teacher, index) => (
+                  <TableRow key={teacher.id}>
+                    <TableCell onClick={() => router.push(`/dashboard/teachers/${teacher.id}`)} className="text-center">{startIndex + index + 1}</TableCell>
+                    <TableCell onClick={() => router.push(`/dashboard/teachers/${teacher.id}`)}>
+                      {teacher.user.profile ? (
+                        <img
+                          src={teacher.user.profile || ''}
+                          alt={`${teacher.user.firstName} ${teacher.user.lastName}`}
+                          width={40}
+                          height={40}
+                          className="rounded-full object-cover w-10 h-10"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold">
+                          {teacher.user.firstName.charAt(0)}{teacher.user.lastName.charAt(0)}
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell onClick={() => router.push(`/dashboard/teachers/${teacher.id}`)}>{`${teacher.user.firstName} ${teacher.user.lastName}`}</TableCell>
+                    <TableCell onClick={() => router.push(`/dashboard/teachers/${teacher.id}`)}>{teacher.user.email}</TableCell>
+                    <TableCell onClick={() => router.push(`/dashboard/teachers/${teacher.id}`)}>{teacher.user.phoneNumber}</TableCell>
+                    <TableCell onClick={() => router.push(`/dashboard/teachers/${teacher.id}`)}>
+                      {teacher.isActivated ? t('common.activated') : t('common.deactivated')}
+                    </TableCell>
+                    <TableCell className="text-center">
                       {canEdit && (
-                        <>
-                          <Button variant="ghost" size="icon" asChild>
-                            <Link href={`/dashboard/teachers/${teacher.id}`}>
-                              <RiEdit2Line className="h-5 w-5 text-gray-600" />
-                            </Link>
+                        <div className="flex justify-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push(`/dashboard/teachers/${teacher.id}`);
+                            }}
+                          >
+                            <RiEdit2Line className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => handleDeleteClick(teacher)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteClick(teacher);
+                            }}
                           >
-                            <RiDeleteBinLine className="h-5 w-5 text-red-500" />
+                            <RiDeleteBinLine className="h-4 w-4" />
                           </Button>
-                        </>
+                        </div>
                       )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-
-        {/* Pagination Controls */}
-        <div className="flex justify-between items-center mt-4">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">Rows per page:</span>
-            <Select value={itemsPerPage.toString()} onValueChange={(value) => setItemsPerPage(Number(value))}>
-              <SelectTrigger className="w-20">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </Button>
-            <span className="text-sm text-gray-600">
-              Page {currentPage} of {totalPages}
-            </span>
-            <Button
-              variant="outline"
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         </div>
       </div>
@@ -241,32 +224,21 @@ const TeachersView = () => {
       <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Teacher</DialogTitle>
+            <DialogTitle>{t('common.delete')}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete {selectedTeacher?.user.firstName} {selectedTeacher?.user.lastName}? This action cannot be undone.
+              {t('teachers.deleteConfirmation')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsDeleteModalOpen(false)}
-              disabled={isPending}
-            >
-              Cancel
+            <Button variant="outline" onClick={() => setIsDeleteModalOpen(false)}>
+              {t('common.cancel')}
             </Button>
             <Button
               variant="destructive"
               onClick={handleDeleteConfirm}
               disabled={isPending}
             >
-              {isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Deleting...
-                </>
-              ) : (
-                'Delete'
-              )}
+              {isPending ? t('common.loading') : t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

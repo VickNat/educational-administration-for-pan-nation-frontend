@@ -32,6 +32,7 @@ import { useGetStudents, useGetUnassignedStudents } from '@/queries/students/que
 import { Checkbox } from '@/components/ui/checkbox';
 import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/app/context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 interface StudentsTabProps {
   sectionId: string;
@@ -93,6 +94,8 @@ const StudentsTab: React.FC<StudentsTabProps> = ({ sectionId, sectionName, stude
   const { data: unassignedStudents } = useGetUnassignedStudents();
   const { data: studentsToDisplay } = useGetStudents();
   const [studentsToDisplayData, setStudentsToDisplayData] = useState<Student[]>(unassignedStudents?.result || []);
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (unassignedStudents) {
@@ -226,9 +229,9 @@ const StudentsTab: React.FC<StudentsTabProps> = ({ sectionId, sectionName, stude
                     <Checkbox checked={isAllSelected} onCheckedChange={toggleSelectAll} />
                   </TableHead>
                   <TableHead className="w-12 text-center">#</TableHead>
-                  <TableHead>Student Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead className="text-center">Action</TableHead>
+                  <TableHead>{t('common.profile')}</TableHead>
+                  <TableHead>{t('students.studentName')}</TableHead>
+                  <TableHead className="text-center">{t('common.action')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -241,8 +244,22 @@ const StudentsTab: React.FC<StudentsTabProps> = ({ sectionId, sectionName, stude
                       />
                     </TableCell>
                     <TableCell className="text-center">{index + 1}</TableCell>
+                    <TableCell>
+                      {student.user.profile ? (
+                        <img
+                          src={student.user.profile}
+                          alt={`${student.user.firstName} ${student.user.lastName}`}
+                          width={40}
+                          height={40}
+                          className="rounded-full object-cover w-10 h-10"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-semibold">
+                          {student.user.firstName.charAt(0)}{student.user.lastName.charAt(0)}
+                        </div>
+                      )}
+                    </TableCell>
                     <TableCell>{`${student.user.firstName} ${student.user.lastName}`}</TableCell>
-                    <TableCell>{student.user.email}</TableCell>
                     <TableCell className="text-center">
                       <Popover>
                         <PopoverTrigger asChild>

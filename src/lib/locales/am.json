@@ -19,7 +19,22 @@
     "subjects": "መመሪያዎች",
     "teachers": "ጤናማዎች",
     "parents": "ልጆቻችን",
-    "students": "ልጆቻችን"
+    "students": "ልጆቻችን",
+    "search": "ፈልግ...",
+    "status": "ሁኔታ",
+    "action": "ድርጊት",
+    "name": "ስም",
+    "email": "ኢሜይል",
+    "phoneNumber": "ስልክ ቁጥር",
+    "activated": "ንቁ",
+    "deactivated": "ያልንቁ",
+    "all": "ሁሉም",
+    "add": "አክል",
+    "edit": "አርትዕ",
+    "delete": "ሰርዝ",
+    "back": "ተመለስ",
+    "loading": "በመጫን ላይ...",
+    "noData": "ዳሰሳ የለም"
   },
   "header": {
     "search": "ፈልግ...",
@@ -40,5 +55,53 @@
     "lastName": "የአያት ስም",
     "phone": "ስልክ",
     "changeProfilePicture": "የመገለጫ ስዕልዎን ለመቀየር በካሜራ አዶ ላይ ጠቅ ያድርጉ"
+  },
+  "dashboard": {
+    "quickActions": "ፈጣን ድርጊቶች",
+    "generateRoster": "የሰራተኞች ዝርዝር ይፍጠሩ",
+    "viewSections": "ህግትዎችን ይመልከቱ",
+    "manageStudents": "ተማሪዎችን ያስተዳድሩ",
+    "schoolCalendar": "የትምህርት ቤት ካሌንዳር",
+    "myChildren": "ልጆቼ",
+    "schoolEvents": "የትምህርት ቤት ዝግጅቶች",
+    "empoweringEducation": "ትምህርትን በማብቅ ላይ"
+  },
+  "students": {
+    "title": "ተማሪዎች",
+    "addStudent": "ተማሪ አክል",
+    "searchPlaceholder": "በስም ወይም ኢሜይል ፈልግ...",
+    "filterBySection": "በህግት አጣራ",
+    "studentName": "የተማሪ ስም",
+    "section": "ህግት",
+    "noStudents": "ተማሪዎች አልተመደቡም"
+  },
+  "teachers": {
+    "title": "መምህራን",
+    "addTeacher": "መምህር አክል",
+    "searchPlaceholder": "በስም ወይም ኢሜይል ፈልግ...",
+    "filterByStatus": "በሁኔታ አጣራ",
+    "teacherName": "የመምህር ስም",
+    "noTeachers": "መምህራን የሉም"
+  },
+  "parents": {
+    "title": "ወላጆች",
+    "addParent": "ወላጅ አክል",
+    "searchPlaceholder": "በስም ወይም ኢሜይል ፈልግ...",
+    "filterByStatus": "በሁኔታ አጣራ",
+    "parentName": "የወላጅ ስም",
+    "noParents": "ወላጆች የሉም",
+    "addChild": "ተማሪ አክል"
+  },
+  "sections": {
+    "title": "ህግትዎች",
+    "addSection": "ህግት አክል",
+    "gradeLevel": "የመጠባበቅ ደረጃ",
+    "homeRoomTeacher": "የቤት ክፍል መምህር",
+    "details": "የህግት ዝርዝሮች",
+    "students": "ተማሪዎች",
+    "teachers": "መምህራን",
+    "collectiveResult": "የጋራ ውጤት",
+    "chat": "ቻት",
+    "attendance": "ተገኝነት"
   }
 } 

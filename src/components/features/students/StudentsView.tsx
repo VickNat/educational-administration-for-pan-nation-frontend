@@ -30,6 +30,7 @@ import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 
 // Add the following type definition at the top of the file, after the imports
 type Section = {
@@ -92,6 +93,7 @@ const StudentsView = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [sectionFilter, setSectionFilter] = useState<string>('all');
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (data) {
@@ -123,13 +125,12 @@ const StudentsView = () => {
     }
   };
 
-  // Update the filteredStudents logic to handle unassigned students
+  // Filter students based on search and section filter
   const filteredStudents = studentsData.filter(student => {
     const fullName = `${student.user.firstName} ${student.user.lastName}`.toLowerCase();
     const email = student.user.email.toLowerCase();
-    const sectionName = student.section?.name?.toLowerCase() || '';
     const matchesSearch = fullName.includes(search.toLowerCase()) || email.includes(search.toLowerCase());
-    const matchesSection = sectionFilter === 'all' ? true : sectionFilter === 'unassigned' ? !student.section : student.section?.id === sectionFilter;
+    const matchesSection = sectionFilter === 'all' ? true : student.section?.id === sectionFilter;
     return matchesSearch && matchesSection;
   });
 
@@ -138,8 +139,13 @@ const StudentsView = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedStudents = filteredStudents.slice(startIndex, startIndex + itemsPerPage);
 
-  // Update the uniqueSections logic to include an option for unassigned students
-  const uniqueSections = Array.from(new Set(studentsData.map(student => student.section?.id || ''))).filter(Boolean);
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-6xl mx-auto p-6">
@@ -148,35 +154,41 @@ const StudentsView = () => {
         {/* Header Section */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Students</h1>
-            {/* <p className="text-sm text-muted-foreground">Manage / Students</p> */}
+            <h1 className="text-2xl font-bold text-gray-900">{t('students.title')}</h1>
           </div>
-          {/* <Button asChild className="bg-blue-600 hover:bg-blue-700">
-            <Link href="/dashboard/students/add">Add student</Link>
-          </Button> */}
+          {user?.user.role === 'DIRECTOR' && (
+            <Button asChild>
+              <Link href="/dashboard/student/add">{t('students.addStudent')}</Link>
+            </Button>
+          )}
         </div>
 
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <Input
               type="text"
-              placeholder="Search by name or email..."
+              placeholder={t('students.searchPlaceholder')}
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="w-full sm:w-64"
             />
             <Select value={sectionFilter} onValueChange={setSectionFilter}>
               <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder="Filter by section" />
+                <SelectValue placeholder={t('students.filterBySection')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Sections</SelectItem>
-                <SelectItem value="unassigned">Unassigned Students</SelectItem>
-                {uniqueSections.map(sectionId => (
-                  <SelectItem key={sectionId} value={sectionId || ''}>
-                    {studentsData.find(s => s.section?.id === sectionId)?.section?.name || 'Unknown Section'}
-                  </SelectItem>
-                ))}
+                <SelectItem value="all">{t('common.all')}</SelectItem>
+                {studentsData
+                  .filter((student, index, self) => 
+                    student.section && 
+                    index === self.findIndex(s => s.section?.id === student.section?.id)
+                  )
+                  .map(student => (
+                    <SelectItem key={student.section?.id} value={student.section?.id || ''}>
+                      {student.section?.name || 'N/A'}
+                    </SelectItem>
+                  ))
+                }
               </SelectContent>
             </Select>
           </div>
@@ -189,11 +201,10 @@ const StudentsView = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-12 text-center">#</TableHead>
-                  <TableHead>Profile</TableHead>
-                  <TableHead>Student Name</TableHead>
-                  <TableHead>Section</TableHead>
-                  {/* <TableHead>Parent ID</TableHead> */}
-                  <TableHead className="text-center">Action</TableHead>
+                  <TableHead>{t('common.profile')}</TableHead>
+                  <TableHead>{t('students.studentName')}</TableHead>
+                  <TableHead>{t('students.section')}</TableHead>
+                  <TableHead className="text-center">{t('common.action')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -217,26 +228,31 @@ const StudentsView = () => {
                     </TableCell>
                     <TableCell>{`${student.user.firstName} ${student.user.lastName}`}</TableCell>
                     <TableCell>{student.section?.name || 'N/A'}</TableCell>
-                    {/* <TableCell>{student.parentId}</TableCell> */}
                     <TableCell className="text-center">
-                      <div className="flex justify-center gap-2">
-                        {canEdit(student) && (
-                          <>
-                            <Button variant="ghost" size="icon" asChild>
-                              <Link href={`/dashboard/student/${student.id}`}>
-                                <RiEdit2Line className="h-5 w-5 text-gray-600" />
-                              </Link>
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDeleteClick(student)}
-                            >
-                              <RiDeleteBinLine className="h-5 w-5 text-red-500" />
-                            </Button>
-                          </>
-                        )}
-                      </div>
+                      {canEdit(student) && (
+                        <div className="flex justify-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push(`/dashboard/student/${student.id}`);
+                            }}
+                          >
+                            <RiEdit2Line className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteClick(student);
+                            }}
+                          >
+                            <RiDeleteBinLine className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -287,32 +303,21 @@ const StudentsView = () => {
       <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Student</DialogTitle>
+            <DialogTitle>{t('common.delete')}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete {selectedStudent?.user.firstName} {selectedStudent?.user.lastName}? This action cannot be undone.
+              {t('students.deleteConfirmation')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsDeleteModalOpen(false)}
-              disabled={isPending}
-            >
-              Cancel
+            <Button variant="outline" onClick={() => setIsDeleteModalOpen(false)}>
+              {t('common.cancel')}
             </Button>
             <Button
               variant="destructive"
               onClick={handleDeleteConfirm}
               disabled={isPending}
             >
-              {isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Deleting...
-                </>
-              ) : (
-                'Delete'
-              )}
+              {isPending ? t('common.loading') : t('common.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

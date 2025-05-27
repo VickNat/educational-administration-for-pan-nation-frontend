@@ -29,7 +29,7 @@ import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 
 const ParentsView = () => {
   const { data, refetch } = useGetParents();
@@ -43,6 +43,7 @@ const ParentsView = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [activationFilter, setActivationFilter] = useState<string>('all');
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (data && data?.result) {
@@ -81,10 +82,10 @@ const ParentsView = () => {
     <div className="max-w-6xl mx-auto p-6">
       <div className="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl border border-primary/20 p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Parents</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t('parents.title')}</h1>
           {user?.user.role === 'DIRECTOR' && (
             <Button asChild >
-              <Link href="/dashboard/parents/add-with-child">Add parent</Link>
+              <Link href="/dashboard/parents/add-with-child">{t('parents.addParent')}</Link>
             </Button>
           )}
         </div>
@@ -93,19 +94,19 @@ const ParentsView = () => {
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             <Input
               type="text"
-              placeholder="Search by name or email..."
+              placeholder={t('parents.searchPlaceholder')}
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="w-full sm:w-64"
             />
             <Select value={activationFilter} onValueChange={setActivationFilter}>
               <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder="Filter by activation" />
+                <SelectValue placeholder={t('parents.filterByStatus')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Parents</SelectItem>
-                <SelectItem value="activated">Activated</SelectItem>
-                <SelectItem value="deactivated">Deactivated</SelectItem>
+                <SelectItem value="all">{t('common.all')}</SelectItem>
+                <SelectItem value="activated">{t('common.activated')}</SelectItem>
+                <SelectItem value="deactivated">{t('common.deactivated')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -116,12 +117,12 @@ const ParentsView = () => {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-12 text-center">#</TableHead>
-                <TableHead>Profile</TableHead>
-                <TableHead>Parent Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Phone Number</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-center">Action</TableHead>
+                <TableHead>{t('common.profile')}</TableHead>
+                <TableHead>{t('parents.parentName')}</TableHead>
+                <TableHead>{t('common.email')}</TableHead>
+                <TableHead>{t('common.phoneNumber')}</TableHead>
+                <TableHead>{t('common.status')}</TableHead>
+                <TableHead className="text-center">{t('common.action')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -146,7 +147,7 @@ const ParentsView = () => {
                   <TableCell>{parent.user.firstName} {parent.user.lastName}</TableCell>
                   <TableCell>{parent.user.email}</TableCell>
                   <TableCell>{parent.user.phoneNumber}</TableCell>
-                  <TableCell>{parent.isActivated ? 'Activated' : 'Deactivated'}</TableCell>
+                  <TableCell>{parent.isActivated ? t('common.activated') : t('common.deactivated')}</TableCell>
                   {user?.user.role === 'DIRECTOR' && (
                     <TableCell className="text-center">
                       <div className="flex justify-center gap-2">
@@ -215,9 +216,9 @@ const ParentsView = () => {
       <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Parent</DialogTitle>
+            <DialogTitle>{t('common.delete')}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete {selectedParent?.user.firstName} {selectedParent?.user.lastName}? This action cannot be undone.
+              {t('parents.deleteConfirmation')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -229,7 +230,7 @@ const ParentsView = () => {
               }}
               disabled={isPending}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button
               variant="destructive"
@@ -239,10 +240,10 @@ const ParentsView = () => {
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Deleting...
+                  {t('common.loading')}
                 </>
               ) : (
-                'Delete'
+                t('common.delete')
               )}
             </Button>
           </DialogFooter>
