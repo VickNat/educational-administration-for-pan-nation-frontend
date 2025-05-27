@@ -23,6 +23,9 @@ import {
 import { motion } from "framer-motion"
 import { useState, useEffect } from "react"
 import { useAuth } from "./context/AuthContext"
+import a from "@/../public/images/a.png"
+import b from "@/../public/images/b.png"
+import c from "@/../public/images/c.png"
 
 const features = [
   {
@@ -132,25 +135,21 @@ const testimonials = [
 ]
 
 const systemFeatures = [
-  {
-    title: "Student Dashboard",
-    description: "Comprehensive view of grades, assignments, and upcoming events",
-    image: "/placeholder.svg?height=300&width=500",
-  },
+
   {
     title: "Teacher Portal",
     description: "Powerful tools for grade management, communication, and class organization",
-    image: "/placeholder.svg?height=300&width=500",
+    image: a,
   },
   {
     title: "Parent Interface",
     description: "Real-time access to child's academic progress and school communications",
-    image: "/placeholder.svg?height=300&width=500",
+    image: b,
   },
   {
     title: "Admin Control Panel",
     description: "Complete school management with user administration and system analytics",
-    image: "/placeholder.svg?height=300&width=500",
+    image: c,
   },
 ]
 
@@ -477,8 +476,9 @@ export default function LandingPage() {
                     src={feature.image || "/placeholder.svg"}
                     alt={feature.title}
                     width={500}
-                    height={300}
-                    className="w-full h-64 object-cover"
+                    height={600}
+                    unoptimized
+                    className="w-full h-screen object-cover"
                   />
                   <div className="p-6">
                     <h3 className="text-2xl font-semibold mb-2 text-primary">{feature.title}</h3>
@@ -492,7 +492,7 @@ export default function LandingPage() {
       </motion.section>
 
       {/* Testimonials Carousel */}
-      <motion.section
+      {/* <motion.section
         id="testimonials"
         initial="hidden"
         whileInView="visible"
@@ -540,7 +540,7 @@ export default function LandingPage() {
             )}
           />
         </div>
-      </motion.section>
+      </motion.section> */}
 
       {/* Timeline Section */}
       <motion.section
