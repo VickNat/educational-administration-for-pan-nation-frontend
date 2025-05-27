@@ -22,6 +22,7 @@ import { useGenerateRoster } from '@/queries/results/mutations';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import toast from 'react-hot-toast';
 import logo from '@/../public/images/logo.png'
+import { useTranslation } from 'react-i18next';
 
 const SHORTCUTS = {
   DIRECTOR: [
@@ -100,6 +101,8 @@ const DashboardView = () => {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const { t } = useTranslation();
+
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName[0]}${lastName[0]}`.toUpperCase();
   };
@@ -137,7 +140,7 @@ const DashboardView = () => {
               <h1 className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
                 Pan-nation School
               </h1>
-              <p className="text-xs sm:text-sm text-muted-foreground mt-1">Empowering Education Excellence</p>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">{t('dashboard.empoweringEducation')}</p>
             </div>
           </div>
 
@@ -176,10 +179,10 @@ const DashboardView = () => {
       </div>
 
       {/* Quick Actions Section */}
-      <div className="mb-8">
+      <div className="bg-gradient-to-br from-primary/5 to-secondary/5 dark:bg-input/20 rounded-xl border-2 border-primary/20 p-4 sm:p-6">
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <h2 className="text-xl sm:text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-            Quick Actions
+            {t('dashboard.quickActions')}
           </h2>
           {role === 'DIRECTOR' && (
             <Button
@@ -187,7 +190,7 @@ const DashboardView = () => {
               onClick={() => setOpen(true)}
               disabled={loading}
             >
-              Generate Roster
+              {t('dashboard.generateRoster')}
             </Button>
           )}
         </div>
@@ -200,8 +203,8 @@ const DashboardView = () => {
                   {shortcut.icon}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h2 className="text-base sm:text-lg font-semibold text-primary mb-1 truncate">{shortcut.title}</h2>
-                  <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{shortcut.description}</p>
+                  <h2 className="text-base sm:text-lg font-semibold text-primary mb-1 truncate">{t(shortcut.title)}</h2>
+                  <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{t(shortcut.description)}</p>
                 </div>
               </Card>
             </Link>
@@ -213,18 +216,21 @@ const DashboardView = () => {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Are you sure you want to generate the new roster?</DialogTitle>
+            <DialogTitle>Generate Roster</DialogTitle>
           </DialogHeader>
-          <div className="text-sm text-gray-700 mb-4">
-            This will promote all students to the next section and grade level, and <span className="font-semibold text-red-600">delete all collective results for the current semester</span>.<br />
-            <span className="font-semibold">This action cannot be undone.</span>
-          </div>
+          <p className="text-sm text-muted-foreground">
+            Are you sure you want to generate a new roster? This will reset all current results.
+          </p>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>
-              Cancel
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              {t('common.cancel')}
             </Button>
-            <Button className="bg-red-600 hover:bg-red-700 text-white" onClick={handleGenerateRoster} disabled={loading}>
-              {loading ? 'Generating...' : 'Yes, Generate Roster'}
+            <Button
+              variant="destructive"
+              onClick={handleGenerateRoster}
+              disabled={loading}
+            >
+              {loading ? 'Generating...' : 'Generate'}
             </Button>
           </DialogFooter>
         </DialogContent>

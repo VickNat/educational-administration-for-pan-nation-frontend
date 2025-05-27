@@ -45,21 +45,17 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
       { name: t('common.dashboard'), href: '/dashboard', icon: <RiDashboardLine /> },
       { name: t('common.message'), href: '/dashboard/messages', icon: <RiMessageLine /> },
       { name: t('common.announcements'), href: '/dashboard/announcements', icon: <RiMegaphoneLine /> },
-      { name: t('common.gradeLevels'), href: '/dashboard/grade-level', icon: <RiGraduationCapLine /> },
       { name: t('common.sections'), href: '/dashboard/sections', icon: <RiBookmarkLine /> },
       { name: t('common.calendar'), href: '/dashboard/calendar', icon: <RiCalendarEventLine /> },
     ],
     DIRECTOR: [
+      { name: t('common.gradeLevels'), href: '/dashboard/grade-level', icon: <RiGraduationCapLine /> },
       { name: t('common.subjects'), href: '/dashboard/subjects', icon: <RiBookOpenLine /> },
       { name: t('common.teachers'), href: '/dashboard/teachers', icon: <RiTeamLine /> },
       { name: t('common.parents'), href: '/dashboard/parents', icon: <RiParentLine /> },
       { name: t('common.students'), href: '/dashboard/student', icon: <RiUserLine /> },
     ],
     TEACHER: [
-      { name: t('common.subjects'), href: '/dashboard/subjects', icon: <RiBookOpenLine /> },
-      { name: t('common.teachers'), href: '/dashboard/teachers', icon: <RiTeamLine /> },
-      { name: t('common.parents'), href: '/dashboard/parents', icon: <RiParentLine /> },
-      { name: t('common.students'), href: '/dashboard/student', icon: <RiUserLine /> },
     ],
     PARENT: [
       // { name: 'Section Messages', href: '/dashboard/section-messages', icon: <RiMessageLine /> },

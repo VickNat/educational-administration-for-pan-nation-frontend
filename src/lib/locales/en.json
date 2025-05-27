@@ -19,7 +19,22 @@
     "subjects": "Subjects",
     "teachers": "Teachers",
     "parents": "Parents",
-    "students": "Students"
+    "students": "Students",
+    "search": "Search...",
+    "status": "Status",
+    "action": "Action",
+    "name": "Name",
+    "email": "Email",
+    "phoneNumber": "Phone Number",
+    "activated": "Activated",
+    "deactivated": "Deactivated",
+    "all": "All",
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "back": "Back",
+    "loading": "Loading...",
+    "noData": "No data available"
   },
   "header": {
     "search": "Search...",
@@ -40,5 +55,53 @@
     "lastName": "Last Name",
     "phone": "Phone",
     "changeProfilePicture": "Click on the camera icon to change your profile picture"
+  },
+  "dashboard": {
+    "quickActions": "Quick Actions",
+    "generateRoster": "Generate Roster",
+    "viewSections": "View Sections",
+    "manageStudents": "Manage Students",
+    "schoolCalendar": "School Calendar",
+    "myChildren": "My Children",
+    "schoolEvents": "School Events",
+    "empoweringEducation": "Empowering Education Excellence"
+  },
+  "students": {
+    "title": "Students",
+    "addStudent": "Add Student",
+    "searchPlaceholder": "Search by name or email...",
+    "filterBySection": "Filter by section",
+    "studentName": "Student Name",
+    "section": "Section",
+    "noStudents": "No students assigned"
+  },
+  "teachers": {
+    "title": "Teachers",
+    "addTeacher": "Add Teacher",
+    "searchPlaceholder": "Search by name or email...",
+    "filterByStatus": "Filter by status",
+    "teacherName": "Teacher Name",
+    "noTeachers": "No teachers available"
+  },
+  "parents": {
+    "title": "Parents",
+    "addParent": "Add Parent",
+    "searchPlaceholder": "Search by name or email...",
+    "filterByStatus": "Filter by status",
+    "parentName": "Parent Name",
+    "noParents": "No parents available",
+    "addChild": "Add Student"
+  },
+  "sections": {
+    "title": "Sections",
+    "addSection": "Add Section",
+    "gradeLevel": "Grade Level",
+    "homeRoomTeacher": "Home Room Teacher",
+    "details": "Section Details",
+    "students": "Students",
+    "teachers": "Teachers",
+    "collectiveResult": "Collective Result",
+    "chat": "Chat",
+    "attendance": "Attendance"
   }
 } 
