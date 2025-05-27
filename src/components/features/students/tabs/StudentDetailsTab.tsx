@@ -135,19 +135,6 @@ const StudentDetailsTab: React.FC<StudentDetailsTabProps> = ({ student, canEdit 
             </div>
 
             <div>
-              <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                Email
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                value={student.user?.email || '-'}
-                readOnly
-                className="mt-1 bg-gray-50"
-              />
-            </div>
-
-            <div>
               <Label htmlFor="phoneNumber" className="text-sm font-medium text-gray-700">
                 Phone Number
               </Label>
@@ -174,52 +161,13 @@ const StudentDetailsTab: React.FC<StudentDetailsTabProps> = ({ student, canEdit 
             </div>
 
             <div>
-              <Label htmlFor="id" className="text-sm font-medium text-gray-700">
-                Student ID
-              </Label>
-              <Input
-                id="id"
-                type="text"
-                value={student.id || '-'}
-                readOnly
-                className="mt-1 bg-gray-50"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="parentId" className="text-sm font-medium text-gray-700">
-                Parent ID
-              </Label>
-              <Input
-                id="parentId"
-                type="text"
-                value={student.parentId || '-'}
-                readOnly
-                className="mt-1 bg-gray-50"
-              />
-            </div>
-
-            <div>
               <Label htmlFor="sectionId" className="text-sm font-medium text-gray-700">
-                Section ID
+                Section
               </Label>
               <Input
                 id="sectionId"
                 type="text"
                 value={student.sectionId || 'N/A'}
-                readOnly
-                className="mt-1 bg-gray-50"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="userId" className="text-sm font-medium text-gray-700">
-                User ID
-              </Label>
-              <Input
-                id="userId"
-                type="text"
-                value={student.userId || '-'}
                 readOnly
                 className="mt-1 bg-gray-50"
               />
