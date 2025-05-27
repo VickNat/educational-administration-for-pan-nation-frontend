@@ -29,7 +29,7 @@ import { cn } from '@/lib/utils';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useGetGradeLevels } from '@/queries/grade-level/queries';
 import { useGetAvailableHomeRoomTeachers } from '@/queries/teachers/queries';
-import { useGetStudents } from '@/queries/students/queries';
+import { useGetStudents, useGetUnassignedStudents } from '@/queries/students/queries';
 import { useAddSection } from '@/queries/sections/mutations';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -65,7 +65,8 @@ const AddSectionsView = () => {
 
   const { data: gradeLevelsData } = useGetGradeLevels();
   const { data: teachersData } = useGetAvailableHomeRoomTeachers();
-  const { data: studentsData } = useGetStudents();
+  // const { data: studentsData } = useGetStudents();
+  const { data: unassignedStudentsData } = useGetUnassignedStudents();
   const { mutateAsync: addSection, isPending } = useAddSection();
   const router = useRouter();
   const params = useParams();
@@ -89,10 +90,10 @@ const AddSectionsView = () => {
       setTeachers(teachersData.result);
     }
 
-    if (studentsData) {
-      setStudents(studentsData?.result);
+    if (unassignedStudentsData) {
+      setStudents(unassignedStudentsData?.result);
     }
-  }, [gradeLevelsData, teachersData, studentsData]);
+  }, [gradeLevelsData, teachersData, unassignedStudentsData]);
 
   useEffect(() => {
     if (gradeLevelIdFromQuery) {

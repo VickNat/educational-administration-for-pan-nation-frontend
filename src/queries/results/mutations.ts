@@ -17,12 +17,20 @@ export const useDeleteResult = () => {
 
   return useMutation({
     mutationFn: (resultId: string) => fetchWithAuth(`/result/${resultId}`, { method: 'DELETE' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['results'] });
+    },
   });
 };
 
 export const useGenerateCollectiveResult = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (sectionId: string) => fetchWithAuth(`/collective-result/section/${sectionId}`, { method: 'POST' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['results'] });
+    },
   });
 };
 
@@ -37,4 +45,16 @@ export const useUpdateCollectiveResult = () => {
     },
   });
 };
+
+export const useGenerateRoster = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => fetchWithAuth(`/roster`, { method: 'POST' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['results'] });
+    },
+  });
+};
+
 

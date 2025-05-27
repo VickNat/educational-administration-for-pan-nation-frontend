@@ -23,10 +23,10 @@ interface AnnouncementCardProps {
 const AnnouncementCard = ({ topic, description, image, directorId, id, directorName }: AnnouncementCardProps) => {
   return (
     <Link href={`/dashboard/announcements/${id}`}>
-      <div className="group bg-gradient-to-br from-primary/5 to-secondary/5 dark:bg-input/20 rounded-xl border-2 border-primary/20 p-4 sm:p-6 transition-all duration-300 hover:border-primary/30 hover:scale-[1.02] mb-4 break-inside-avoid">
+      <div className="group bg-gradient-to-br from-primary/5 to-secondary/5 dark:bg-input/20 rounded-2xl border-2 border-primary/20 p-6 sm:p-8 transition-all duration-300 hover:border-primary/30 hover:scale-[1.01] mb-6 w-full max-w-2xl mx-auto shadow-none">
         {/* Image (if present) */}
         {image && (
-          <div className="relative w-full aspect-video mb-4 rounded-lg overflow-hidden">
+          <div className="relative w-full aspect-[2/1] mb-6 rounded-xl overflow-hidden">
             <Image
               src={image}
               alt={topic}
@@ -42,26 +42,28 @@ const AnnouncementCard = ({ topic, description, image, directorId, id, directorN
         )}
 
         {/* Content */}
-        <div className="space-y-3">
+        <div className="space-y-4">
           {/* Header: Topic and Time */}
           <div className="flex justify-between items-start gap-4">
-            <h2 className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary line-clamp-2">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 line-clamp-2">
               {topic}
             </h2>
+          </div>
+
+          {/* Description */}
+          <p className="text-base sm:text-lg text-muted-foreground line-clamp-4 leading-relaxed">
+            {description}
+          </p>
+
+          {/* Footer: Director Info */}
+          <div className="pt-4 border-t border-primary/10 flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">
+              Posted by Director: {directorName}
+            </span>
             {/* <div className="flex items-center gap-1 text-xs text-muted-foreground whitespace-nowrap">
               <RiTimeLine className="w-3 h-3" />
               <span>{formatDistanceToNow(new Date(createdAt), { addSuffix: true })}</span>
             </div> */}
-          </div>
-
-          {/* Description */}
-          <p className="text-muted-foreground line-clamp-3">{description}</p>
-
-          {/* Footer: Director Info */}
-          <div className="pt-2 border-t border-primary/10">
-            <span className="text-sm text-muted-foreground">
-              Posted by Director: {directorName}
-            </span>
           </div>
         </div>
       </div>
@@ -82,10 +84,10 @@ const AnnouncementsView = () => {
   }, [data]);
 
   return (
-    <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 min-h-screen">
+    <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8 min-h-screen">
       {/* Header Section */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
           Announcements
         </h1>
         {user?.user.role === 'DIRECTOR' && (
@@ -98,8 +100,8 @@ const AnnouncementsView = () => {
         )}
       </div>
 
-      {/* Feed Section: Masonry Columns */}
-      <div className="columns-1 md:columns-2 lg:columns-3 gap-2">
+      {/* Feed Section: Responsive List */}
+      <div className="flex flex-col gap-8">
         {announcements.length > 0 ? (
           announcements.map((announcement, index) => (
             <AnnouncementCard
@@ -113,9 +115,9 @@ const AnnouncementsView = () => {
             />
           ))
         ) : (
-          <div className="col-span-full">
-            <div className="bg-gradient-to-br from-primary/5 to-secondary/5 dark:bg-input/20 rounded-xl border-2 border-primary/20 p-8 text-center">
-              <p className="text-muted-foreground">
+          <div className="w-full max-w-2xl mx-auto">
+            <div className="bg-gradient-to-br from-primary/5 to-secondary/5 dark:bg-input/20 rounded-2xl border-2 border-primary/20 p-12 text-center">
+              <p className="text-muted-foreground text-lg">
                 No announcements available.
               </p>
             </div>

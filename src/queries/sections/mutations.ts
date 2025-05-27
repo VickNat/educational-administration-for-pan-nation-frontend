@@ -6,7 +6,7 @@ export const useAddSection = () => {
   return useMutation({
     mutationFn: (data: any) => fetchWithAuth('/section', { method: 'POST', body: JSON.stringify(data) }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['sections', 'grade-levels'] });
+      queryClient.invalidateQueries({ queryKey: ['sections'] });
     },
   });
 };
@@ -16,7 +16,7 @@ export const useAddStudentsToSection = (sectionId: string) => {
   return useMutation({
     mutationFn: (data: any) => fetchWithAuth(`/section/addStudents/${sectionId}`, { method: 'POST', body: JSON.stringify(data) }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['sections', 'grade-levels'] });
+      queryClient.invalidateQueries({ queryKey: ['sections'] });
     },
   });
 };
@@ -26,7 +26,7 @@ export const useRemoveStudentsFromSection = (sectionId: string) => {
   return useMutation({
     mutationFn: (data: any) => fetchWithAuth(`/section/removeStudent/${sectionId}`, { method: 'POST', body: JSON.stringify(data) }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['sections', 'grade-levels'] });
+      queryClient.invalidateQueries({ queryKey: ['sections'] });
     },
   });
 };
@@ -36,7 +36,7 @@ export const useUpdateSection = (id: string) => {
   return useMutation({
     mutationFn: (data: any) => fetchWithAuth(`/section/updateSection/${id}`, { method: 'POST', body: JSON.stringify(data) }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['sections', 'grade-levels'] });
+      queryClient.invalidateQueries({ queryKey: ['sections'] });
     },
   });
 };
@@ -46,7 +46,7 @@ export const useDeleteSection = (id: string) => {
   return useMutation({
     mutationFn: () => fetchWithAuth(`/section/${id}`, { method: 'DELETE' }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['sections', 'grade-levels'] });
+      queryClient.invalidateQueries({ queryKey: ['sections'] });
     },
   });
 };

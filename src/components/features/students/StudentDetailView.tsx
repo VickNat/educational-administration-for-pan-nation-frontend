@@ -100,9 +100,25 @@ const StudentDetailView = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold text-gray-900 mb-6">Student Details</h1>
-        <Button variant="ghost" onClick={() => router.back()}>
-            <RiArrowLeftLine className="w-5 h-5" /> Back
-        </Button>
+        <div className="flex items-center gap-2">
+          <Link href={`/performance/${id}`}>
+            <Button
+              // variant="ghost"
+              className="flex items-center gap-2"
+            >
+              <RiBook2Line className="w-4 h-4" />
+              View Performance
+            </Button>
+          </Link>
+          <Button
+            variant="ghost"
+            onClick={() => router.back()}
+            className="flex items-center gap-2"
+          >
+            <RiArrowLeftLine className="w-4 h-4" />
+            Back
+          </Button>
+        </div>
       </div>
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Sidebar */}

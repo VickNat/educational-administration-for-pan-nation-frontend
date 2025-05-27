@@ -18,6 +18,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { useGenerateRoster } from '@/queries/results/mutations';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import toast from 'react-hot-toast';
 
 const SHORTCUTS = {
   DIRECTOR: [
@@ -92,9 +95,25 @@ const DashboardView = () => {
   const { user } = useAuth();
   const role = user?.user?.role || 'DIRECTOR';
   const shortcuts = SHORTCUTS[role] || [];
+  const { mutateAsync: generateRoster } = useGenerateRoster();
   const router = useRouter();
+  const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   const getInitials = (firstName: string, lastName: string) => {
     return `${firstName[0]}${lastName[0]}`.toUpperCase();
+  };
+
+  const handleGenerateRoster = async () => {
+    setLoading(true);
+    try {
+      await generateRoster();
+      toast.success('Roster generated and results reset successfully!');
+      setOpen(false);
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to generate roster');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -157,9 +176,20 @@ const DashboardView = () => {
 
       {/* Quick Actions Section */}
       <div className="mb-8">
-        <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-          Quick Actions
-        </h2>
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <h2 className="text-xl sm:text-2xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+            Quick Actions
+          </h2>
+          {role === 'DIRECTOR' && (
+            <Button
+              className="bg-red-600 hover:bg-red-700 text-white font-semibold px-5 py-2 rounded-lg shadow-sm transition-colors"
+              onClick={() => setOpen(true)}
+              disabled={loading}
+            >
+              Generate Roster
+            </Button>
+          )}
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {shortcuts.map((shortcut) => (
             <Link href={shortcut.href} key={shortcut.title}>
@@ -177,6 +207,27 @@ const DashboardView = () => {
           ))}
         </div>
       </div>
+
+      {/* Confirmation Dialog */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you sure you want to generate the new roster?</DialogTitle>
+          </DialogHeader>
+          <div className="text-sm text-gray-700 mb-4">
+            This will promote all students to the next section and grade level, and <span className="font-semibold text-red-600">delete all collective results for the current semester</span>.<br />
+            <span className="font-semibold">This action cannot be undone.</span>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>
+              Cancel
+            </Button>
+            <Button className="bg-red-600 hover:bg-red-700 text-white" onClick={handleGenerateRoster} disabled={loading}>
+              {loading ? 'Generating...' : 'Yes, Generate Roster'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

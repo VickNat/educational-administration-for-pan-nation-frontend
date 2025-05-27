@@ -3,15 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { RiEdit2Line, RiDeleteBinLine } from 'react-icons/ri';
+import { RiEdit2Line, RiDeleteBinLine, RiMore2Line } from 'react-icons/ri';
 import {
   Dialog,
   DialogContent,
@@ -28,6 +20,7 @@ import * as Yup from 'yup';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '@/app/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 // Dummy data for subjects
 const initialSubjectsData = [
@@ -64,6 +57,8 @@ const SubjectsView = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [subjectToDelete, setSubjectToDelete] = useState<Subject | null>(null);
   const [editSubject, setEditSubject] = useState<Subject | null>(null);
+  const [search, setSearch] = useState('');
+  const [popoverOpenId, setPopoverOpenId] = useState<string | null>(null);
 
   useEffect(() => {
     if (data) {
@@ -116,6 +111,7 @@ const SubjectsView = () => {
   const handleDeleteSubject = (subject: Subject) => {
     setSubjectToDelete(subject);
     setIsDeleteDialogOpen(true);
+    setPopoverOpenId(null);
   };
 
   const confirmDelete = async () => {
@@ -141,93 +137,159 @@ const SubjectsView = () => {
   const openEditDialog = (subject: Subject) => {
     setEditSubject({ ...subject });
     setIsEditDialogOpen(true);
+    setPopoverOpenId(null);
+  };
+
+  // Filtered subjects
+  const filteredSubjects = subjectsData.filter(subject =>
+    subject.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  // Card for each subject
+  const SubjectCard = ({ subject }: { subject: Subject }) => {
+    const canEditOrDelete = user?.user.role === 'DIRECTOR';
+    return (
+      <div className="relative bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl border border-primary/20 p-8 flex flex-col justify-center items-center shadow-none hover:border-primary/40 transition-all cursor-pointer min-h-[100px] group">
+        {/* 3-dots popover menu */}
+        {canEditOrDelete && (
+          <Popover open={popoverOpenId === subject.id} onOpenChange={open => setPopoverOpenId(open ? subject.id : null)}>
+            <PopoverTrigger asChild>
+              <button
+                className="absolute top-4 right-4 p-2 rounded-full hover:bg-primary/10 focus:outline-none"
+                onClick={e => { e.stopPropagation(); setPopoverOpenId(subject.id); }}
+              >
+                <RiMore2Line className="w-6 h-6 text-gray-500" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-40 p-2">
+              <button
+                className="flex items-center gap-2 px-3 py-2 rounded hover:bg-primary/5 text-sm text-gray-800 w-full"
+                onClick={e => { e.stopPropagation(); openEditDialog(subject); }}
+              >
+                <RiEdit2Line className="w-4 h-4" /> Edit
+              </button>
+              <button
+                className="flex items-center gap-2 px-3 py-2 rounded hover:bg-red-50 text-sm text-red-600 w-full"
+                onClick={e => { e.stopPropagation(); handleDeleteSubject(subject); }}
+              >
+                <RiDeleteBinLine className="w-4 h-4" /> Delete
+              </button>
+            </PopoverContent>
+          </Popover>
+        )}
+        <div className="text-xl font-bold text-gray-900 text-center w-full truncate">{subject.name}</div>
+      </div>
+    );
   };
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      {/* Paper-like Background Container (No Shadow) */}
-      <div className="bg-white rounded-lg p-6">
-        {/* Header Section (No Path) */}
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Subjects</h1>
-          <Button
-            onClick={() => setIsAddDialogOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700"
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <h1 className="text-2xl font-bold text-gray-900">Subjects</h1>
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <Input
+            type="text"
+            placeholder="Search subjects..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="w-full sm:w-64"
+          />
+          {user?.user.role === 'DIRECTOR' && (
+            <Button onClick={() => setIsAddDialogOpen(true)}>
+              Add subject
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Subjects Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {filteredSubjects.map((subject) => (
+          <SubjectCard key={subject.id} subject={subject} />
+        ))}
+      </div>
+
+      {/* Add Subject Dialog */}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Subject</DialogTitle>
+          </DialogHeader>
+          <Formik
+            initialValues={{ name: '' }}
+            validationSchema={subjectSchema}
+            onSubmit={handleAddSubject}
           >
-            Add subject
-          </Button>
-        </div>
+            {({ isSubmitting }) => (
+              <Form className="space-y-4">
+                <div>
+                  <Label htmlFor="name" className="text-sm font-medium text-gray-700">
+                    Name
+                  </Label>
+                  <Field
+                    as={Input}
+                    id="name"
+                    name="name"
+                    type="text"
+                    placeholder="Enter subject name"
+                    className="mt-1"
+                  />
+                  <ErrorMessage
+                    name="name"
+                    component="div"
+                    className="text-red-500 text-sm mt-1"
+                  />
+                </div>
+                <DialogFooter className="mt-6">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsAddDialogOpen(false)}
+                    className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="bg-blue-600 hover:bg-blue-700"
+                    disabled={isSubmitting || isCreating}
+                  >
+                    {isCreating ? 'Adding...' : 'Add'}
+                  </Button>
+                </DialogFooter>
+              </Form>
+            )}
+          </Formik>
+        </DialogContent>
+      </Dialog>
 
-        {/* Table Section */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Current Subjects</h2>
-          <div className="relative mb-4">
-            <Input
-              type="text"
-              placeholder="Search..."
-              className="w-48 ml-auto"
-            />
-          </div>
-          <div className="border rounded-lg">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-12 text-center">#</TableHead>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Grade Level ID</TableHead>
-                  {user?.user.role === 'DIRECTOR' && (
-                    <TableHead className="text-center">Action</TableHead>
-                  )}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {subjectsData.map((subject, index) => (
-                  <TableRow key={subject.id}>
-                    <TableCell className="text-center">{index + 1}</TableCell>
-                    <TableCell>{subject.id}</TableCell>
-                    <TableCell>{subject.name}</TableCell>
-                    <TableCell>{subject.gradeLevelId}</TableCell>
-                    {user?.user.role === 'DIRECTOR' && (
-                      <TableCell className="text-center">
-                        <div className="flex justify-center gap-2">
-                          <Button
-                            variant="ghost"
-                          size="icon"
-                          onClick={() => openEditDialog(subject)}
-                        >
-                          <RiEdit2Line className="h-5 w-5 text-gray-600" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDeleteSubject(subject)}
-                        >
-                          <RiDeleteBinLine className="h-5 w-5 text-red-500" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    )}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
-
-        {/* Add Subject Dialog */}
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add Subject</DialogTitle>
-            </DialogHeader>
+      {/* Edit Subject Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Subject</DialogTitle>
+          </DialogHeader>
+          {editSubject && (
             <Formik
-              initialValues={{ name: '' }}
+              initialValues={{ name: editSubject.name }}
               validationSchema={subjectSchema}
-              onSubmit={handleAddSubject}
+              onSubmit={handleEditSubject}
             >
               {({ isSubmitting }) => (
                 <Form className="space-y-4">
+                  <div>
+                    <Label htmlFor="id" className="text-sm font-medium text-gray-700">
+                      ID
+                    </Label>
+                    <Input
+                      id="id"
+                      type="text"
+                      value={editSubject.id}
+                      readOnly
+                      className="mt-1 bg-gray-50"
+                    />
+                  </div>
                   <div>
                     <Label htmlFor="name" className="text-sm font-medium text-gray-700">
                       Name
@@ -246,11 +308,26 @@ const SubjectsView = () => {
                       className="text-red-500 text-sm mt-1"
                     />
                   </div>
+                  <div>
+                    <Label
+                      htmlFor="gradeLevelId"
+                      className="text-sm font-medium text-gray-700"
+                    >
+                      Grade Level ID
+                    </Label>
+                    <Input
+                      id="gradeLevelId"
+                      type="text"
+                      value={editSubject.gradeLevelId || ''}
+                      readOnly
+                      className="mt-1 bg-gray-50"
+                    />
+                  </div>
                   <DialogFooter className="mt-6">
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => setIsAddDialogOpen(false)}
+                      onClick={() => setIsEditDialogOpen(false)}
                       className="border-gray-300 text-gray-700 hover:bg-gray-50"
                     >
                       Cancel
@@ -258,136 +335,53 @@ const SubjectsView = () => {
                     <Button
                       type="submit"
                       className="bg-blue-600 hover:bg-blue-700"
-                      disabled={isSubmitting || isCreating}
+                      disabled={isSubmitting || isUpdating}
                     >
-                      {isCreating ? 'Adding...' : 'Add'}
+                      {isUpdating ? 'Saving...' : 'Save'}
                     </Button>
                   </DialogFooter>
                 </Form>
               )}
             </Formik>
-          </DialogContent>
-        </Dialog>
+          )}
+        </DialogContent>
+      </Dialog>
 
-        {/* Edit Subject Dialog */}
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Edit Subject</DialogTitle>
-            </DialogHeader>
-            {editSubject && (
-              <Formik
-                initialValues={{ name: editSubject.name }}
-                validationSchema={subjectSchema}
-                onSubmit={handleEditSubject}
-              >
-                {({ isSubmitting }) => (
-                  <Form className="space-y-4">
-                    <div>
-                      <Label htmlFor="id" className="text-sm font-medium text-gray-700">
-                        ID
-                      </Label>
-                      <Input
-                        id="id"
-                        type="text"
-                        value={editSubject.id}
-                        readOnly
-                        className="mt-1 bg-gray-50"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="name" className="text-sm font-medium text-gray-700">
-                        Name
-                      </Label>
-                      <Field
-                        as={Input}
-                        id="name"
-                        name="name"
-                        type="text"
-                        placeholder="Enter subject name"
-                        className="mt-1"
-                      />
-                      <ErrorMessage
-                        name="name"
-                        component="div"
-                        className="text-red-500 text-sm mt-1"
-                      />
-                    </div>
-                    <div>
-                      <Label
-                        htmlFor="gradeLevelId"
-                        className="text-sm font-medium text-gray-700"
-                      >
-                        Grade Level ID
-                      </Label>
-                      <Input
-                        id="gradeLevelId"
-                        type="text"
-                        value={editSubject.gradeLevelId || ''}
-                        readOnly
-                        className="mt-1 bg-gray-50"
-                      />
-                    </div>
-                    <DialogFooter className="mt-6">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setIsEditDialogOpen(false)}
-                        className="border-gray-300 text-gray-700 hover:bg-gray-50"
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        type="submit"
-                        className="bg-blue-600 hover:bg-blue-700"
-                        disabled={isSubmitting || isUpdating}
-                      >
-                        {isUpdating ? 'Saving...' : 'Save'}
-                      </Button>
-                    </DialogFooter>
-                  </Form>
-                )}
-              </Formik>
-            )}
-          </DialogContent>
-        </Dialog>
-
-        {/* Delete Confirmation Dialog */}
-        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Delete Subject</DialogTitle>
-            </DialogHeader>
-            <div className="py-4">
-              <p className="text-gray-600">
-                Are you sure you want to delete the subject "{subjectToDelete?.name}"? This action cannot be undone.
-              </p>
-            </div>
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  setIsDeleteDialogOpen(false);
-                  setSubjectToDelete(null);
-                }}
-                className="border-gray-300 text-gray-700 hover:bg-gray-50"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={confirmDelete}
-                disabled={isDeleting}
-                className="bg-red-600 hover:bg-red-700"
-              >
-                {isDeleting ? 'Deleting...' : 'Delete'}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Subject</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-gray-600">
+              Are you sure you want to delete the subject "{subjectToDelete?.name}"? This action cannot be undone.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setIsDeleteDialogOpen(false);
+                setSubjectToDelete(null);
+              }}
+              className="border-gray-300 text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={confirmDelete}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {isDeleting ? 'Deleting...' : 'Delete'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
