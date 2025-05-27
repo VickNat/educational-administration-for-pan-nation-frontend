@@ -79,21 +79,21 @@ const CollectiveResultTab = ({ studentId }: CollectiveResultTabProps) => {
           <CardHeader className="text-center space-y-4 pb-6 border-b border-primary/10">
             <div className="flex items-center justify-center gap-2">
               <Trophy className="h-8 w-8 text-primary" />
-              <CardTitle className="text-3xl font-extrabold tracking-tight font-serif text-primary-foreground print:text-black">Academic Achievement Certificate</CardTitle>
+              <CardTitle className="text-3xl font-extrabold tracking-tight font-serif text-primary print:text-black">Academic Achievement Certificate</CardTitle>
               <Trophy className="h-8 w-8 text-primary" />
             </div>
-            <p className="text-muted-foreground text-lg font-medium">This is to certify that</p>
-            <h2 className="text-2xl font-bold font-serif text-primary-foreground print:text-black">{`${student?.user?.firstName} ${student?.user?.lastName}`}</h2>
+            <p className="text-gray-600 text-lg font-medium">This is to certify that</p>
+            <h2 className="text-2xl font-bold font-serif text-primary print:text-black">{`${student?.user?.firstName} ${student?.user?.lastName}`}</h2>
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
             <div className="grid grid-cols-2 gap-4 text-center">
               <div className="p-4 rounded-lg bg-primary/5 border border-primary/10">
-                <p className="text-sm text-muted-foreground">Total Score</p>
-                <p className="text-2xl font-bold text-primary-foreground print:text-black">{totalScore}</p>
+                <p className="text-sm text-gray-600">Total Score</p>
+                <p className="text-2xl font-bold text-primary">{totalScore}</p>
               </div>
               <div className="p-4 rounded-lg bg-primary/5 border border-primary/10">
-                <p className="text-sm text-muted-foreground">Class Rank</p>
-                <p className="text-2xl font-bold text-primary-foreground print:text-black">#{rank}</p>
+                <p className="text-sm text-gray-600">Class Rank</p>
+                <p className="text-2xl font-bold text-primary">#{rank}</p>
               </div>
             </div>
 
@@ -122,8 +122,8 @@ const CollectiveResultTab = ({ studentId }: CollectiveResultTabProps) => {
                     </Select>
                   </div>
 
-                  <div className="text-center p-4 bg-muted/50 rounded-lg">
-                    <p className="text-sm text-muted-foreground mb-2">Teacher's Feedback</p>
+                  <div className="text-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <p className="text-sm text-gray-600 mb-2">Teacher's Feedback</p>
                     <Field
                       as={Input}
                       name="feedback"
@@ -133,7 +133,7 @@ const CollectiveResultTab = ({ studentId }: CollectiveResultTabProps) => {
                   </div>
 
                   <div className="flex justify-center">
-                    <Button type="submit" disabled={isPending} className="gap-2">
+                    <Button type="submit" disabled={isPending} className="gap-2 bg-primary hover:bg-primary/90">
                       <Save className="h-4 w-4" />
                       {isPending ? 'Saving...' : 'Save Changes'}
                     </Button>
@@ -146,33 +146,33 @@ const CollectiveResultTab = ({ studentId }: CollectiveResultTabProps) => {
             <div className="hidden print:block text-center mt-6">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Star className="h-5 w-5 text-primary" />
-                <span className="font-semibold">Conduct:</span>
-                <span className="ml-1">{conduct || '-'}</span>
+                <span className="font-semibold text-gray-700">Conduct:</span>
+                <span className="ml-1 text-primary">{conduct || '-'}</span>
               </div>
               <div className="text-center p-2">
-                <span className="font-semibold">Teacher's Feedback:</span>
-                <span className="ml-1">{feedback || '-'}</span>
+                <span className="font-semibold text-gray-700">Teacher's Feedback:</span>
+                <span className="ml-1 text-gray-600">{feedback || '-'}</span>
               </div>
             </div>
 
             <div className="mt-8">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-800">
                 <Award className="h-5 w-5 text-primary" />
                 Subject-wise Performance
               </h3>
               <ScrollArea className="h-[300px] rounded-md border p-4 print:h-auto print:border-none print:p-0">
                 <div className="space-y-4">
                   {result && result.map((subjectResult) => (
-                    <div key={subjectResult.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-primary/10 print:bg-transparent print:border-b print:rounded-none">
+                    <div key={subjectResult.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200 print:bg-transparent print:border-b print:rounded-none">
                       <div>
-                        <p className="font-medium">{subjectResult.subject?.name}</p>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="font-medium text-gray-800">{subjectResult.subject?.name}</p>
+                        <p className="text-sm text-gray-600">
                           Section: {subjectResult.section?.name}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold">{subjectResult.final}</p>
-                        <p className="text-sm text-muted-foreground">Final Score</p>
+                        <p className="font-semibold text-primary">{subjectResult.final}</p>
+                        <p className="text-sm text-gray-600">Final Score</p>
                       </div>
                     </div>
                   ))}
@@ -182,9 +182,9 @@ const CollectiveResultTab = ({ studentId }: CollectiveResultTabProps) => {
 
             {/* Footer for print: date and signature */}
             <div className="mt-12 flex flex-col items-end print:items-end print:mt-16">
-              <div className="text-sm text-muted-foreground print:text-black mb-2">Date: {new Date().toLocaleDateString()}</div>
+              <div className="text-sm text-gray-600 print:text-black mb-2">Date: {new Date().toLocaleDateString()}</div>
               <div className="border-t border-primary/30 w-40 mt-2"></div>
-              <div className="text-sm mt-1 text-muted-foreground print:text-black">Signature</div>
+              <div className="text-sm mt-1 text-gray-600 print:text-black">Signature</div>
             </div>
           </CardContent>
         </Card>
