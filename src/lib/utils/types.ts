@@ -36,6 +36,8 @@ export interface UpdateUserInput {
   lastName?: string;
   phoneNumber?: string;
   profile?: string | null;
+  gender?: string | null;
+  dateOfBirth?: string | null;
 }
 
 export interface Parent {
@@ -81,6 +83,8 @@ export interface Student {
     phoneNumber: string;
     role: 'STUDENT';
     profile?: string | null;
+    gender?: string | null;
+    dateOfBirth?: string | null;
   };
 }
 
@@ -215,6 +219,7 @@ export interface CollectiveResultByStudent {
   sectionId: string;
   isAvailable: boolean;
   totalScore: number;
+  average: number;
   result: Result[];
   student: {
     id: string;

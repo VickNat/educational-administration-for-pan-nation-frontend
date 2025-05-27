@@ -6,7 +6,7 @@ import { useGetParentById } from '@/queries/parents/queries';
 import { Parent } from '@/lib/utils/types';
 import { useAuth } from '@/app/context/AuthContext';
 import { Button } from '@/components/ui/button';
-import { RiArrowLeftLine, RiUserAddLine } from 'react-icons/ri';
+import { RiArrowLeftLine, RiUserAddLine, RiUser3Line, RiTeamLine } from 'react-icons/ri';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useForgotPassword } from '@/queries/users/mutations';
@@ -16,6 +16,8 @@ import * as Yup from 'yup';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import DetailsTab from './tabs/DetailsTab';
+import ChildrenTab from './tabs/ChildrenTab';
 
 const validationSchema = Yup.object().shape({
   password: Yup.string()
@@ -35,6 +37,7 @@ const ParentsDetailView = () => {
   const { user } = useAuth();
   const { mutateAsync: resetPassword, isPending } = useForgotPassword();
   const [showResetPassword, setShowResetPassword] = useState(false);
+  const [activeTab, setActiveTab] = useState('details');
 
   useEffect(() => {
     if (data && data?.result) {
@@ -61,96 +64,58 @@ const ParentsDetailView = () => {
     }
   };
 
-  return (
-    <div className="max-w-6xl mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Parent Details</h1>
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            onClick={() => router.back()}
-            className="flex items-center gap-2"
-          >
-            <RiArrowLeftLine className="w-4 h-4" />
-            Back
-          </Button>
-          {(user?.user?.role === 'DIRECTOR' || user?.user?.role === 'TEACHER') && (
-            <Button
-              variant="default"
-              onClick={() => {
-                router.push(`/dashboard/student/add?parentId=${id}`);
-              }}
-              className="flex items-center gap-2"
-            >
-              <RiUserAddLine className="w-4 h-4" />
-              Add Student
-            </Button>
-          )}
+  const tabs = [
+    { id: 'details', label: 'Details', icon: RiUser3Line },
+    { id: 'children', label: 'Children', icon: RiTeamLine },
+  ];
 
-          {user?.user?.role === 'DIRECTOR' && (
-            <Button
-              variant="default"
-              onClick={() => {
-                setShowResetPassword(true);
-              }}
-            >
-              Reset Password
-            </Button>
-          )}
+  return (
+    <div className="p-6">
+      <div className="max-w-4xl mx-auto mb-8">
+        <div className="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl border border-primary/20 p-8 flex flex-col sm:flex-row items-center gap-6 shadow-none">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Parent Details</h1>
+            <div className="flex items-center gap-3 mt-2">
+              <span className="text-sm text-muted-foreground font-medium">Parent:</span>
+              <span className="text-base font-semibold text-gray-800">{parentData?.user?.firstName} {parentData?.user?.lastName}</span>
+            </div>
+          </div>
+          <Button
+            asChild
+            variant="ghost"
+            className="self-start"
+          >
+            <span onClick={() => router.back()} className="flex items-center cursor-pointer">
+              <RiArrowLeftLine className="w-5 h-5" /> Back
+            </span>
+          </Button>
         </div>
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className='shadow-none border-none'>
-          <CardHeader>
-            <CardTitle>Personal Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">First Name</label>
-              <div className="text-base">{parentData?.user?.firstName || '-'}</div>
+      <div className="flex flex-col lg:flex-row gap-6">
+        <div className="lg:w-64">
+          <div className="bg-white rounded-xl p-2">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm ${activeTab === tab.id
+                  ? 'bg-blue-50 text-blue-600'
+                  : 'text-gray-600 hover:bg-gray-50'
+                  }`}
+              >
+                <tab.icon className="w-5 h-5" />
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="flex-1">
+          <div className="bg-white rounded-xl p-6">
+            {activeTab === 'details' && <DetailsTab parentData={parentData} user={user} onShowResetPassword={() => setShowResetPassword(true)} />}
+            {activeTab === 'children' && <ChildrenTab students={parentData?.students || []} router={router} parentId={parentData?.id} />}
             </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">Last Name</label>
-              <div className="text-base">{parentData?.user?.lastName || '-'}</div>
             </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">Email</label>
-              <div className="text-base">{parentData?.user?.email || '-'}</div>
             </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">Phone Number</label>
-              <div className="text-base">{parentData?.user?.phoneNumber || '-'}</div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className='shadow-none border-none'>
-          <CardHeader>
-            <CardTitle>Students</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {parentData?.students?.length > 0 ? (
-              <div className="space-y-2">
-                {parentData.students.map((student: any) => (
-                  <div key={student.id} className="flex cursor-pointer hover:bg-gray-100 items-center justify-between p-3 rounded-lg border" onClick={() => router.push(`/dashboard/student/${student.id}`)}>
-                    <span className="font-medium">{student.user.firstName} {student.user.lastName}</span>
-                    <Badge variant="secondary">Student</Badge>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                No students assigned
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
       <Dialog open={showResetPassword} onOpenChange={setShowResetPassword}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -166,7 +131,7 @@ const ParentsDetailView = () => {
           >
             {({ errors, touched }) => (
               <Form className="space-y-4">
-                <div className="space-y-2">
+            <div className="space-y-2">
                   <Field
                     as={Input}
                     name="password"
@@ -177,8 +142,8 @@ const ParentsDetailView = () => {
                   {errors.password && touched.password && (
                     <div className="text-sm text-red-500">{errors.password}</div>
                   )}
-                </div>
-                <div className="space-y-2">
+            </div>
+              <div className="space-y-2">
                   <Field
                     as={Input}
                     name="confirmPassword"
@@ -189,7 +154,7 @@ const ParentsDetailView = () => {
                   {errors.confirmPassword && touched.confirmPassword && (
                     <div className="text-sm text-red-500">{errors.confirmPassword}</div>
                   )}
-                </div>
+                  </div>
                 <div className="flex justify-end gap-2">
                   <Button
                     type="button"
@@ -208,7 +173,7 @@ const ParentsDetailView = () => {
                       'Reset Password'
                     )}
                   </Button>
-                </div>
+              </div>
               </Form>
             )}
           </Formik>

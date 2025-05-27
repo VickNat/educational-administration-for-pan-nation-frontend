@@ -84,7 +84,8 @@ const TeachersView = () => {
       setIsDeleteModalOpen(false);
       setSelectedTeacher(null);
     } catch (error) {
-      toast.error('Failed to delete teacher');
+      console.log("error", error)
+      toast.error('Failed to delete teacher because the current teacher has a relation.');
     }
   };
 
@@ -151,9 +152,9 @@ const TeachersView = () => {
             </TableHeader>
             <TableBody>
               {paginatedTeachers.map((teacher, index) => (
-                <TableRow onClick={() => router.push(`/dashboard/teachers/${teacher.id}`)} key={teacher.id}>
-                  <TableCell className="text-center">{startIndex + index + 1}</TableCell>
-                  <TableCell>
+                <TableRow key={teacher.id}>
+                  <TableCell  onClick={() => router.push(`/dashboard/teachers/${teacher.id}`)} className="text-center">{startIndex + index + 1}</TableCell>
+                  <TableCell  onClick={() => router.push(`/dashboard/teachers/${teacher.id}`)}>
                     {teacher.user.profile ? (
                       <img
                         src={teacher.user.profile || ''}
@@ -168,10 +169,10 @@ const TeachersView = () => {
                       </div>
                     )}
                   </TableCell>
-                  <TableCell>{`${teacher.user.firstName} ${teacher.user.lastName}`}</TableCell>
-                  <TableCell>{teacher.user.email}</TableCell>
-                  <TableCell>{teacher.user.phoneNumber}</TableCell>
-                  <TableCell>{teacher.isActivated ? 'Activated' : 'Deactivated'}</TableCell>
+                  <TableCell  onClick={() => router.push(`/dashboard/teachers/${teacher.id}`)}>{`${teacher.user.firstName} ${teacher.user.lastName}`}</TableCell>
+                  <TableCell  onClick={() => router.push(`/dashboard/teachers/${teacher.id}`)}>{teacher.user.email}</TableCell>
+                  <TableCell  onClick={() => router.push(`/dashboard/teachers/${teacher.id}`)}>{teacher.user.phoneNumber}</TableCell>
+                  <TableCell  onClick={() => router.push(`/dashboard/teachers/${teacher.id}`)}>{teacher.isActivated ? 'Activated' : 'Deactivated'}</TableCell>
                   <TableCell className="text-center">
                     <div className="flex justify-center gap-2">
                       {canEdit && (

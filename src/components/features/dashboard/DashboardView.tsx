@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { useGenerateRoster } from '@/queries/results/mutations';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import toast from 'react-hot-toast';
+import logo from '@/../public/images/logo.png'
 
 const SHORTCUTS = {
   DIRECTOR: [
@@ -32,27 +33,27 @@ const SHORTCUTS = {
     },
     {
       icon: <RiBookLine className="h-8 w-8 text-green-500 bg-green-100 rounded-lg p-1.5" />,
-      title: 'Add Classes',
+      title: 'Add Sections',
       description: 'Organize classes and assign teachers and students.',
-      href: '/dashboard/classes',
+      href: '/dashboard/sections/add',
     },
     {
       icon: <RiGroupLine className="h-8 w-8 text-purple-500 bg-purple-100 rounded-lg p-1.5" />,
       title: 'Add Students',
       description: 'Add students and assign them to classes.',
-      href: '/dashboard/students',
+      href: '/dashboard/student/add',
     },
     {
       icon: <RiFileListLine className="h-8 w-8 text-pink-500 bg-pink-100 rounded-lg p-1.5" />,
       title: 'Add Subjects',
       description: 'Manage subjects for your school curriculum.',
-      href: '/dashboard/subjects',
+      href: '/dashboard/subjects/add',
     },
     {
       icon: <RiCalendarEventLine className="h-8 w-8 text-yellow-500 bg-yellow-100 rounded-lg p-1.5" />,
       title: 'Add Events',
       description: 'Plan and manage school events.',
-      href: '/dashboard/events',
+      href: '/dashboard/calendar/add',
     },
   ],
   TEACHER: [
@@ -62,12 +63,12 @@ const SHORTCUTS = {
       description: 'View and manage your assigned sections.',
       href: '/dashboard/sections',
     },
-    {
-      icon: <RiGroupLine className="h-8 w-8 text-purple-500 bg-purple-100 rounded-lg p-1.5" />,
-      title: 'View Students',
-      description: 'Manage your students and track their progress.',
-      href: '/dashboard/students',
-    },
+    // {
+    //   icon: <RiGroupLine className="h-8 w-8 text-purple-500 bg-purple-100 rounded-lg p-1.5" />,
+    //   title: 'View Students',
+    //   description: 'Manage your students and track their progress.',
+    //   href: '/dashboard/students',
+    // },
     {
       icon: <RiCalendarEventLine className="h-8 w-8 text-yellow-500 bg-yellow-100 rounded-lg p-1.5" />,
       title: 'School Calendar',
@@ -80,13 +81,13 @@ const SHORTCUTS = {
       icon: <RiGroupLine className="h-8 w-8 text-purple-500 bg-purple-100 rounded-lg p-1.5" />,
       title: 'My Children',
       description: "Monitor your children's progress and activities.",
-      href: '/dashboard/children',
+      href: '/dashboard/settings?tab=children',
     },
     {
       icon: <RiCalendarEventLine className="h-8 w-8 text-yellow-500 bg-yellow-100 rounded-lg p-1.5" />,
       title: 'School Events',
       description: 'View upcoming school events and activities.',
-      href: '/dashboard/events',
+      href: '/dashboard/calendar',
     },
   ],
 };
@@ -125,7 +126,7 @@ const DashboardView = () => {
           <div className="flex items-center gap-3 sm:gap-4">
             <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden">
               <Image
-                src="/images/logo.png"
+                src={logo}
                 alt="School Logo"
                 fill
                 className="object-contain transition-transform duration-300 hover:scale-105"

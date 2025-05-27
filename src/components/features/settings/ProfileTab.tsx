@@ -16,6 +16,8 @@ export default function ProfileTab() {
   const [firstName, setFirstName] = useState(user?.user?.firstName || '');
   const [lastName, setLastName] = useState(user?.user?.lastName || '');
   const [phone, setPhone] = useState(user?.user?.phoneNumber || '');
+  const [gender, setGender] = useState(user?.user?.gender || '');
+  const [dateOfBirth, setDateOfBirth] = useState(user?.user?.dateOfBirth || '');
   const [imagePreview, setImagePreview] = useState<string | null>(user?.user?.profile || null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const updateUser = useUpdateUser();
@@ -24,6 +26,8 @@ export default function ProfileTab() {
     setFirstName(user?.user?.firstName || '');
     setLastName(user?.user?.lastName || '');
     setPhone(user?.user?.phoneNumber || '');
+    setGender(user?.user?.gender || '');
+    setDateOfBirth(user?.user?.dateOfBirth ? new Date(user.user.dateOfBirth).toISOString().split('T')[0] : '');
     setImagePreview(user?.user?.profile || null);
   }, [user]);
 
@@ -57,6 +61,8 @@ export default function ProfileTab() {
           lastName,
           phoneNumber: phone,
           profile: profileUrl,
+          gender,
+          dateOfBirth: dateOfBirth ? new Date(dateOfBirth).toISOString() : null,
         },
       });
       toast.success('Profile updated successfully');
@@ -125,6 +131,27 @@ export default function ProfileTab() {
                 placeholder="Last Name"
                 value={lastName}
                 onChange={e => setLastName(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label className="block text-sm font-medium text-gray-700 mb-1">Gender</Label>
+              <select
+                className="w-full rounded-md border border-gray-300 py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary"
+                value={gender}
+                onChange={e => setGender(e.target.value)}
+              >
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+            <div>
+              <Label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</Label>
+              <Input
+                type="date"
+                className="w-full"
+                value={dateOfBirth}
+                onChange={e => setDateOfBirth(e.target.value)}
               />
             </div>
             <div className="md:col-span-2">

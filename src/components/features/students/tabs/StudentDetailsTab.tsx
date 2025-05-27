@@ -9,6 +9,7 @@ import { toast } from 'react-hot-toast';
 import { Loader2, Camera } from 'lucide-react';
 import { Student } from '@/lib/utils/types';
 import Image from 'next/image';
+import logo from '@/../public/images/logo.png'
 import { uploadImage } from '@/utils/helper';
 
 interface StudentDetailsTabProps {
@@ -70,7 +71,7 @@ const StudentDetailsTab: React.FC<StudentDetailsTabProps> = ({ student, canEdit 
           <div className="relative group">
             <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-primary/20 shadow-lg">
               <Image
-                src={imagePreview || '/images/logo.png'}
+                src={imagePreview || logo}
                 alt="Profile"
                 fill
                 className="object-cover"
@@ -219,6 +220,32 @@ const StudentDetailsTab: React.FC<StudentDetailsTabProps> = ({ student, canEdit 
                 id="userId"
                 type="text"
                 value={student.userId || '-'}
+                readOnly
+                className="mt-1 bg-gray-50"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="gender" className="text-sm font-medium text-gray-700">
+                Gender
+              </Label>
+              <Input
+                id="gender"
+                type="text"
+                value={student.user?.gender === 'M' ? 'Male' : student.user?.gender === 'F' ? 'Female' : '-'}
+                readOnly
+                className="mt-1 bg-gray-50"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="dateOfBirth" className="text-sm font-medium text-gray-700">
+                Date of Birth
+              </Label>
+              <Input
+                id="dateOfBirth"
+                type="text"
+                value={student.user?.dateOfBirth ? new Date(student.user.dateOfBirth).toISOString().split('T')[0] : '-'}
                 readOnly
                 className="mt-1 bg-gray-50"
               />

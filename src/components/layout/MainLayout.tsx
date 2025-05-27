@@ -56,7 +56,13 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
             {/* Profile image placeholder */}
             <div className="h-9 w-9 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
               {/* Optionally, show user image if available */}
-              <img src={user?.user.profile || ""} alt={user?.user.firstName} className="h-full w-full object-cover" />
+              {user?.user.profile ? (
+                <img src={user.user.profile} alt={user.user.firstName} className="h-full w-full object-cover" />
+              ) : (
+                <span className="text-primary font-semibold">
+                  {`${user?.user.firstName?.[0] || ''}${user?.user.lastName?.[0] || ''}`.toUpperCase()}
+                </span>
+              )}
             </div>
             <div className="flex flex-col items-end">
               <span className="font-medium text-gray-900 text-sm">

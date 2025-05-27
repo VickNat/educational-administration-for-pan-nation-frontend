@@ -192,7 +192,7 @@ const StudentsView = () => {
                   <TableHead>Profile</TableHead>
                   <TableHead>Student Name</TableHead>
                   <TableHead>Section</TableHead>
-                  <TableHead>Parent ID</TableHead>
+                  {/* <TableHead>Parent ID</TableHead> */}
                   <TableHead className="text-center">Action</TableHead>
                 </TableRow>
               </TableHeader>
@@ -217,7 +217,7 @@ const StudentsView = () => {
                     </TableCell>
                     <TableCell>{`${student.user.firstName} ${student.user.lastName}`}</TableCell>
                     <TableCell>{student.section?.name || 'N/A'}</TableCell>
-                    <TableCell>{student.parentId}</TableCell>
+                    {/* <TableCell>{student.parentId}</TableCell> */}
                     <TableCell className="text-center">
                       <div className="flex justify-center gap-2">
                         {canEdit(student) && (

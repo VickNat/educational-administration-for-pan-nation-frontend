@@ -147,166 +147,173 @@ const AddSectionsView = () => {
         >
           {({ values, setFieldValue }) => (
             <Form className="space-y-6">
-          {/* Name Field */}
-          <div className="space-y-2">
-            <Label htmlFor="name" className="text-sm font-medium text-gray-700">
-              Section Name
-            </Label>
-                <Field
-                  as={Input}
-              id="name"
-                  name="name"
-              type="text"
-              placeholder="e.g., Section B"
-              className="max-w-md"
-            />
-                <ErrorMessage
-                  name="name"
-                  component="div"
-                  className="text-red-500 text-sm mt-1"
-                />
-          </div>
-
-          {/* Students Multi-Select Dropdown */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-700">
-              Students
-            </Label>
-                <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  className="w-full max-w-md justify-between"
-                >
-                      {values.students.length > 0
-                        ? `${values.students.length} student(s) selected`
-                    : "Select students"}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-full max-w-md p-0">
-                <Command>
-                  <CommandInput placeholder="Search students..." />
-                  <CommandEmpty>No students found.</CommandEmpty>
-                  <CommandGroup>
-                        {students?.map((student: Student) => (
-                      <CommandItem
-                        key={student.id}
-                            value={student.id}
-                            onSelect={() => {
-                              const newStudents = values.students.includes(student.id)
-                                ? values.students.filter((id) => id !== student.id)
-                                : [...values.students, student.id];
-                              setFieldValue('students', newStudents);
-                            }}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                                values.students.includes(student.id)
-                              ? "opacity-100"
-                              : "opacity-0"
-                          )}
-                        />
-                            {student.user.firstName} {student.user.lastName}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </Command>
-              </PopoverContent>
-            </Popover>
-                <ErrorMessage
-                  name="students"
-                  component="div"
-                  className="text-red-500 text-sm mt-1"
-                />
-            <p className="text-sm text-muted-foreground">
-                  Selected: {values.students.length} student(s)
-            </p>
-          </div>
-
-              {/* Grade Level Dropdown - Only show if not provided in query */}
-              {!gradeLevelIdFromQuery && (
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-700">
-              Grade Level
-            </Label>
-                  <Select
-                    value={values.gradeLevelId}
-                    onValueChange={(value) => setFieldValue('gradeLevelId', value)}
-                  >
-              <SelectTrigger className="w-full max-w-md">
-                      <SelectValue>
-                        {values.gradeLevelId
-                          ? gradeLevels.find(gl => gl.id === values.gradeLevelId)?.level
-                          : "Select grade level"}
-                      </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                      {gradeLevels?.map((gradeLevel: GradeLevel) => (
-                  <SelectItem key={gradeLevel.id} value={gradeLevel.id}>
-                          {gradeLevel.level}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Name Field */}
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-sm font-medium text-gray-700">
+                    Section Name
+                  </Label>
+                  <Field
+                    as={Input}
+                    id="name"
+                    name="name"
+                    type="text"
+                    placeholder="e.g., Section B"
+                    className="max-w-md"
+                  />
                   <ErrorMessage
-                    name="gradeLevelId"
+                    name="name"
                     component="div"
                     className="text-red-500 text-sm mt-1"
                   />
-          </div>
-              )}
+                </div>
 
-          {/* Home Room (Teacher) Dropdown */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-700">
-              Home Room Teacher
-            </Label>
-                <Select
-                  value={values.homeRoom}
-                  onValueChange={(value) => setFieldValue('homeRoom', value)}
-                >
-              <SelectTrigger className="w-full max-w-md">
-                    <SelectValue>
-                      {values.homeRoom
-                        ? (() => {
-                            const teacher = teachers.find(t => t.id === values.homeRoom);
-                            return teacher ? `${teacher.user.firstName} ${teacher.user.lastName}` : "Select teacher";
-                          })()
-                        : "Select teacher"}
-                    </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                    {teachers?.map((teacher: Teacher) => (
-                  <SelectItem key={teacher.id} value={teacher.id}>
-                        {teacher.user.firstName} {teacher.user.lastName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-                <ErrorMessage
-                  name="homeRoom"
-                  component="div"
-                  className="text-red-500 text-sm mt-1"
-                />
-          </div>
+                {/* Students Multi-Select Dropdown */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700">
+                    Students
+                  </Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className="w-full max-w-md justify-between"
+                      >
+                        {values.students.length > 0
+                          ? `${values.students.length} student(s) selected`
+                          : "Select students"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full max-w-md p-0" style={{ width: 'var(--radix-popover-trigger-width)', maxHeight: 300, overflow: 'auto' }}>
+                      <Command>
+                        <CommandInput placeholder="Search students..." />
+                        <CommandEmpty>No students found.</CommandEmpty>
+                        <CommandGroup>
+                          {students?.map((student: Student) => (
+                            <CommandItem
+                              key={student.id}
+                              value={student.id}
+                              onSelect={() => {
+                                const newStudents = values.students.includes(student.id)
+                                  ? values.students.filter((id) => id !== student.id)
+                                  : [...values.students, student.id];
+                                setFieldValue('students', newStudents);
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  values.students.includes(student.id)
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                                )}
+                              />
+                              {student.user.firstName} {student.user.lastName}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <ErrorMessage
+                    name="students"
+                    component="div"
+                    className="text-red-500 text-sm mt-1"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Selected: {values.students.length} student(s)
+                  </p>
+                </div>
 
-          {/* Form Actions */}
-          <div className="flex justify-end gap-3">
-            <Button
+                {/* Grade Level Dropdown - Only show if not provided in query */}
+                {!gradeLevelIdFromQuery && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">
+                      Grade Level
+                    </Label>
+                    <Select
+                      value={values.gradeLevelId}
+                      onValueChange={(value) => setFieldValue('gradeLevelId', value)}
+                    >
+                      <SelectTrigger className="w-full max-w-md">
+                        <SelectValue>
+                          {values.gradeLevelId
+                            ? gradeLevels.find(gl => gl.id === values.gradeLevelId)?.level
+                            : "Select grade level"}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {gradeLevels?.map((gradeLevel: GradeLevel) => (
+                          <SelectItem key={gradeLevel.id} value={gradeLevel.id}>
+                            {gradeLevel.level}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <ErrorMessage
+                      name="gradeLevelId"
+                      component="div"
+                      className="text-red-500 text-sm mt-1"
+                    />
+                  </div>
+                )}
+
+                {/* Home Room (Teacher) Dropdown */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700">
+                    Home Room Teacher
+                  </Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className="w-full max-w-md justify-between"
+                      >
+                        {values.homeRoom
+                          ? (() => {
+                              const teacher = teachers.find(t => t.id === values.homeRoom);
+                              return teacher ? `${teacher.user.firstName} ${teacher.user.lastName}` : "Select teacher";
+                            })()
+                          : "Select teacher"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full max-w-md p-0" style={{ width: 'var(--radix-popover-trigger-width)', maxHeight: 300, overflow: 'auto' }}>
+                      {teachers?.map((teacher: Teacher) => (
+                        <div
+                          key={teacher.id}
+                          className="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-center"
+                          onClick={() => setFieldValue('homeRoom', teacher.id)}
+                        >
+                          {teacher.user.firstName} {teacher.user.lastName}
+                        </div>
+                      ))}
+                    </PopoverContent>
+                  </Popover>
+                  <ErrorMessage
+                    name="homeRoom"
+                    component="div"
+                    className="text-red-500 text-sm mt-1"
+                  />
+                </div>
+              </div>
+              {/* Form Actions */}
+              <div className="flex justify-end gap-3">
+                <Button
                   type="button"
-              variant="outline"
-              className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                  variant="outline"
+                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
                   onClick={() => router.back()}
                   disabled={isPending}
-            >
+                >
                   Cancel
-            </Button>
-            <Button
-              type="submit"
-              className="bg-blue-600 hover:bg-blue-700"
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-blue-600 hover:bg-blue-700"
                   disabled={isPending}
                 >
                   {isPending ? (
@@ -317,8 +324,8 @@ const AddSectionsView = () => {
                   ) : (
                     'Create Section'
                   )}
-            </Button>
-          </div>
+                </Button>
+              </div>
             </Form>
           )}
         </Formik>

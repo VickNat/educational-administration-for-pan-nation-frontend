@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { RiArrowLeftLine, RiBook2Line, RiChatSmile2Line, RiTeamLine } from 'react-icons/ri';
 import { useGetGradeLevelById } from '@/queries/grade-level/queries';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { GradeLevel } from '@/lib/utils/types';
 import GradeLevelDetailsTab from './tabs/GradeLevelDetailsTab';
 import SectionsTab from './tabs/SectionsTab';
@@ -33,9 +33,11 @@ const tabs = [
 
 const GradeLevelDetail = () => {
   const { id } = useParams();
+  const searchParams = useSearchParams();
+  const tab = searchParams.get('tab');
   const { data } = useGetGradeLevelById(id as string);
   const [gradeLevel, setGradeLevel] = useState<GradeLevel | null>(null);
-  const [activeTab, setActiveTab] = useState('details');
+  const [activeTab, setActiveTab] = useState(tab || 'details');
   const [canEdit, setCanEdit] = useState(false);
   const { user } = useAuth();
 
@@ -44,6 +46,12 @@ const GradeLevelDetail = () => {
       setGradeLevel(data.result);
     }
   }, [data]);
+
+  useEffect(() => {
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [tab]);
 
   useEffect(() => {
     if (user?.user.role === 'DIRECTOR') {

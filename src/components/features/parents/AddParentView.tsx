@@ -19,6 +19,8 @@ interface ParentFormData {
   phoneNumber: string;
   password: string;
   profile?: string | null;
+  gender: string;
+  dateOfBirth: string;
 }
 
 interface AddParentViewProps {
@@ -35,6 +37,8 @@ const AddParentView = ({ onParentAdded }: AddParentViewProps) => {
     email: '',
     phoneNumber: '',
     password: '',
+    gender: '',
+    dateOfBirth: '',
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -73,6 +77,7 @@ const AddParentView = ({ onParentAdded }: AddParentViewProps) => {
       const result = await addParent({
         ...formData,
         profile: profileUrl,
+        dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth).toISOString() : null,
       }) as any;
       toast.success('Parent added successfully');
       if (onParentAdded) {
@@ -88,7 +93,7 @@ const AddParentView = ({ onParentAdded }: AddParentViewProps) => {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -202,6 +207,39 @@ const AddParentView = ({ onParentAdded }: AddParentViewProps) => {
                   placeholder="09876542"
                   className="mt-1"
                   value={formData.phoneNumber}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              {/* Gender */}
+              <div>
+                <Label htmlFor="gender" className="text-sm font-medium text-gray-700">
+                  Gender
+                </Label>
+                <select
+                  id="gender"
+                  className="w-full rounded-md border border-gray-300 py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary"
+                  value={formData.gender}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select Gender</option>
+                  <option value="M">Male</option>
+                  <option value="F">Female</option>
+                </select>
+              </div>
+
+              {/* Date of Birth */}
+              <div>
+                <Label htmlFor="dateOfBirth" className="text-sm font-medium text-gray-700">
+                  Date of Birth
+                </Label>
+                <Input
+                  id="dateOfBirth"
+                  type="date"
+                  className="mt-1"
+                  value={formData.dateOfBirth}
                   onChange={handleChange}
                   required
                 />
