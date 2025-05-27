@@ -19,9 +19,11 @@ interface StudentFormData {
   lastName: string;
   email: string;
   phoneNumber: string;
-  password: string;
+  password?: string;
   parentId: string;
   profile?: string | null;
+  gender: string;
+  dateOfBirth: string;
 }
 
 interface AddStudentsViewProps {
@@ -39,8 +41,10 @@ const AddStudentsView = ({ parentId, onStudentAdded }: AddStudentsViewProps) => 
     lastName: '',
     email: 'temp'+Math.random()+parentId+'@gmail.com',
     phoneNumber: '',
-    password: '',
     parentId: parentIdFromUrl || parentId || '',
+    profile: undefined,
+    gender: '',
+    dateOfBirth: '',
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -76,9 +80,15 @@ const AddStudentsView = ({ parentId, onStudentAdded }: AddStudentsViewProps) => 
         profileUrl = url;
       }
 
+      // Generate a random password
+      const randomPassword = Math.random().toString(36).slice(-10);
+
       await addStudent({
         ...formData,
         profile: profileUrl,
+        password: randomPassword,
+        parentId: formData.parentId,
+        dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth).toISOString() : null,
       });
       toast.success('Student added successfully');
       if (onStudentAdded) {
@@ -94,7 +104,7 @@ const AddStudentsView = ({ parentId, onStudentAdded }: AddStudentsViewProps) => 
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -182,72 +192,42 @@ const AddStudentsView = ({ parentId, onStudentAdded }: AddStudentsViewProps) => 
                   />
                 </div>
 
-                {/* Email */}
-                {/* <div>
-                  <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                    Email
-                  </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="ddd@gmail.com"
-                    className="mt-1"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                  />
-                </div> */}
-
-                {/* Phone Number */}
-                {/* <div>
-                  <Label htmlFor="phoneNumber" className="text-sm font-medium text-gray-700">
-                    Phone Number
-                  </Label>
-                  <Input
-                    id="phoneNumber"
-                    type="tel"
-                    placeholder="09876542"
-                    className="mt-1"
-                    value={formData.phoneNumber}
-                    onChange={handleChange}
-                    required
-                  />
-                </div> */}
-
-                {/* Password */}
+                {/* Gender */}
                 <div>
-                  <Label htmlFor="password" className="text-sm font-medium text-gray-700">
-                    Password
+                  <Label htmlFor="gender" className="text-sm font-medium text-gray-700">
+                    Gender
                   </Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="Abebe"
-                    className="mt-1"
-                    value={formData.password}
+                  <select
+                    id="gender"
+                    className="w-full rounded-md border border-gray-300 py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary"
+                    value={formData.gender}
                     onChange={handleChange}
                     required
-                  />
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                  </select>
                 </div>
 
-                {/* Parent ID */}
+                {/* Date of Birth */}
                 <div>
-                  <Label htmlFor="parentId" className="text-sm font-medium text-gray-700">
-                    Parent ID
+                  <Label htmlFor="dateOfBirth" className="text-sm font-medium text-gray-700">
+                    Date of Birth
                   </Label>
                   <Input
-                    id="parentId"
-                    type="text"
-                    className="mt-1 bg-muted"
-                    value={formData.parentId}
-                    disabled
+                    id="dateOfBirth"
+                    type="date"
+                    className="mt-1"
+                    value={formData.dateOfBirth}
+                    onChange={handleChange}
                     required
                   />
                 </div>
               </div>
 
               {/* Form Actions */}
-              <div className="flex justify-end gap-3 pt-4">
+              <div className="flex justify-end gap-3 pt-28">
                 <Button
                   type="button"
                   variant="outline"

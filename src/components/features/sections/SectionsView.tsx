@@ -113,8 +113,7 @@ const SectionsView = () => {
           <div className="text-xl font-bold text-gray-900 mb-1">{section.name}</div>
           <div className="text-sm text-muted-foreground mb-1">Grade Level: {section.gradeLevel?.level || 'N/A'}</div>
         </div>
-        <div className="flex items-center gap-2 mt-2">
-          <span className="text-xs text-muted-foreground">Homeroom:</span>
+        <div className="flex items-center gap-2">
           <Avatar className="h-7 w-7">
             {teacherProfile ? (
               <AvatarImage src={teacherProfile} />

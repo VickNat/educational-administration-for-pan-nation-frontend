@@ -15,7 +15,6 @@ export function useUpdateParent(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: any) => {
-      console.log("Data", data)
       return fetchWithAuth(`/parent/${id}`, { method: 'POST', body: JSON.stringify(data) });
     },
     onSuccess: () => {

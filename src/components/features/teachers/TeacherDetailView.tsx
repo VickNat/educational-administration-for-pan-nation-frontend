@@ -41,6 +41,8 @@ const TeacherDetailView = () => {
     firstName: '',
     lastName: '',
     phoneNumber: '',
+    gender: '',
+    dateOfBirth: '',
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -54,13 +56,15 @@ const TeacherDetailView = () => {
         firstName: data.result.user.firstName,
         lastName: data.result.user.lastName,
         phoneNumber: data.result.user.phoneNumber,
+        gender: data.result.user.gender || '',
+        dateOfBirth: data.result.user.dateOfBirth ? new Date(data.result.user.dateOfBirth).toISOString().split('T')[0] : '',
       });
       setTeacherData(data.result);
       setImagePreview(data.result.user.profile || null);
     }
   }, [data]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
     setFormData(prev => ({ ...prev, [id]: value }));
   };
@@ -92,6 +96,7 @@ const TeacherDetailView = () => {
       await updateTeacher({
         ...formData,
         profile: profileUrl,
+        dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth).toISOString() : null,
       });
       toast.success('Teacher updated successfully');
     } catch (error) {
@@ -164,23 +169,23 @@ const TeacherDetailView = () => {
             <h1 className="text-2xl font-bold">Teacher Details</h1>
           </div>
           <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            onClick={() => router.back()}
+            className="flex items-center gap-2"
+          >
+            Back
+          </Button>
+          {user?.user?.role === 'DIRECTOR' && (
             <Button
-              variant="ghost"
-              onClick={() => router.back()}
-              className="flex items-center gap-2"
+              variant="default"
+              onClick={() => {
+                setShowResetPassword(true);
+              }}
             >
-              Back
+              Reset Password
             </Button>
-            {user?.user?.role === 'DIRECTOR' && (
-              <Button
-                variant="default"
-                onClick={() => {
-                  setShowResetPassword(true);
-                }}
-              >
-                Reset Password
-              </Button>
-            )}
+          )}
           </div>
         </div>
 
@@ -226,141 +231,132 @@ const TeacherDetailView = () => {
 
             {/* Form Fields Section */}
             <div className="w-full md:w-2/3 space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* First Name */}
-                <div>
-                  <Label htmlFor="firstName" className="text-sm font-medium text-gray-700">
-                    First Name
-                  </Label>
-                  <Input
-                    id="firstName"
-                    type="text"
-                    value={formData.firstName}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* First Name */}
+            <div>
+              <Label htmlFor="firstName" className="text-sm font-medium text-gray-700">
+                First Name
+              </Label>
+              <Input
+                id="firstName"
+                type="text"
+                value={formData.firstName}
+                onChange={handleChange}
+                readOnly={!canEdit}
+                className="mt-1 bg-gray-50"
+              />
+            </div>
+
+            {/* Last Name */}
+            <div>
+              <Label htmlFor="lastName" className="text-sm font-medium text-gray-700">
+                Last Name
+              </Label>
+              <Input
+                id="lastName"
+                type="text"
+                value={formData.lastName}
+                onChange={handleChange}
+                readOnly={!canEdit}
+                className="mt-1 bg-gray-50"
+              />
+            </div>
+
+            {/* Phone Number */}
+            <div>
+              <Label htmlFor="phoneNumber" className="text-sm font-medium text-gray-700">
+                Phone Number
+              </Label>
+              <Input
+                id="phoneNumber"
+                type="tel"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                readOnly={!canEdit}
+                className="mt-1 bg-gray-50"
+              />
+            </div>
+
+            {/* Email */}
+            <div>
+              <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                Email
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                value={data.result.user.email}
+                readOnly
+                className="mt-1 bg-gray-50"
+              />
+            </div>
+
+            {/* Role */}
+            <div>
+              <Label htmlFor="role" className="text-sm font-medium text-gray-700">
+                Role
+              </Label>
+              <Input
+                id="role"
+                type="text"
+                value={data.result.user.role}
+                readOnly
+                className="mt-1 bg-gray-50"
+              />
+            </div>
+
+                {/* Gender */}
+            <div>
+                  <Label htmlFor="gender" className="text-sm font-medium text-gray-700">
+                    Gender
+              </Label>
+                  <select
+                    id="gender"
+                    className="w-full rounded-md border border-gray-300 py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary"
+                    value={formData.gender}
                     onChange={handleChange}
-                    readOnly={!canEdit}
-                    className="mt-1 bg-gray-50"
-                  />
-                </div>
-
-                {/* Last Name */}
-                <div>
-                  <Label htmlFor="lastName" className="text-sm font-medium text-gray-700">
-                    Last Name
-                  </Label>
-                  <Input
-                    id="lastName"
-                    type="text"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    readOnly={!canEdit}
-                    className="mt-1 bg-gray-50"
-                  />
-                </div>
-
-                {/* Phone Number */}
-                <div>
-                  <Label htmlFor="phoneNumber" className="text-sm font-medium text-gray-700">
-                    Phone Number
-                  </Label>
-                  <Input
-                    id="phoneNumber"
-                    type="tel"
-                    value={formData.phoneNumber}
-                    onChange={handleChange}
-                    readOnly={!canEdit}
-                    className="mt-1 bg-gray-50"
-                  />
-                </div>
-
-                {/* Email */}
-                <div>
-                  <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                    Email
-                  </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={data.result.user.email}
-                    readOnly
-                    className="mt-1 bg-gray-50"
-                  />
-                </div>
-
-                {/* Role */}
-                <div>
-                  <Label htmlFor="role" className="text-sm font-medium text-gray-700">
-                    Role
-                  </Label>
-                  <Input
-                    id="role"
-                    type="text"
-                    value={data.result.user.role}
-                    readOnly
-                    className="mt-1 bg-gray-50"
-                  />
-                </div>
-
-                {/* Teacher ID */}
-                <div>
-                  <Label htmlFor="id" className="text-sm font-medium text-gray-700">
-                    Teacher ID
-                  </Label>
-                  <Input
-                    id="id"
-                    type="text"
-                    value={data.result.id}
-                    readOnly
-                    className="mt-1 bg-gray-50"
-                  />
-                </div>
-
-                {/* User ID */}
-                <div>
-                  <Label htmlFor="userId" className="text-sm font-medium text-gray-700">
-                    User ID
-                  </Label>
-                  <Input
-                    id="userId"
-                    type="text"
-                    value={data.result.userId}
-                    readOnly
-                    className="mt-1 bg-gray-50"
-                  />
-                </div>
-
-                {/* Is Activated */}
-                <div>
-                  <Label htmlFor="isActivated" className="text-sm font-medium text-gray-700">
-                    Is Activated
-                  </Label>
-                  <Input
-                    id="isActivated"
-                    type="text"
-                    value={data.result.isActivated.toString()}
-                    readOnly
-                    className="mt-1 bg-gray-50"
-                  />
-                </div>
-              </div>
-
-              {/* Form Actions */}
-              {canEdit && (
-                <div className="flex justify-end gap-3">
-                  <Button
-                    type="submit"
-                    disabled={isPending || isImageLoading}
+                    disabled={!canEdit}
                   >
+                    <option value="">Select Gender</option>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                  </select>
+            </div>
+
+                {/* Date of Birth */}
+            <div>
+                  <Label htmlFor="dateOfBirth" className="text-sm font-medium text-gray-700">
+                    Date of Birth
+              </Label>
+              <Input
+                    id="dateOfBirth"
+                    type="date"
+                    value={formData.dateOfBirth}
+                    onChange={handleChange}
+                    readOnly={!canEdit}
+                className="mt-1 bg-gray-50"
+              />
+            </div>
+          </div>
+
+          {/* Form Actions */}
+          {canEdit && (
+            <div className="flex justify-end gap-3">
+              <Button
+                type="submit"
+                    disabled={isPending || isImageLoading}
+              >
                     {(isPending || isImageLoading) ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Saving...
-                      </>
-                    ) : (
-                      'Save Changes'
-                    )}
-                  </Button>
-                </div>
-              )}
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  'Save Changes'
+                )}
+              </Button>
+            </div>
+          )}
             </div>
           </div>
         </form>

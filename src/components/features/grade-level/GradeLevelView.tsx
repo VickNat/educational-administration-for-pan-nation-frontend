@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { RiEdit2Line, RiDeleteBinLine, RiMore2Line } from 'react-icons/ri';
+import { RiEdit2Line, RiDeleteBinLine, RiMore2Line, RiMessage2Line } from 'react-icons/ri';
 import Link from 'next/link';
 import {
   Dialog,
@@ -102,9 +102,9 @@ const GradeLevelView = () => {
             </>
           )}
           {user?.user.role !== 'DIRECTOR' && (
-            <Button variant="ghost" className="absolute top-4 right-4 p-2 rounded-full hover:bg-primary/10 focus:outline-none">
-              <RiMore2Line className="w-6 h-6 text-gray-500" /> Details
-            </Button>
+            <Link href={`/dashboard/grade-level/${gradeLevel.id}?tab=chat`} className="flex items-center gap-2 px-3 py-2 rounded hover:bg-primary/5 text-sm text-gray-800">
+              <RiMessage2Line className="w-4 h-4" /> Messages
+            </Link>
           )}
         </PopoverContent>
       </Popover>
