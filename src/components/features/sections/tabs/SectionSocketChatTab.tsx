@@ -12,6 +12,7 @@ import { format } from "date-fns"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import io from "socket.io-client"
+import { uploadImage } from '@/utils/helper'
 
 interface SectionChatTabProps {
   sectionId: string
@@ -20,7 +21,7 @@ interface SectionChatTabProps {
 interface SectionMessage {
   id: string
   content: string
-  image?: string
+  images?: string[]
   createdAt: string
   sectionId: string
   senderId: string
@@ -40,7 +41,7 @@ interface SectionMessageResponse {
 }
 
 // Create socket connection
-const socket = io("http://localhost:4000", {
+const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:4000", {
   reconnection: true,
   reconnectionAttempts: 5,
   reconnectionDelay: 1000,
@@ -58,13 +59,28 @@ const SocketSectionChatTab = ({ sectionId }: SectionChatTabProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const socketInitialized = useRef(false)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
 
-  // Scroll to bottom when messages update
+  // Auto-scroll to bottom when messages update (like SocketMessageList)
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+    if (scrollRef.current && messages.length) {
+      const scrollToBottom = () => {
+        const scrollElement = scrollRef.current?.querySelector('[data-radix-scroll-area-viewport]') as HTMLElement;
+        if (scrollElement) {
+          scrollElement.scrollTo({
+            top: scrollElement.scrollHeight,
+            behavior: 'smooth',
+          });
+        } else {
+          scrollRef.current!.scrollTop = scrollRef.current!.scrollHeight;
+        }
+      };
+      requestAnimationFrame(() => {
+        setTimeout(scrollToBottom, 50);
+      });
     }
-  }, [messages])
+  }, [messages.length]);
 
   // Socket connection and message handling
   useEffect(() => {
@@ -159,25 +175,46 @@ const SocketSectionChatTab = ({ sectionId }: SectionChatTabProps) => {
     setSelectedImage(null)
   }
 
-  const handleSubmit = async (values: { content: string }, { resetForm }: any) => {
-    if (!user?.user?.id) return
+  // Handle image file selection
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
+  const handleSubmit = async (values: { content: string }, { resetForm }: any) => {
+    if (!user?.user?.id) return;
+    let imageUrl = undefined;
+    if (imageFile) {
+      const { url, error } = await uploadImage(imageFile);
+      if (error) {
+        toast.error('Failed to upload image');
+        return;
+      }
+      imageUrl = url;
+    }
     try {
       const messageData = {
         content: values.content,
         sectionId,
         senderId: user.user.id,
-        images: selectedImage ? [selectedImage] : [],
-      }
-
-      // Send message through socket
-      socket.emit("section_send_message", messageData)
-      resetForm()
-      setSelectedImage(null)
+        images: [imageUrl],
+      };
+      console.log("Sending message:", messageData);
+      socket.emit("section_send_message", messageData);
+      resetForm();
+      setImageFile(null);
+      setImagePreview(null);
     } catch (error) {
-      toast.error("Failed to send message")
+      toast.error("Failed to send message");
     }
-  }
+  };
 
   return (
     <div className="h-[calc(100vh-200px)] flex flex-col bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800/50 relative overflow-hidden">
@@ -267,12 +304,13 @@ const SocketSectionChatTab = ({ sectionId }: SectionChatTabProps) => {
                             : "hover:shadow-slate-200 dark:hover:shadow-slate-700"
                         }`}
                       >
+                        
                         {/* Message image */}
-                        {message.image && (
+                        {message.images && message.images.length > 0 && (
                           <div className="mb-3 -mx-1">
                             <div className="relative overflow-hidden rounded-xl">
                               <img
-                                src={message.image || "/placeholder.svg"}
+                                src={message.images[0] || "/placeholder.svg"}
                                 alt="Message attachment"
                                 className="max-w-[280px] w-full h-auto object-cover transition-transform duration-300 hover:scale-[1.02]"
                               />
@@ -343,12 +381,12 @@ const SocketSectionChatTab = ({ sectionId }: SectionChatTabProps) => {
           {({ values }) => (
             <Form className="space-y-4">
               {/* Selected Image Preview */}
-              {selectedImage && (
+              {imagePreview && (
                 <div className="flex justify-center">
                   <div className="relative group">
                     <div className="relative overflow-hidden rounded-2xl shadow-lg">
                       <img
-                        src={selectedImage || "/placeholder.svg"}
+                        src={imagePreview || "/placeholder.svg"}
                         alt="Selected"
                         className="max-h-[200px] object-cover"
                       />
@@ -379,30 +417,30 @@ const SocketSectionChatTab = ({ sectionId }: SectionChatTabProps) => {
                 </div>
 
                 {/* Image Upload Button */}
-                <Dialog open={isImageDialogOpen} onOpenChange={setIsImageDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      className="rounded-2xl h-12 w-12 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 shadow-sm"
-                    >
-                      <ImageIcon className="h-5 w-5 text-slate-600 dark:text-slate-400" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-md">
-                    <ImageUpload
-                      onImageSelect={handleImageSelect}
-                      onImageRemove={handleImageRemove}
-                      selectedImage={selectedImage || undefined}
-                    />
-                  </DialogContent>
-                </Dialog>
+                <div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    id="section-chat-image-upload"
+                    style={{ display: 'none' }}
+                    onChange={handleFileInputChange}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    className="rounded-2xl h-12 w-12 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 shadow-sm"
+                    onClick={() => document.getElementById('section-chat-image-upload')?.click()}
+                    disabled={!!imagePreview}
+                  >
+                    <ImageIcon className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                  </Button>
+                </div>
 
                 {/* Send Button */}
                 <Button
                   type="submit"
-                  disabled={!values.content.trim() && !selectedImage}
+                  disabled={(!values.content.trim() && !imagePreview) || !!(imageFile && !imagePreview)}
                   className="rounded-2xl h-12 px-6 bg-gradient-to-r from-blue-500 via-blue-600 to-purple-600 hover:from-blue-600 hover:via-blue-700 hover:to-purple-700 text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
                 >
                   <Send className="h-5 w-5 mr-2" />
